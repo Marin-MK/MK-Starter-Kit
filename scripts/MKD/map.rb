@@ -1,12 +1,12 @@
 def load_data(filename)
 	return File.open(filename, 'rb') do |f|
-		next Marshal.load(f)
+		next Marshal.load(Zlib::Inflate.inflate(Marshal.load(f)).reverse)
 	end
 end
 
 def save_data(filename, data)
   f = File.new(filename, 'wb')
-  Marshal.dump(data, f)
+  Marshal.dump(Zlib::Deflate.deflate(Marshal.dump(data).reverse), f)
   f.close
   return nil
 end
@@ -45,7 +45,7 @@ module MKD
 		end
 
 		def self.load(id)
-			return load_data("data/maps/map#{id.to_digits(3)}.mkd") rescue nil
+			return load_data("data/maps/map#{id.to_digits(3)}.mkd")
 		end
 
 		def save
@@ -53,9 +53,3 @@ module MKD
 		end
 	end
 end
-
-m = MKD::Map.load(0)
-p m.name
-m.name = "Test Town"
-m.save
-p m.name

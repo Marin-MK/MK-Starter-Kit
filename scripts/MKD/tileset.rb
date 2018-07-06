@@ -17,8 +17,7 @@ module MKD
 		end
 
 		def self.load(id = nil)
-			data = load_data("data/tilesets.mkd") rescue []
-			data ||= []
+			data = load_data("data/tilesets.mkd")
 			return data unless id
 			return data[id]
 		end
