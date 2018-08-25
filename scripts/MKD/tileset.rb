@@ -2,28 +2,35 @@ module MKD
 	class Tileset
 		attr_accessor :id
 		attr_accessor :name
-		attr_accessor :graphic
+		attr_accessor :graphic_name
 		attr_accessor :passabilities
 		attr_accessor :priorities
 		attr_accessor :tags
 
-		def initialize(id)
+		def initialize(id = 0)
 			@id = id
 			@name = ""
-			@graphic = ""
+			@graphic_name = ""
 			@priorities = []
 			@passabilities = []
 			@tags = []
 		end
 
-		def self.load(id = nil)
-			data = load_data("data/tilesets.mkd")
-			return data unless id
-			return data[id]
+		def self.fetch(id = nil)
+			if File.file?("data/tilesets.mkd")
+			  data = load_data("data/tilesets.mkd")
+			  return data unless id
+			  return data[id]
+			else
+				return nil
+			end
 		end
 
+    #temp
 		def save
-			data = MKD::Tileset.load
+			p "save"
+			data = MKD::Tileset.fetch || []
+			p "save 2"
 			data[@id] = self
 			save_data("data/tilesets.mkd", data)
 		end
