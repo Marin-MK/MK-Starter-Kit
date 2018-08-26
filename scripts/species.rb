@@ -14,15 +14,13 @@ class Species
 
   def self.get(species)
     s = self.try_get(species)
-    return s if s		
+    return s if s
     raise "No species found for #{i = species.inspect; i.size > 32 ? i[0..32] + '...' : i}"
   end
 
   def self.try_get(species)
     validate species => [Fixnum, Symbol]
-    List.each { |e| return e if e && e.id == species }
-    List.each { |e| return e if e && e.intname == species }
-    return nil
+    return List.detect { |e| return e if e && (e.id == species || e.intname == species) }
   end
 
   attr_reader :id, :intname, :name, :type1, :type2, :abilities, :hidden_ability,
