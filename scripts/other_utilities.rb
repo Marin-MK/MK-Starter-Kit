@@ -7,7 +7,7 @@ class Numeric
   end
 end
 
-def validates(hash)
+def validate(hash)
   errors = hash.map do |key, value|
     if value.is_a?(Array)
       "Expected #{key} to be one of [#{value.join(",")}], got #{key.class}" unless value.include?(key.class)
