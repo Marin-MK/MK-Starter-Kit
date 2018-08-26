@@ -28,9 +28,7 @@ module MKD
 
     #temp
 		def save
-			p "save"
 			data = MKD::Tileset.fetch || []
-			p "save 2"
 			data[@id] = self
 			save_data("data/tilesets.mkd", data)
 		end

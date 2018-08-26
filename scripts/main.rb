@@ -14,10 +14,14 @@ $visuals.map is updated
 (map will be updated too once there's something worth updating there)
 
 =end
-i = 1
+
 loop do
   Graphics.update
   Input.update
   $game.update
   $visuals.update
+  if Input.trigger?(Input::C)
+    $game.player.x += 1
+    $game.player.y += 1
+  end
 end
