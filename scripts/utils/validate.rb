@@ -9,7 +9,7 @@ def validate(hash)
     end
   end
   return if errors.none?
-  raise ArugmentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ")
+  raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ")
 end
 
 def validate_binding(input_binding, **hash)

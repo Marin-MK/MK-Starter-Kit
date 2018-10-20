@@ -21,8 +21,6 @@ module MKD
 			  data = FileUtils.load_data("data/tilesets.mkd")
 			  return data unless id
 			  return data[id]
-			else
-				return nil
 			end
 		end
 
