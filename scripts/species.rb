@@ -4,7 +4,7 @@ class Species
   # Loads all species data from species.mkd
   def self.load
     List.clear
-    data = load_data('data/species.mkd')
+    data = FileUtils.load_data('data/species.mkd')
     for i in 0...data.size
       List[i] = data[i]
       next if List[i].nil?
@@ -84,7 +84,7 @@ s = Species.new(1) do
   }
 end
 
-save_data('data/species.mkd', [nil, s])
+FileUtils.save_data('data/species.mkd', [nil, s])
 =end
 
 Species.load

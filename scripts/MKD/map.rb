@@ -25,12 +25,12 @@ module MKD
     end
 
     def self.fetch(id)
-      return load_data("data/maps/map#{id.to_digits(3)}.mkd")
+      return FileUtils.load_data("data/maps/map#{id.to_digits(3)}.mkd")
     end
 
     #temp
     def save
-      save_data("data/maps/map#{@id.to_digits}.mkd", self)
+      FileUtils.save_data("data/maps/map#{@id.to_digits}.mkd", self)
     end
   end
 end

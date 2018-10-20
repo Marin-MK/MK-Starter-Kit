@@ -1,5 +1,6 @@
-file_utilities.rb: File Utilities
-other_utilities.rb: Other Utilities
+utils/file_utils.rb: File Utilities
+utils/numeric.rb: Numeric Utilities
+utils/validate.rb: Validator Utilities
 mkd\map.rb: Map
 mkd\tileset.rb: Tileset
 mkd\event.rb: Event
