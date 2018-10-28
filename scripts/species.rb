@@ -3,12 +3,16 @@ class Species
 
   # these are passed to the attr_reader here, but also delegated by the Pokemon class
   # which is why they're in a frozen constant.
-  SPECIES_PROPERTIES = [
-    :id, :intname, :name, :type1, :type2, :abilities, :hidden_ability,
-    :egg_groups, :hatch_time, :height, :weight, :exp_yield, :growth_rate,
-    :gender_ratio, :catch_rate, :ev_yield, :pokedex_color, :pokedex_entry,
-    :base_friendship, :moveset, :tm_compatibility, :egg_moves, :tutor_moves,
+  DELEGATED_PROPERTIES = [
+    :id, :intname, :type1, :type2, :hidden_ability,
+    :egg_groups, :height, :weight, :exp_yield, :growth_rate,
+    :gender_ratio, :catch_rate, :pokedex_color, :pokedex_entry,
+    :base_friendship, :tm_compatibility, :egg_moves, :tutor_moves,
     :evolutions
+  ]
+
+  NONDELEGATED_PROPERTIES = [
+    :name, :abilities, :hatch_time, :ev_yield, :moveset
   ]
 
   # Loads all species data from species.mkd
@@ -33,7 +37,8 @@ class Species
     return List.detect { |e| return e if e && (e.id == species || e.intname == species) }
   end
 
-  attr_reader *SPECIES_PROPERTIES
+  attr_reader *DELEGATED_PROPERTIES
+  attr_reader *NONDELEGATED_PROPERTIES
 
   def initialize(id, &block)
     @id = id
