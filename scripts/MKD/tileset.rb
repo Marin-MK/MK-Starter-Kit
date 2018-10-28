@@ -18,11 +18,9 @@ module MKD
 
 		def self.fetch(id = nil)
 			if File.file?("data/tilesets.mkd")
-			  data = load_data("data/tilesets.mkd")
+			  data = FileUtils.load_data("data/tilesets.mkd")
 			  return data unless id
 			  return data[id]
-			else
-				return nil
 			end
 		end
 
@@ -30,7 +28,7 @@ module MKD
 		def save
 			data = MKD::Tileset.fetch || []
 			data[@id] = self
-			save_data("data/tilesets.mkd", data)
+			FileUtils.save_data("data/tilesets.mkd", data)
 		end
 	end
 end
