@@ -1,8 +1,10 @@
 class Species
   List = []
 
-  # these are passed to the attr_reader here, but also delegated by the Pokemon class
-  # which is why they're in a frozen constant.
+  # using Module#delegate, these properties are defined on a species,
+  # but can also be accessed as methods of Pokemon,
+  # for example pokemon.weight instead of pokemon.species.weight
+
   DELEGATED_PROPERTIES = [
     :id, :intname, :type1, :type2, :hidden_ability,
     :egg_groups, :height, :weight, :exp_yield, :growth_rate,
@@ -10,6 +12,12 @@ class Species
     :base_friendship, :tm_compatibility, :egg_moves, :tutor_moves,
     :evolutions
   ]
+
+  # these don't really make sense on an individual pokemon
+  # and/or have confusing names given other properties (#moves vs #moveset)
+  # so they're only available on a species
+  # to get them on a pokemon, use
+  # pokemon.species.some_method
 
   NONDELEGATED_PROPERTIES = [
     :name, :abilities, :hatch_time, :ev_yield, :moveset
