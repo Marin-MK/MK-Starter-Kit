@@ -16,8 +16,8 @@ class Visuals
       @sprite.z = 1
       @sprite.ox = @sprite.src_rect.width / 2
       @sprite.oy = @sprite.src_rect.height
-      @sprite.x = 16
-      @sprite.y = 32
+      @sprite.x = Graphics.width / 2
+      @sprite.y = Graphics.height / 2 + 16
       @oldx = game_player.x
       @oldy = game_player.y
       @xdist = []
@@ -26,6 +26,7 @@ class Visuals
       @ydist = []
       @ytrav = []
       @ystart = []
+      @anim = []
     end
 
     def set_direction(value)
@@ -35,10 +36,16 @@ class Visuals
         @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
         @sprite.src_rect.x += @sprite.src_rect.width
       end
-      @turncount = 5
+      @turncount = 6
+    end
+
+    def set_direction_noanim(value)
+      @sprite.src_rect.y = @sprite.src_rect.height * [:down,:left,:right,:up].index(value)
     end
 
     def update
+      moving = moving?
+      @i += 1 if @i
       if @turncount
         @turncount -= 1
         if @turncount == 0
@@ -47,26 +54,41 @@ class Visuals
           @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
         end
       end
-      if @oldx != $game.player.x
+      if $game.player.x != @oldx
         @xdist << 32 * ($game.player.x - @oldx)
         @xtrav << 0
-        @xstart << (@xstart[0] ? @xstart.last + @xdist.last : @sprite.x)
+        @xstart << (@xstart[0] ? @xstart.last + @xdist.last : $visuals.map.real_x)
+        anims = []
+        pos = $game.player.x - @oldx > 0
+        (2 * ($game.player.x - @oldx).abs).times { |i| anims << 16 * i * (pos ? 1 : -1) }
+        @anim << anims
       end
-      if @oldy != $game.player.y
+      if $game.player.y != @oldy
         @ydist << 32 * ($game.player.y - @oldy)
         @ytrav << 0
-        @ystart << (@ystart[0] ? @ystart.last + @ydist.last : @sprite.y)
+        @ystart << (@ystart[0] ? @ystart.last + @ydist.last : $visuals.map.real_y)
+        anims = []
+        pos = $game.player.y - @oldy > 0
+        (2 * ($game.player.y - @oldy).abs).times { |i| anims << 16 * i * (pos ? 1 : -1) }
+        @anim << anims
       end
+      @i = 0 if !moving && moving?
       if @xtrav[0] && @xdist[0]
         if @xtrav[0].abs < @xdist[0].abs
           dist = $game.player.speed * (@xdist[0] < 0 ? -1 : 1)
           @xtrav[0] += dist
           @xtrav[0] = @xdist[0] < 0 ? [@xtrav[0], @xdist[0]].max : [@xtrav[0], @xdist[0]].min
-          @sprite.x = @xstart[0] + @xtrav[0]
+          if @anim[0].size > 0 && (@xdist[0] > 0 && @xtrav[0] > @anim[0][0] || @xdist[0] < 0 && @xtrav[0] < @anim[0][0])
+            @sprite.src_rect.x += @sprite.src_rect.width
+            @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
+            @anim[0].delete_at(0)
+          end
+          $visuals.map.real_x = @xstart[0] - @xtrav[0]
         else
           @xtrav.delete_at(0)
           @xdist.delete_at(0)
           @xstart.delete_at(0)
+          @anim.delete_at(0)
         end
       end
       if @ytrav[0] && @ydist[0]
@@ -74,15 +96,23 @@ class Visuals
           dist = $game.player.speed * (@ydist[0] < 0 ? -1 : 1)
           @ytrav[0] += dist
           @ytrav[0] = @ydist[0] < 0 ? [@ytrav[0], @ydist[0]].max : [@ytrav[0], @ydist[0]].min
-          @sprite.y = @ystart[0] + @ytrav[0]
+          if @anim[0].size > 0 && (@ydist[0] > 0 && @ytrav[0] > @anim[0][0] || @ydist[0] < 0 && @ytrav[0] < @anim[0][0])
+            @sprite.src_rect.x += @sprite.src_rect.width
+            @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
+            @anim[0].delete_at(0)
+          end
+          $visuals.map.real_y = @ystart[0] - @ytrav[0]
         else
           @ytrav.delete_at(0)
           @ydist.delete_at(0)
           @ystart.delete_at(0)
+          @anim.delete_at(0)
         end
       end
       @oldx = $game.player.x
       @oldy = $game.player.y
+      @wasmoving = moving?
+      @i = nil unless moving?
     end
 
     def moving?
@@ -94,11 +124,11 @@ class Visuals
     end
 
     def moving_left?
-      return moving? && @xdist[0] && @xdist[0] > 0
+      return moving? && @xdist[0] && @xdist[0] < 0
     end
 
     def moving_right?
-      return moving? && @xdist[0] && @xdist[0] < 0
+      return moving? && @xdist[0] && @xdist[0] > 0
     end
 
     def moving_up?

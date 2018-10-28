@@ -1,4 +1,5 @@
 utils/file_utils.rb: File Utilities
+utils/input.rb: Input Utilities
 utils/numeric.rb: Numeric Utilities
 utils/validate.rb: Validator Utilities
 utils/module.rb: Module Utilities

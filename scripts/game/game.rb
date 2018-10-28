@@ -6,6 +6,7 @@ class Game
   end
 
   def update
+    @map.update
     @player.update
   end
 end

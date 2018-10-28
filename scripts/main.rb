@@ -20,8 +20,7 @@ loop do
   Input.update
   $game.update
   $visuals.update
-  if Input.trigger?(Input::C)
-    $game.player.x += 1
-    $game.player.y += 1
+  if Input.trigger?(Input::CTRL)
+    abort
   end
 end

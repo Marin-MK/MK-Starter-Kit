@@ -8,5 +8,9 @@ class Game
       @data = MKD::Map.fetch(id)
       Visuals::Map.create(self)
     end
+
+    def update
+
+    end
   end
 end
