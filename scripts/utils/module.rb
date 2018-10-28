@@ -3,12 +3,10 @@ class Module
     methods = Array(methods)
     validate to: [Symbol, String]
     
-    to = to.to_s
-
     methods.map! do |method|
-      signature = /[^\]]=$/.match?(method) ? "arg" : "*args, &block"
+      signature = /[^\]]=$/.match(method) ? "arg" : "*args, &block"
 
-      <<~RUBY.split('\n').join(';')
+      <<-RUBY
         def #{method}(#{signature})
           #{to}.#{method}(#{signature})
         end
