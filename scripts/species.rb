@@ -1,10 +1,10 @@
 class Species
+  # Stores the species
   List = []
 
-  # using Module#delegate, these properties are defined on a species,
-  # but can also be accessed as methods of Pokemon,
-  # for example pokemon.weight instead of pokemon.species.weight
-
+  # These methods are defined on the species, but can also be directly
+  # on a Pokemon object as a shortcut.
+  # e.g. pokemon.weight instead of pokemon.species.weight (which still works)
   DELEGATED_PROPERTIES = [
     :id, :intname, :type1, :type2, :hidden_ability,
     :egg_groups, :height, :weight, :exp_yield, :growth_rate,
@@ -13,17 +13,15 @@ class Species
     :evolutions
   ]
 
-  # these don't really make sense on an individual pokemon
-  # and/or have confusing names given other properties (#moves vs #moveset)
-  # so they're only available on a species
-  # to get them on a pokemon, use
-  # pokemon.species.some_method
-
+  # These methods are also defined on the species, but cannot be accessed
+  # directly on Pokemon objects, because they have confusing or conflicting names
+  # when used on Pokemon (e.g. #moves vs #moveset, #evs vs #ev_yield)
+  # To use these, you have to normally access the species first: pokemon.species.moveset
   NONDELEGATED_PROPERTIES = [
     :name, :abilities, :hatch_time, :ev_yield, :moveset
   ]
 
-  # Loads all species data from species.mkd
+  # Loads all species data from species.mkd and stores it in the List constant
   def self.load
     List.clear
     data = FileUtils.load_data('data/species.mkd')
@@ -34,12 +32,14 @@ class Species
     end
   end
 
+  # Returns the species object based on the given internal name or ID. Crashes if not found.
   def self.get(species)
     s = self.try_get(species)
     return s if s
     raise "No species found for #{i = species.inspect; i.size > 32 ? i[0..32] + '...' : i}"
   end
 
+  # Returns the species object based on the given internal name or ID.
   def self.try_get(species)
     validate species => [Fixnum, Symbol]
     return List.detect { |e| return e if e && (e.id == species || e.intname == species) }
@@ -48,6 +48,7 @@ class Species
   attr_reader *DELEGATED_PROPERTIES
   attr_reader *NONDELEGATED_PROPERTIES
 
+  #temp - should not have a constructor
   def initialize(id, &block)
     @id = id
     instance_eval(&block) if block

@@ -1,12 +1,11 @@
 class Pokemon
+  # Creates a new Pokemon object of the given species with the given level.
   def initialize(species, level)
     @species = species
     @level = level
   end
 
-  # this saves us from typing pokemon.species.hidden_ability
-  # see utils/module.rb for documentation on Module#delegate
-
-  # see species.rb for the list of these properties
+  # Allows you to type pokemon.weight instead of pokemon.species.weight
+  # but only for the list of delegated properties that can be seen in species.rb
   delegate Species::DELEGATED_PROPERTIES, to: :@species
-end 
+end

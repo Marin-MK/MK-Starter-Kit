@@ -34,13 +34,13 @@ module MKD
   class Event
     class State
       class Graphic
-        attr_accessor :type # 0 = stand, 1+ = tile
-        attr_accessor :name
+        attr_accessor :type # 0 = standard or 1 = tile
+        attr_accessor :param # filename or tile id
         attr_accessor :direction # :down, :left, :right, :up
 
         def initialize
           @type = 0
-          @name = ""
+          @param = ""
           @direction = :down
         end
       end

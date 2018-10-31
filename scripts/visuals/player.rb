@@ -45,7 +45,6 @@ class Visuals
 
     def update
       moving = moving?
-      @i += 1 if @i
       if @turncount
         @turncount -= 1
         if @turncount == 0
@@ -53,6 +52,17 @@ class Visuals
           @sprite.src_rect.x += @sprite.src_rect.width
           @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
         end
+      end
+      if $game.player.graphic_name != @oldgraphic
+        frame_x = @sprite.src_rect.x.to_f / @sprite.bitmap.width * 4
+        frame_y = @sprite.src_rect.y.to_f / @sprite.bitmap.height * 4
+        @sprite.bitmap = Bitmap.new("gfx/characters/" + $game.player.graphic_name)
+        @sprite.src_rect.width = @sprite.bitmap.width / 4
+        @sprite.src_rect.height = @sprite.bitmap.height / 4
+        @sprite.ox = @sprite.src_rect.width / 2
+        @sprite.oy = @sprite.src_rect.height
+        @sprite.src_rect.x = frame_x * @sprite.src_rect.width
+        @sprite.src_rect.y = frame_y * @sprite.src_rect.height
       end
       if $game.player.x != @oldx
         @xdist << 32 * ($game.player.x - @oldx)
@@ -72,7 +82,6 @@ class Visuals
         (2 * ($game.player.y - @oldy).abs).times { |i| anims << 16 * i * (pos ? 1 : -1) }
         @anim << anims
       end
-      @i = 0 if !moving && moving?
       if @xtrav[0] && @xdist[0]
         if @xtrav[0].abs < @xdist[0].abs
           dist = $game.player.speed * (@xdist[0] < 0 ? -1 : 1)
@@ -111,8 +120,7 @@ class Visuals
       end
       @oldx = $game.player.x
       @oldy = $game.player.y
-      @wasmoving = moving?
-      @i = nil unless moving?
+      @oldgraphic = $game.player.graphic_name
     end
 
     def moving?

@@ -6,6 +6,7 @@ class Game
     attr_accessor :graphic_name
     attr_accessor :direction
     attr_accessor :speed
+    attr_accessor :running
 
     def initialize
       @map_id = 0
@@ -14,9 +15,12 @@ class Game
       @direction = :down
       @speed = 2.2 # Has to be a float
       @graphic_name = "boy"
+      @running = false
+      @runcount = 0
       Visuals::Player.create(self)
     end
 
+    # Changes the player's direction with a turn animation.
     def direction=(value)
       unless [:down,:left,:right,:up].include?(value)
         raise "Invalid direction value #{value.inspect} - should be :down, :left, :right, or :up."
@@ -25,6 +29,7 @@ class Game
       @direction = value
     end
 
+    # Changes the player's direction without a turn animation.
     def direction_noanim=(value)
       unless [:down,:left,:right,:up].include?(value)
         raise "Invalid direction value #{value.inspect} - should be :down, :left, :right, or :up."
@@ -33,26 +38,12 @@ class Game
       @direction = value
     end
 
+    # Returns whether or not the player is moving.
     def moving?
       return $visuals.player.moving?
     end
 
-    def moving_up?
-      return $visuals.player.moving_up?
-    end
-
-    def moving_down?
-      return $visuals.player.moving_down?
-    end
-
-    def moving_right?
-      return $visuals.player.moving_right?
-    end
-
-    def moving_left?
-      return $visuals.player.moving_left?
-    end
-
+    # Moves the player down one tile. Not meant to be manually called.
     def move_down
       if @direction != :down && @lastdir4 == 0
         self.direction = :down
@@ -65,6 +56,7 @@ class Game
       @downcount -= 1 if @downcount
     end
 
+    # Moves the player down left tile. Not meant to be manually called.
     def move_left
       if @direction != :left && @lastdir4 == 0
         self.direction = :left
@@ -77,6 +69,7 @@ class Game
       @leftcount -= 1 if @leftcount
     end
 
+    # Moves the player down right tile. Not meant to be manually called.
     def move_right
       if @direction != :right && @lastdir4 == 0
         self.direction = :right
@@ -89,6 +82,7 @@ class Game
       @rightcount -= 1 if @rightcount
     end
 
+    # Moves the player up one tile. Not meant to be manually called.
     def move_up
       if @direction != :up && @lastdir4 == 0
         self.direction = :up
@@ -101,10 +95,25 @@ class Game
       @upcount -= 1 if @upcount
     end
 
+    def can_run?
+      return moving?
+    end
+
     def update
+      oldrun = @running
+      if Input.press?(Input::B)
+        @runcount = 7 if !moving? && !@wasmoving && @runcount == 0
+        @runcount += 1
+      else
+        @runcount = 0
+      end
+      @running = @runcount > 7 && can_run?
+      @speed = @running ? PLAYERRUNSPEED : PLAYERWALKSPEED
+      if oldrun != @running # Walking to running or running to walking
+        @graphic_name = @running ? "boy_run" : "boy"
+      end
       if !moving? && !@wasmoving
-        input = Input.dir4
-        case input
+        case input = Input.dir4
         when 2
           move_down
         when 4
@@ -120,105 +129,3 @@ class Game
     end
   end
 end
-
-
-=begin
-      mov = moving?
-      puts mov
-      if Input.press?(Input::DOWN) && !mov && !Input.press?(Input::UP)
-        self.direction = :down if @wasmoving
-        @downcount ||= 0
-        if @direction != :down
-          self.direction = :down
-          @downcount = (((32 / @speed).ceil + 1) / 2.0).round
-        elsif @downcount % ((32 / @speed).ceil + 1) == 0
-          @y += 1
-        else
-          @downcount += 1
-        end
-      else
-        @downcount = 0
-      end
-
-      if Input.press?(Input::UP) && !mov && !Input.press?(Input::DOWN)
-        self.direction = :up if @wasmoving
-        @upcount ||= 0
-        if @direction != :up
-          self.direction = :up
-          @upcount = (((32 / @speed).ceil + 1) / 2.0).round
-        elsif @upcount % ((32 / @speed).ceil + 1) == 0
-          @y -= 1
-        else
-          @upcount += 1
-        end
-      else
-        @upcount = 0
-      end
-=end
-
-=begin
-      if Input.press?(Input::DOWN) && !moving_up? && !Input.press?(Input::UP)
-        @downcount ||= 0
-        #self.direction = :down if @wasmoving
-        if @downcount == 0 && @direction != :down && !moving?
-          self.direction = :down
-          @downcount = (((32 / @speed).ceil + 1) / 3.0).round
-        elsif @downcount % ((32 / @speed).ceil + 1) == 0 && !moving_down? && !moving_up?
-          @y += 1
-        end
-        @downcount += 1
-      else
-        @downcount = 0
-      end
-
-      if Input.press?(Input::UP) && !moving_down? && !Input.press?(Input::DOWN)
-        @upcount ||= 0
-        #self.direction = :up if @wasmoving
-        if @upcount == 0 && @direction != :up && !moving?
-          self.direction = :up
-          @upcount = (((32 / @speed).ceil + 1) / 3.0).round
-        elsif @upcount % ((32 / @speed).ceil + 1) == 0 && !moving_up? && !moving_down?
-          @y -= 1
-        end
-        @upcount += 1
-      else
-        @upcount = 0
-      end
-=end
-
-=begin
-
-
-      # Up and down override left and right
-      dominant = moving_up? || moving_down? || Input.press?(Input::UP) || Input.press?(Input::DOWN)
-      if Input.press?(Input::LEFT) && !moving_right? && !Input.press?(Input::RIGHT) && !dominant
-        @leftcount ||= 0
-        self.direction = :left if @wasmoving
-        if @leftcount == 0 && @direction != :left && !moving?
-          self.direction = :left
-          @leftcount = (((32 / @speed).ceil + 1) / 3.0).round
-        elsif @leftcount % ((32 / @speed).ceil + 1) == 0 && !moving_left?
-          @x -= 1
-        end
-        @leftcount += 1
-      else
-        @leftcount = 0
-      end
-
-      # Up and down override left, but they don't override right if down and up are both pressed
-      dominant = false if Input.press?(Input::DOWN) && Input.press?(Input::UP)
-      if Input.press?(Input::RIGHT) && !moving_left? && !Input.press?(Input::LEFT) && !dominant
-        @rightcount ||= 0
-        self.direction = :right if @wasmoving
-        if @rightcount == 0 && @direction != :right && !moving?
-          self.direction = :right
-          @rightcount = (((32 / @speed).ceil + 1) / 3.0).round
-        elsif @rightcount % ((32 / @speed).ceil + 1) == 0 && !moving_right?
-          @x += 1
-        end
-        @rightcount += 1
-      else
-        @rightcount = 0
-      end
- 
-=end
