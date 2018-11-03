@@ -6,7 +6,8 @@ class Game
     attr_accessor :graphic_name
     attr_accessor :direction
     attr_accessor :speed
-    attr_accessor :running
+    attr_reader :running
+    attr_reader :fake_move
 
     def initialize
       @map_id = 0
@@ -43,63 +44,12 @@ class Game
       return $visuals.player.moving?
     end
 
-    # Moves the player down one tile. Not meant to be manually called.
-    def move_down
-      if @direction != :down && @lastdir4 == 0
-        self.direction = :down
-        @downcount = 8
-      elsif @downcount.nil? || @downcount == 0
-        self.direction_noanim = :down if @direction != :down
-        @y += 1
-        @downcount = nil
-      end
-      @downcount -= 1 if @downcount
-    end
-
-    # Moves the player down left tile. Not meant to be manually called.
-    def move_left
-      if @direction != :left && @lastdir4 == 0
-        self.direction = :left
-        @leftcount = 8
-      elsif @leftcount.nil? || @leftcount == 0
-        self.direction_noanim = :left if @direction != :left
-        @x -= 1
-        @leftcount = nil
-      end
-      @leftcount -= 1 if @leftcount
-    end
-
-    # Moves the player down right tile. Not meant to be manually called.
-    def move_right
-      if @direction != :right && @lastdir4 == 0
-        self.direction = :right
-        @rightcount = 8
-      elsif @rightcount.nil? || @rightcount == 0
-        self.direction_noanim = :right if @direction != :right
-        @x += 1
-        @rightcount = nil
-      end
-      @rightcount -= 1 if @rightcount
-    end
-
-    # Moves the player up one tile. Not meant to be manually called.
-    def move_up
-      if @direction != :up && @lastdir4 == 0
-        self.direction = :up
-        @upcount = 8
-      elsif @upcount.nil? || @upcount == 0
-        self.direction_noanim = :up if @direction != :up
-        @y -= 1
-        @upcount = nil
-      end
-      @upcount -= 1 if @upcount
-    end
-
     def can_run?
       return moving?
     end
 
     def update
+      @fake_move = false
       oldrun = @running
       if Input.press?(Input::B)
         @runcount = 7 if !moving? && !@wasmoving && @runcount == 0
@@ -126,6 +76,80 @@ class Game
         @lastdir4 = input
       end
       @wasmoving = moving?
+      #puts @fake_move
+    end
+
+    def fake_moving?
+      return $visuals.player.fake_anim
+    end
+
+    # Moves the player down one tile. Not to be manually called.
+    private def move_down
+      puts "down check: #{fake_moving?}"
+      if @direction != :down && @lastdir4 == 0 && !fake_moving?
+        self.direction = :down
+        @downcount = 8
+      elsif @downcount.nil? || @downcount == 0 || @fake_move
+        self.direction_noanim = :down if @direction != :down
+        if $game.map.passable?(@x, @y + 1, :down)
+          @y += 1
+        else
+          @fake_move = true
+        end
+        @downcount = nil
+      end
+      @downcount -= 1 if @downcount
+    end
+
+    # Moves the player down left tile. Not to be manually called.
+    private def move_left
+      if @direction != :left && @lastdir4 == 0 && !fake_moving?
+        self.direction = :left
+        @leftcount = 8
+      elsif @leftcount.nil? || @leftcount == 0 || @fake_move
+        self.direction_noanim = :left if @direction != :left
+        if $game.map.passable?(@x - 1, @y, :left)
+          @x -= 1
+        else
+          @fake_move = true
+        end
+        @leftcount = nil
+      end
+      @leftcount -= 1 if @leftcount
+    end
+
+    # Moves the player down right tile. Not to be manually called.
+    private def move_right
+      if @direction != :right && @lastdir4 == 0 && !fake_moving?
+        self.direction = :right
+        @rightcount = 8
+      elsif @rightcount.nil? || @rightcount == 0 || @fake_move
+        self.direction_noanim = :right if @direction != :right
+        if $game.map.passable?(@x + 1, @y, :right)
+          @x += 1
+        else
+          @fake_move = true
+        end
+        @rightcount = nil
+      end
+      @rightcount -= 1 if @rightcount
+    end
+
+    # Moves the player up one tile. Not to be manually called.
+    private def move_up
+      if @direction != :up && @lastdir4 == 0 && !fake_moving?
+        self.direction = :up
+        @upcount = 8
+      elsif @upcount.nil? || @upcount == 0 || @fake_move
+        self.direction_noanim = :up if @direction != :up
+        if $game.map.passable?(@x, @y - 1, :up)
+          @y -= 1
+        else
+          @fake_move = true
+        end
+        @upcount = nil
+      end
+      @upcount -= 1 if @upcount
     end
   end
 end

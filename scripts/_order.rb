@@ -2,6 +2,7 @@ settings.rb: Settings
 utils\file_utils.rb: File Utilities
 utils\input.rb: Input Utilities
 utils\numeric.rb: Numeric Utilities
+utils\other.rb: Other Utilities
 utils\validate.rb: Validator Utilities
 utils\module.rb: Module Utilities
 utils\viewport.rb: Viewport Utilities
