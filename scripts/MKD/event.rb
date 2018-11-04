@@ -2,6 +2,7 @@ module MKD
   class Event
     attr_accessor :id
     attr_accessor :name
+    attr_accessor :name
     attr_accessor :states
 
     def initialize(id = 0)

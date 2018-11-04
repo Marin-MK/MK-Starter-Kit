@@ -29,18 +29,19 @@ class Visuals
       @layers = []
       tilesetbmp = Bitmap.new("gfx/tilesets/" + tileset.graphic_name)
       for i in 0...@game_map.data.tiles.size
-        if @layers[i].nil?
-          @layers[i] = Sprite.new($visuals.viewport)
-          @layers[i].x = @real_x
-          @layers[i].y = @real_y
-          @layers[i].z = 10 + 2 * i
-          @layers[i].bitmap = Bitmap.new(@game_map.data.width * 32, @game_map.data.height * 32)
-        end
         for y in 0...@game_map.data.height
           for x in 0...@game_map.data.width
             tile_id = @game_map.data.tiles[i][x + y * @game_map.data.height]
             next unless tile_id
-            @layers[i].bitmap.blt(x * 32, y * 32, tilesetbmp, Rect.new((tile_id % 8) * 32, (tile_id / 8).floor * 32, 32, 32))
+            pty = tileset.priorities[tile_id] || 0
+            if @layers[pty].nil?
+              @layers[pty] = Sprite.new($visuals.viewport)
+              @layers[pty].x = @real_x
+              @layers[pty].y = @real_y
+              @layers[pty].z = 10 + pty * 2
+              @layers[pty].bitmap = Bitmap.new(@game_map.data.width * 32, @game_map.data.height * 32)
+            end
+            @layers[pty].bitmap.blt(x * 32, y * 32, tilesetbmp, Rect.new((tile_id % 8) * 32, (tile_id / 8).floor * 32, 32, 32))
           end
         end
       end

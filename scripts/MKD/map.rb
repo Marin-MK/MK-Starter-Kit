@@ -6,7 +6,6 @@ module MKD
     attr_accessor :height
     attr_accessor :tiles
     attr_accessor :passabilities
-    attr_accessor :priorities
     attr_accessor :tags
     attr_accessor :tileset_id
     attr_accessor :events
@@ -18,7 +17,6 @@ module MKD
       @height = 0
       @tiles = []
       @passabilities = []
-      @priorities = []
       @tags = []
       @tileset_id = 0
       @events = []

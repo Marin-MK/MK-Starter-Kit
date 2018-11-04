@@ -33,7 +33,13 @@ tileset.passabilities = [
   0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0,
 ]
-tileset.priorities = [] # lazy
+# Which z layer the tiles appear on. 0 and nil = 10, 1 = 12, 2 = 14, etc.
+tileset.priorities = [
+  nil,nil,nil,nil,nil,nil,nil,nil,
+   1 , 1 ,nil,nil,nil,nil,nil,nil,
+  nil,nil,nil,nil,nil,nil,nil,nil,
+  nil,nil,nil,nil,nil,nil,nil,nil,
+]
 tileset.tags = [] # lazy
 tileset.save
 
@@ -59,13 +65,7 @@ map.tiles = [
   ]
 ]
 # Overwrites tileset passability data for non-nil entries.
-map.passabilities = [
-  nil, nil, nil, nil, nil,
-  nil, nil, nil, nil, nil,
-  nil, nil, nil, nil, nil,
-  nil, nil, nil, nil, nil,
-  nil, nil, nil, nil, nil
-]
+map.passabilities = []
 map.tileset_id = 1
 map.save
 
