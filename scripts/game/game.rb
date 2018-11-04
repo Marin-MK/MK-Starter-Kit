@@ -51,11 +51,11 @@ map.tiles = [
     3,3, 3, 3, 3
   ],
   [ # Layer 2
-    0,0,0,0,0,
-    0,0,8,9,0,
-    0,0,0,0,0,
-    0,0,0,0,0,
-    0,0,0,0,0
+    nil,nil,nil,nil,nil,
+    nil,nil, 8 , 9 ,nil,
+    nil,nil,nil,nil,nil,
+    nil,nil,nil,nil,nil,
+    nil,nil,nil,nil,nil,
   ]
 ]
 # Overwrites tileset passability data for non-nil entries.

@@ -4,9 +4,7 @@ class Visuals
       $visuals.player = self.new(game_player)
     end
 
-    attr_accessor :sprite
-    attr_accessor :ytrav
-    attr_accessor :ydist
+    # Publicly available for $game.player
     attr_reader :fake_anim
 
     def initialize(game_player)
@@ -14,11 +12,11 @@ class Visuals
       @sprite.bitmap = Bitmap.new("gfx/characters/" + game_player.graphic_name)
       @sprite.src_rect.width = @sprite.bitmap.width / 4
       @sprite.src_rect.height = @sprite.bitmap.height / 4
-      @sprite.z = 1
       @sprite.ox = @sprite.src_rect.width / 2
       @sprite.oy = @sprite.src_rect.height
       @sprite.x = Graphics.width / 2
       @sprite.y = Graphics.height / 2 + 16
+      @sprite.z = 11 + 2 * (game_player.layer - 1)
       @oldx = game_player.x
       @oldy = game_player.y
       @xdist = []
@@ -58,11 +56,17 @@ class Visuals
           @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
         end
       end
+      if @oldlayer != $game.player.layer
+        @sprite.z = 11 + 2 * ($game.player.layer - 1)
+      end
       # Executes the animation when moving against an impassable tile
       if @fake_anim
         @fake_anim -= 1 if @fake_anim > 0
         if @fake_anim == 0
           @sprite.src_rect.x += @sprite.src_rect.width
+          if @sprite.src_rect.x.to_f / @sprite.bitmap.width * 4 % 2 == 1
+            Audio.se_play("audio/se/wallbump.wav")
+          end
           @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
           if @stop_fake_anim
             @fake_anim = nil
@@ -170,6 +174,7 @@ class Visuals
       @oldy = $game.player.y
       @oldgraphic = $game.player.graphic_name
       @oldfake_move = $game.player.fake_move
+      @oldlayer = $game.player.layer
     end
 
     def moving?

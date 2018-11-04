@@ -20,7 +20,7 @@ loop do
   Input.update
   $game.update
   $visuals.update
-  if Input.press?(Input::CTRL)
+  if Input.trigger?(Input::CTRL)
     abort
   end
 end

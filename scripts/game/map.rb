@@ -30,6 +30,7 @@ class Game
       end
       for layer in 0...@tiles.size
         tile_id = @tiles[layer][x + y * @height]
+        next unless tile_id
         val = @tileset_passabilities[tile_id % 8 + (tile_id / 8).floor * 8]
         return false if val == 0
         next unless direction

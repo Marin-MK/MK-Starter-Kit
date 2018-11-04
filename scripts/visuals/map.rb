@@ -33,11 +33,13 @@ class Visuals
           @layers[i] = Sprite.new($visuals.viewport)
           @layers[i].x = @real_x
           @layers[i].y = @real_y
+          @layers[i].z = 10 + 2 * i
           @layers[i].bitmap = Bitmap.new(@game_map.data.width * 32, @game_map.data.height * 32)
         end
         for y in 0...@game_map.data.height
           for x in 0...@game_map.data.width
             tile_id = @game_map.data.tiles[i][x + y * @game_map.data.height]
+            next unless tile_id
             @layers[i].bitmap.blt(x * 32, y * 32, tilesetbmp, Rect.new((tile_id % 8) * 32, (tile_id / 8).floor * 32, 32, 32))
           end
         end
