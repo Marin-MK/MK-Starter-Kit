@@ -8,6 +8,7 @@ class Visuals
     attr_reader :fake_anim
 
     def initialize(game_player)
+      @game_player = game_player
       @sprite = Sprite.new($visuals.viewport)
       @sprite.bitmap = Bitmap.new("gfx/characters/" + game_player.graphic_name)
       @sprite.src_rect.width = @sprite.bitmap.width / 4
@@ -16,7 +17,7 @@ class Visuals
       @sprite.oy = @sprite.src_rect.height
       @sprite.x = Graphics.width / 2
       @sprite.y = Graphics.height / 2 + 16
-      @sprite.z = 11 + 2 * (game_player.layer - 1)
+      @sprite.z = 11 + 3 * (game_player.priority - 1)
       @oldx = game_player.x
       @oldy = game_player.y
       @xdist = []
@@ -56,8 +57,8 @@ class Visuals
           @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
         end
       end
-      if @oldlayer != $game.player.layer
-        @sprite.z = 11 + 2 * ($game.player.layer - 1)
+      if @oldpriority != @game_player.priority
+        @sprite.z = 11 + 3 * (@game_player.priority - 1)
       end
       # Executes the animation when moving against an impassable tile
       if @fake_anim
@@ -79,8 +80,8 @@ class Visuals
         end
       end
       # Starts and stops the slower animation when moving against an impasasble tile
-      if @oldfake_move != $game.player.fake_move
-        if !$game.player.fake_move
+      if @oldfake_move != @game_player.fake_move
+        if !@game_player.fake_move
           @stop_fake_anim = true
         else
           @fake_anim = 0
@@ -88,10 +89,10 @@ class Visuals
         end
       end
       # Changes the sprite's bitmap if the player's graphic changed
-      if $game.player.graphic_name != @oldgraphic
+      if @game_player.graphic_name != @oldgraphic
         frame_x = @sprite.src_rect.x.to_f / @sprite.bitmap.width * 4
         frame_y = @sprite.src_rect.y.to_f / @sprite.bitmap.height * 4
-        @sprite.bitmap = Bitmap.new("gfx/characters/" + $game.player.graphic_name)
+        @sprite.bitmap = Bitmap.new("gfx/characters/" + @game_player.graphic_name)
         @sprite.src_rect.width = @sprite.bitmap.width / 4
         @sprite.src_rect.height = @sprite.bitmap.height / 4
         @sprite.ox = @sprite.src_rect.width / 2
@@ -100,13 +101,13 @@ class Visuals
         @sprite.src_rect.y = frame_y * @sprite.src_rect.height
       end
       # Add a horizontal movement to the move queue
-      if $game.player.x != @oldx
-        @xdist << 32 * ($game.player.x - @oldx)
+      if @game_player.x != @oldx
+        @xdist << 32 * (@game_player.x - @oldx)
         @xtrav << 0
         @xstart << (@xstart[0] ? @xstart.last + @xdist.last : $visuals.map.real_x)
         anims = []
-        pos = $game.player.x - @oldx > 0
-        (2 * ($game.player.x - @oldx).abs).times { |i| anims << 16 * i * (pos ? 1 : -1) }
+        pos = @game_player.x - @oldx > 0
+        (2 * (@game_player.x - @oldx).abs).times { |i| anims << 16 * i * (pos ? 1 : -1) }
         @anim << anims
         if @xtrav.size == 1
           @sprite.src_rect.x += @sprite.src_rect.width if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 != 0
@@ -116,13 +117,13 @@ class Visuals
         @stop_fake_anim = false
       end
       # Add a vertical movement to the move queue
-      if $game.player.y != @oldy
-        @ydist << 32 * ($game.player.y - @oldy)
+      if @game_player.y != @oldy
+        @ydist << 32 * (@game_player.y - @oldy)
         @ytrav << 0
         @ystart << (@ystart[0] ? @ystart.last + @ydist.last : $visuals.map.real_y)
         anims = []
-        pos = $game.player.y - @oldy > 0
-        (2 * ($game.player.y - @oldy).abs).times { |i| anims << 16 * i * (pos ? 1 : -1) }
+        pos = @game_player.y - @oldy > 0
+        (2 * (@game_player.y - @oldy).abs).times { |i| anims << 16 * i * (pos ? 1 : -1) }
         @anim << anims
         if @ytrav.size == 1
           @sprite.src_rect.x += @sprite.src_rect.width if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 != 0
@@ -134,7 +135,7 @@ class Visuals
       # Executes the horizontal movement
       if @xtrav[0] && @xdist[0]
         if @xtrav[0].abs < @xdist[0].abs
-          dist = $game.player.speed * (@xdist[0] < 0 ? -1 : 1)
+          dist = @game_player.speed * (@xdist[0] < 0 ? -1 : 1)
           @xtrav[0] += dist
           @xtrav[0] = @xdist[0] < 0 ? [@xtrav[0], @xdist[0]].max : [@xtrav[0], @xdist[0]].min
           if @anim[0].size > 0 && (@xdist[0] > 0 && @xtrav[0] > @anim[0][0] || @xdist[0] < 0 && @xtrav[0] < @anim[0][0])
@@ -153,7 +154,7 @@ class Visuals
       # Executes the vertical movement
       if @ytrav[0] && @ydist[0]
         if @ytrav[0].abs < @ydist[0].abs
-          dist = $game.player.speed * (@ydist[0] < 0 ? -1 : 1)
+          dist = @game_player.speed * (@ydist[0] < 0 ? -1 : 1)
           @ytrav[0] += dist
           @ytrav[0] = @ydist[0] < 0 ? [@ytrav[0], @ydist[0]].max : [@ytrav[0], @ydist[0]].min
           if @anim[0].size > 0 && (@ydist[0] > 0 && @ytrav[0] > @anim[0][0] || @ydist[0] < 0 && @ytrav[0] < @anim[0][0])
@@ -170,11 +171,11 @@ class Visuals
         end
       end
       # Stores old values for comparison in the next #update call
-      @oldx = $game.player.x
-      @oldy = $game.player.y
-      @oldgraphic = $game.player.graphic_name
-      @oldfake_move = $game.player.fake_move
-      @oldlayer = $game.player.layer
+      @oldx = @game_player.x
+      @oldy = @game_player.y
+      @oldgraphic = @game_player.graphic_name
+      @oldfake_move = @game_player.fake_move
+      @oldpriority = @game_player.priority
     end
 
     def moving?

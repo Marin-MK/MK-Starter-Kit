@@ -6,7 +6,7 @@ class Game
     attr_accessor :graphic_name
     attr_accessor :direction
     attr_accessor :speed
-    attr_accessor :layer
+    attr_accessor :priority
     
     def initialize
       @map_id = 0
@@ -17,7 +17,7 @@ class Game
       @graphic_name = "boy"
       @running = false
       @runcount = 0
-      @layer = 1
+      @priority = 1
       Visuals::Player.create(self)
     end
 

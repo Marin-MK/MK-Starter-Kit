@@ -12,9 +12,12 @@ mkd\event.rb: Event
 species.rb: Species
 visuals\map.rb: Map
 visuals\player.rb: Player
+visuals\event.rb: Event
 visuals\visuals.rb: Visuals
 game\map.rb: Map
 game\player.rb: Player
+game\event.rb: Event
+game\eventlogic.rb: Event Logic
 game\game.rb: Game
 pokemon\pokemon.rb: Pokemon
 main.rb: Main

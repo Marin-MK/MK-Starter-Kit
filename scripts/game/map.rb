@@ -4,6 +4,7 @@ class Game
     attr_accessor :data
     attr_accessor :width
     attr_accessor :height
+    attr_accessor :events
 
     def initialize(id = 0)
       @id = id
@@ -14,13 +15,17 @@ class Game
       @passabilities = @data.passabilities
       # Fetch passability data from the tileset
       @tileset_passabilities = MKD::Tileset.fetch(@data.tileset_id).passabilities
+      @events = {}
       Visuals::Map.create(self)
+      @data.events.keys.each { |id| @events[id] = Game::Event.new(@id, id, @data.events[id]) }
     end
 
     def passable?(x, y, direction = nil)
       return false if x < 0 || x >= @width || y < 0 || y >= @height
       validate x => Fixnum, y => Fixnum, direction => [Fixnum, Symbol, NilClass]
       direction = get_direction(direction) if direction.is_a?(Symbol)
+      event = @events.values.find { |e| e.x == x && e.y == y }
+      return false if event && !event.settings.passable
       unless @passabilities[x + y * @height].nil?
         val = @passabilities[x + y * @height]
         return false if val == 0
@@ -41,7 +46,7 @@ class Game
     end
 
     def update
-
+      @events.values.each(&:update)
     end
   end
 end

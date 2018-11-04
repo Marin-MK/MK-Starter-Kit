@@ -19,7 +19,7 @@ module MKD
       @passabilities = []
       @tags = []
       @tileset_id = 0
-      @events = []
+      @events = {}
     end
 
     def self.fetch(id)

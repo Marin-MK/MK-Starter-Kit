@@ -16,11 +16,11 @@ $visuals.player is updated
 =end
 
 loop do
-  Graphics.update
   Input.update
   $game.update
   $visuals.update
   if Input.trigger?(Input::CTRL)
     abort
   end
+  Graphics.update
 end

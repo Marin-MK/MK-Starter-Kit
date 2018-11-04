@@ -64,6 +64,19 @@ map.tiles = [
     nil,nil,nil,nil,nil,
   ]
 ]
+
+event = MKD::Event.new
+event.x = 1
+event.y = 3
+event.name = "New event"
+event.settings.passable = false
+state = MKD::Event::State.new
+state.graphic.type = 0
+state.graphic.param = "gfx/characters/boy"
+state.graphic.direction = 6
+event.states = [state]
+map.events = {1 => event}
+
 # Overwrites tileset passability data for non-nil entries.
 map.passabilities = []
 map.tileset_id = 1

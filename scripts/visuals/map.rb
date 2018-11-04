@@ -4,23 +4,27 @@ class Visuals
       $visuals.maps[game_map.id] = self.new(game_map)
     end
 
+    attr_accessor :events
     attr_reader :real_x
     attr_reader :real_y
 
     def real_x=(value)
       @layers.each { |e| e.x = value }
       @real_x = value
+      @events.each { |e| e.update }
     end
 
     def real_y=(value)
       @layers.each { |e| e.y = value }
       @real_y = value
+      @events.each { |e| e.update }
     end
 
     def initialize(game_map)
       @game_map = game_map
       @real_x = Graphics.width / 2 - 16
       @real_y = Graphics.height / 2 - 16
+      @events = []
       create_layers
     end
 
@@ -38,7 +42,7 @@ class Visuals
               @layers[pty] = Sprite.new($visuals.viewport)
               @layers[pty].x = @real_x
               @layers[pty].y = @real_y
-              @layers[pty].z = 10 + pty * 2
+              @layers[pty].z = 10 + pty * 3
               @layers[pty].bitmap = Bitmap.new(@game_map.data.width * 32, @game_map.data.height * 32)
             end
             @layers[pty].bitmap.blt(x * 32, y * 32, tilesetbmp, Rect.new((tile_id % 8) * 32, (tile_id / 8).floor * 32, 32, 32))
