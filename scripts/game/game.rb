@@ -1,6 +1,8 @@
 class Game
   attr_accessor :map
   attr_accessor :player
+  attr_accessor :switches
+  attr_accessor :variables
 
   def initialize
   end
@@ -50,11 +52,11 @@ map.width = 5
 map.height = 5
 map.tiles = [
   [ # Layer 1
-    3,3, 3, 3, 3,
-    3,31,3, 3, 3,
-    3,3, 16,17,3,
-    3,3, 24,25,3,
-    3,3, 3, 3, 3
+    3,3,3, 3, 3,
+    3,3,3, 3, 3,
+    3,3,16,17,3,
+    3,3,24,25,3,
+    3,3,3, 3, 3
   ],
   [ # Layer 2
     nil,nil,nil,nil,nil,
@@ -67,14 +69,30 @@ map.tiles = [
 
 event = MKD::Event.new
 event.x = 1
-event.y = 3
+event.y = 1
 event.name = "New event"
 event.settings.passable = false
-state = MKD::Event::State.new
-state.graphic.type = 0
-state.graphic.param = "gfx/characters/boy"
-state.graphic.direction = 6
-event.states = [state]
+
+state1 = MKD::Event::State.new
+state1.graphic.type = 0
+state1.graphic.param = "gfx/characters/boy"
+state1.graphic.direction = 6
+state1.commands = [
+  [:debug_print, {text: "Ya'r speaking with state 1!"}]
+]
+state1.conditions = [
+  [:switch, {switchid: 1, value: true}]
+]
+
+state2 = MKD::Event::State.new
+state2.graphic.type = 0
+state2.graphic.param = "gfx/characters/boy_run"
+state2.graphic.direction = 8
+state2.commands = [
+  [:debug_print, {text: "This is state 2 speaking!"}]
+]
+
+event.states = [state1, state2]
 map.events = {1 => event}
 
 # Overwrites tileset passability data for non-nil entries.
@@ -84,5 +102,7 @@ map.save
 
 # Initializes the game
 $game = Game.new
+$game.switches = Game::Switches.new
+$game.variables = Game::Variables.new
 $game.map = Game::Map.new(1)
 $game.player = Game::Player.new

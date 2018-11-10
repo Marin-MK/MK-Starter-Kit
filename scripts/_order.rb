@@ -9,6 +9,8 @@ utils\viewport.rb: Viewport Utilities
 mkd\map.rb: Map
 mkd\tileset.rb: Tileset
 mkd\event.rb: Event
+mkd\eventcommands.rb: Event Commands
+mkd\eventconditions.rb: Event Conditions
 species.rb: Species
 visuals\map.rb: Map
 visuals\player.rb: Player
@@ -17,7 +19,8 @@ visuals\visuals.rb: Visuals
 game\map.rb: Map
 game\player.rb: Player
 game\event.rb: Event
-game\eventlogic.rb: Event Logic
+game\switches.rb: Game Switches
+game\variables.rb: Game Variables
 game\game.rb: Game
 pokemon\pokemon.rb: Pokemon
 main.rb: Main

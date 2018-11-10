@@ -37,12 +37,12 @@ class << Input
 
   # Whether the confirm button is triggered.
   def confirm?
-    return Input.trigger?(Input::C)
+    return Input.trigger?(Input::A)
   end
 
   # Whether the cancel button is triggered.
   def cancel?
-    return Input.trigger?(Input::X)
+    return Input.trigger?(Input::B)
   end
 
   # Whether the down button is triggered.

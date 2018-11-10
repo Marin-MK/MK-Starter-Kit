@@ -32,7 +32,8 @@ class Visuals
     end
 
     def set_direction(value)
-      @sprite.src_rect.y = @sprite.src_rect.height * [:down,:left,:right,:up].index(value)
+      value = validate_direction(value)
+      @sprite.src_rect.y = @sprite.src_rect.height * (value / 2 - 1)
       @sprite.src_rect.x += @sprite.src_rect.width
       if @turncount
         @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
@@ -43,7 +44,7 @@ class Visuals
     end
 
     def set_direction_noanim(value)
-      @sprite.src_rect.y = @sprite.src_rect.height * [:down,:left,:right,:up].index(value)
+      @sprite.src_rect.y = @sprite.src_rect.height * (value / 2 - 1)
     end
 
     def update

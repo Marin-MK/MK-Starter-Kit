@@ -52,6 +52,7 @@ class Visuals
     end
 
     def update
+      @events.each { |e| e.update }
     end
   end
 end

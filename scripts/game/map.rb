@@ -23,7 +23,7 @@ class Game
     def passable?(x, y, direction = nil)
       return false if x < 0 || x >= @width || y < 0 || y >= @height
       validate x => Fixnum, y => Fixnum, direction => [Fixnum, Symbol, NilClass]
-      direction = get_direction(direction) if direction.is_a?(Symbol)
+      direction = validate_direction(direction)
       event = @events.values.find { |e| e.x == x && e.y == y }
       return false if event && !event.settings.passable
       unless @passabilities[x + y * @height].nil?
@@ -47,6 +47,13 @@ class Game
 
     def update
       @events.values.each(&:update)
+    end
+
+    def tile_interaction(x, y)
+      return if x < 0 || x >= @width || y < 0 || y >= @height
+      if e = @events.values.find { |e| e.x == x && e.y == y }
+        e.trigger
+      end
     end
   end
 end

@@ -12,7 +12,7 @@ class Game
       @map_id = 0
       @x = 0
       @y = 0
-      @direction = :down
+      @direction = 2
       @speed = 2.2 # Has to be a float
       @graphic_name = "boy"
       @running = false
@@ -23,18 +23,14 @@ class Game
 
     # Changes the player's direction with a turn animation.
     def direction=(value)
-      unless [:down,:left,:right,:up].include?(value)
-        raise "Invalid direction value #{value.inspect} - should be :down, :left, :right, or :up."
-      end
+      value = validate_direction(value)
       $visuals.player.set_direction(value) unless @direction == value
       @direction = value
     end
 
     # Changes the player's direction without a turn animation.
     def direction_noanim=(value)
-      unless [:down,:left,:right,:up].include?(value)
-        raise "Invalid direction value #{value.inspect} - should be :down, :left, :right, or :up."
-      end
+      value = validate_direction(value)
       $visuals.player.set_direction_noanim(value) unless @direction == value
       @direction = value
     end
@@ -53,6 +49,15 @@ class Game
     end
 
     def update
+      if Input.confirm? && !moving?
+        newx = @x
+        newy = @y
+        newx -= 1 if [1, 4, 7].include?(@direction)
+        newx += 1 if [3, 6, 9].include?(@direction)
+        newy -= 1 if [7, 8, 9].include?(@direction)
+        newy += 1 if [1, 2, 3].include?(@direction)
+        $game.map.tile_interaction(newx, newy)
+      end
       @fake_move = false
       oldrun = @running
       if Input.press?(Input::B)
@@ -87,11 +92,11 @@ class Game
 
     # Moves the player down one tile. Not to be manually called.
     private def move_down
-      if @direction != :down && @lastdir4 == 0 && !$visuals.player.fake_anim
+      if @direction != 2 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :down
         @downcount = 8
       elsif @downcount.nil? || @downcount == 0 || @fake_move
-        self.direction_noanim = :down if @direction != :down
+        self.direction_noanim = :down if @direction != 2
         if $game.map.passable?(@x, @y + 1, :down)
           @y += 1
         else
@@ -104,11 +109,11 @@ class Game
 
     # Moves the player down left tile. Not to be manually called.
     private def move_left
-      if @direction != :left && @lastdir4 == 0 && !$visuals.player.fake_anim
+      if @direction != 4 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :left
         @leftcount = 8
       elsif @leftcount.nil? || @leftcount == 0 || @fake_move
-        self.direction_noanim = :left if @direction != :left
+        self.direction_noanim = :left if @direction != 4
         if $game.map.passable?(@x - 1, @y, :left)
           @x -= 1
         else
@@ -121,11 +126,11 @@ class Game
 
     # Moves the player down right tile. Not to be manually called.
     private def move_right
-      if @direction != :right && @lastdir4 == 0 && !$visuals.player.fake_anim
+      if @direction != 6 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :right
         @rightcount = 8
       elsif @rightcount.nil? || @rightcount == 0 || @fake_move
-        self.direction_noanim = :right if @direction != :right
+        self.direction_noanim = :right if @direction != 6
         if $game.map.passable?(@x + 1, @y, :right)
           @x += 1
         else
@@ -138,11 +143,11 @@ class Game
 
     # Moves the player up one tile. Not to be manually called.
     private def move_up
-      if @direction != :up && @lastdir4 == 0 && !$visuals.player.fake_anim
+      if @direction != 8 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :up
         @upcount = 8
       elsif @upcount.nil? || @upcount == 0 || @fake_move
-        self.direction_noanim = :up if @direction != :up
+        self.direction_noanim = :up if @direction != 8
         if $game.map.passable?(@x, @y - 1, :up)
           @y -= 1
         else

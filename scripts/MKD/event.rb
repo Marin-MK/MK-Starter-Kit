@@ -73,22 +73,3 @@ module MKD
     end
   end
 end
-
-module MKD
-  class Event
-    class BasicCommand
-      def execute
-      end
-    end
-  end
-end
-
-module MKD
-  class Event
-    class BasicCondition
-      def test
-        return true
-      end
-    end
-  end
-end

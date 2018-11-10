@@ -30,3 +30,16 @@ def validate_binding(input_binding, **hash)
   return if errors.none?
   raise ArgumentError, errors.compact.join(", ")
 end
+
+def validate_direction(dir)
+  if dir.is_a?(Symbol)
+    if [:down,:left,:right,:up].include?(dir)
+      dir = ([:down,:left,:right,:up].index(dir) + 1) * 2
+    else
+      raise "Invalid direction value #{dir.inspect}"
+    end
+  elsif !dir.is_a?(Fixnum) || (dir.is_a?(Fixnum) && dir < 1 || dir > 9)
+    raise "Invalid direction value #{dir}"
+  end
+  return dir
+end
