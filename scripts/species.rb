@@ -56,6 +56,7 @@ class Species
 end
 
 =begin
+#temp - should not exist
 s = Species.new(1) do
   @intname = :BULBASAUR
   @name = "Bulbasaur"

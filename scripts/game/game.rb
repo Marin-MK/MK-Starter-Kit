@@ -73,26 +73,18 @@ event.y = 1
 event.name = "New event"
 event.settings.passable = false
 
-state1 = MKD::Event::State.new
-state1.graphic.type = 0
-state1.graphic.param = "gfx/characters/boy"
-state1.graphic.direction = 6
-state1.commands = [
-  [:debug_print, {text: "Ya'r speaking with state 1!"}]
+state = MKD::Event::State.new
+state.graphic.type = 0
+state.graphic.param = "gfx/characters/boy"
+state.graphic.direction = 8
+state.commands = [
+  [:debug_print, {text: "I'm an event."}]
 ]
-state1.conditions = [
-  [:switch, {switchid: 1, value: true}]
-]
-
-state2 = MKD::Event::State.new
-state2.graphic.type = 0
-state2.graphic.param = "gfx/characters/boy_run"
-state2.graphic.direction = 8
-state2.commands = [
-  [:debug_print, {text: "This is state 2 speaking!"}]
+state.conditions = [
+  [:script, {code: "false"}]
 ]
 
-event.states = [state1, state2]
+event.states = [state]
 map.events = {1 => event}
 
 # Overwrites tileset passability data for non-nil entries.

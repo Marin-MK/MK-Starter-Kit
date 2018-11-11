@@ -25,7 +25,7 @@ class Game
       validate x => Fixnum, y => Fixnum, direction => [Fixnum, Symbol, NilClass]
       direction = validate_direction(direction)
       event = @events.values.find { |e| e.x == x && e.y == y }
-      return false if event && !event.settings.passable
+      return false if event && event.active_state && !event.settings.passable
       unless @passabilities[x + y * @height].nil?
         val = @passabilities[x + y * @height]
         return false if val == 0
@@ -51,7 +51,7 @@ class Game
 
     def tile_interaction(x, y)
       return if x < 0 || x >= @width || y < 0 || y >= @height
-      if e = @events.values.find { |e| e.x == x && e.y == y }
+      if e = @events.values.find { |e| e.x == x && e.y == y && e.active_state }
         e.trigger
       end
     end
