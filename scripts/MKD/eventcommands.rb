@@ -34,11 +34,19 @@ module MKD
     end
 
 
+    class MoveCommand < BasicCommand
+      def call
+        @event.move(@commands)
+      end
+    end
+
+
     SymbolToCommand = {
       basic: BasicCommand,
       debug_print: DebugPrintCommand,
       console_print: ConsolePrintCommand,
       script: ScriptCommand,
+      move: MoveCommand,
     }
   end
 end

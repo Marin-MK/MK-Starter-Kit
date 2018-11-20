@@ -11,20 +11,20 @@ class Visuals
     def real_x=(value)
       @layers.each { |e| e.x = value }
       @real_x = value
-      @events.each { |e| e.update }
+      @events.values.each { |e| e.sprite.x = @real_x + e.relative_x }
     end
 
     def real_y=(value)
       @layers.each { |e| e.y = value }
       @real_y = value
-      @events.each { |e| e.update }
+      @events.values.each { |e| e.sprite.y = @real_y + e.relative_y }
     end
 
     def initialize(game_map)
       @game_map = game_map
       @real_x = Graphics.width / 2 - 16
       @real_y = Graphics.height / 2 - 16
-      @events = []
+      @events = {}
       create_layers
     end
 
@@ -52,7 +52,7 @@ class Visuals
     end
 
     def update
-      @events.each { |e| e.update }
+      @events.values.each { |e| e.update }
     end
   end
 end

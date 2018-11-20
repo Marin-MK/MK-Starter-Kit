@@ -69,20 +69,18 @@ map.tiles = [
 
 event = MKD::Event.new
 event.x = 1
-event.y = 1
+event.y = 0
 event.name = "New event"
 event.settings.passable = false
 
 state = MKD::Event::State.new
 state.graphic.type = 0
 state.graphic.param = "gfx/characters/boy"
-state.graphic.direction = 8
+state.graphic.direction = 2
 state.commands = [
-  [:debug_print, {text: "I'm an event."}]
+  [:move, {commands: [:right,:right,:right,:down,:down,:down,:down,:left,:left,:left,:left,:up,:up,:up]}]
 ]
-state.conditions = [
-  [:script, {code: "false"}]
-]
+state.conditions = []
 
 event.states = [state]
 map.events = {1 => event}
