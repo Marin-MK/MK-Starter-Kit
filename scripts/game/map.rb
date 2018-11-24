@@ -5,6 +5,8 @@ class Game
     attr_accessor :width
     attr_accessor :height
     attr_accessor :events
+    attr_accessor :event_interpreters
+    attr_accessor :wait_count
 
     def initialize(id = 0)
       @id = id
@@ -18,6 +20,9 @@ class Game
       @events = {}
       Visuals::Map.create(self)
       @data.events.keys.each { |id| @events[id] = Game::Event.new(@id, id, @data.events[id]) }
+      @old_event_interpreters = []
+      @event_interpreters = []
+      @wait_count = 0
     end
 
     def passable?(x, y, direction = nil)
@@ -47,6 +52,13 @@ class Game
 
     def update
       @events.values.each(&:update)
+      @wait_count -= 1 if @wait_count > 0
+      if @event_interpreters.size > 0
+        @event_interpreters[0].update
+        if @event_interpreters[0].done?
+          @event_interpreters.delete_at(0)
+        end
+      end
     end
 
     def tile_interaction(x, y)
@@ -56,8 +68,8 @@ class Game
       end
     end
 
-    def move_interaction(x, y)
-      return if x < 0 || x >= @width || y < 0 || y >= @height
+    def check_event_triggers
+      # Line of Sight triggers
       events = @events.values.select { |e| e.current_page && e.current_page.trigger_mode == 1 }
       events.select! do |e|
         dir = e.direction
@@ -76,7 +88,7 @@ class Game
           next diff > 0 && diff <= maxdiff
         end
       end
-      p "found #{events.size}" if events.size > 0
+      events.each(&:trigger)
     end
   end
 end

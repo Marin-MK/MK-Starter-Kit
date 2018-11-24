@@ -71,7 +71,7 @@ class Game
       if oldrun != @running # Walking to running or running to walking
         @graphic_name = @running ? "boy_run" : "boy"
       end
-      if !moving? && !@wasmoving
+      if !moving? && !@wasmoving && $game.map.event_interpreters.size == 0
         case input = Input.dir4
         when 2
           move_down
@@ -99,7 +99,7 @@ class Game
         self.direction_noanim = :down if @direction != 2
         if $game.map.passable?(@x, @y + 1, :down)
           @y += 1
-          $game.map.move_interaction(@x, @y)
+          $game.map.check_event_triggers
         else
           @fake_move = true
         end
@@ -117,7 +117,7 @@ class Game
         self.direction_noanim = :left if @direction != 4
         if $game.map.passable?(@x - 1, @y, :left)
           @x -= 1
-          $game.map.move_interaction(@x, @y)
+          $game.map.check_event_triggers
         else
           @fake_move = true
         end
@@ -135,7 +135,7 @@ class Game
         self.direction_noanim = :right if @direction != 6
         if $game.map.passable?(@x + 1, @y, :right)
           @x += 1
-          $game.map.move_interaction(@x, @y)
+          $game.map.check_event_triggers
         else
           @fake_move = true
         end
@@ -153,7 +153,7 @@ class Game
         self.direction_noanim = :up if @direction != 8
         if $game.map.passable?(@x, @y - 1, :up)
           @y -= 1
-          $game.map.move_interaction(@x, @y)
+          $game.map.check_event_triggers
         else
           @fake_move = true
         end

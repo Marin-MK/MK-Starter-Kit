@@ -6,7 +6,6 @@ class Visuals
 
     # Publicly available for $game.player
     attr_reader :fake_anim
-    attr_accessor :sprite
 
     def initialize(game_player)
       @game_player = game_player

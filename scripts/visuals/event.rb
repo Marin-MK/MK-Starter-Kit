@@ -23,6 +23,7 @@ class Visuals
         @anim = []
         @relative_x = @game_event.x * 32 + 16
         @relative_y = @game_event.y * 32 + 32
+        @moveroute_wait = 0
         update
       end
 
@@ -46,11 +47,17 @@ class Visuals
         @oldpage = @game_event.current_page
 
         # Queues movement commands
+        if @moveroute_wait > 0
+          @moveroute_wait -= 1
+          next_move_command if @moveroute_wait == 0
+        end
         if @moveroute_ready
           move = @game_event.moveroute[0]
           if move
             @moveroute_ready = false
-            case move
+            name = move
+            name = move[0] if move.is_a?(Array)
+            case name
             when :down
               @ydist << 32
               @ytrav << 0
@@ -83,6 +90,24 @@ class Visuals
               @game_event.direction = 8
               @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
               @game_event.y -= 1
+            when :turn_down
+              @game_event.direction = 2
+              @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+              next_move_command
+            when :turn_left
+              @game_event.direction = 4
+              @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+              next_move_command
+            when :turn_right
+              @game_event.direction = 6
+              @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+              next_move_command
+            when :turn_up
+              @game_event.direction = 8
+              @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+              next_move_command
+            when :wait
+              @moveroute_wait = move[1]
             else
               raise "Invalid move route command #{move.inspect}"
             end
@@ -106,8 +131,7 @@ class Visuals
             @xdist.delete_at(0)
             @xstart.delete_at(0)
             @anim.delete_at(0)
-            @moveroute_ready = true
-            @game_event.moveroute.delete_at(0)
+            next_move_command
           end
         end
         # Executes the vertical movement
@@ -127,8 +151,7 @@ class Visuals
             @ydist.delete_at(0)
             @ystart.delete_at(0)
             @anim.delete_at(0)
-            @moveroute_ready = true
-            @game_event.moveroute.delete_at(0)
+            next_move_command
           end
         end
 
@@ -136,6 +159,11 @@ class Visuals
         map = $visuals.maps[@game_event.map_id]
         @sprite.x = map.real_x + @relative_x
         @sprite.y = map.real_y + @relative_y
+      end
+
+      def next_move_command
+        @moveroute_ready = true
+        @game_event.moveroute.delete_at(0)
       end
     end
   end

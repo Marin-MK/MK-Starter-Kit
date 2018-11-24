@@ -36,9 +36,10 @@ module MKD
 
 
     SymbolToCondition = {
-      :switch => SwitchCondition,
-      :variable => VariableCondition,
-      :script => ScriptCondition,
+      basic: BasicCondition,
+      switch: SwitchCondition,
+      variable: VariableCondition,
+      script: ScriptCondition,
     }
   end
 end

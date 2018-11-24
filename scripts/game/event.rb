@@ -29,7 +29,7 @@ class Game
 
     def update
       for i in 0...@pages.size
-        unless @pages[i].conditions.any? { |cond, params| !MKD::Event::SymbolToCondition[cond].new(self, params).valid? }
+        if all_conditions_true_on_page(i)
           if @current_page != @pages[i]
             # Switch event page
             @direction = @pages[i].graphic.direction
@@ -40,9 +40,15 @@ class Game
       end
     end
 
+    def all_conditions_true_on_page(page_index)
+      return !@pages[page_index].conditions.any? do |cond, params|
+        !MKD::Event::SymbolToCondition[cond].new(self, params).valid?
+      end
+    end
+
     def trigger
-      @current_page.commands.each do |cmd, params|
-        MKD::Event::SymbolToCommand[cmd].new(self, params).call
+      unless $game.map.event_interpreters.any? { |i| i.event == self }
+        $game.map.event_interpreters << Interpreter.new(self, @current_page.commands)
       end
     end
 
@@ -51,6 +57,10 @@ class Game
       commands.each do |e|
         @moveroute.concat(e)
       end
+    end
+
+    def moving?
+      return @moveroute.size > 0
     end
   end
 end

@@ -48,62 +48,88 @@ tileset.save
 # Creates a new map (normally loaded from a file)
 map = MKD::Map.new(1)
 map.name = "Some Town"
-map.width = 5
-map.height = 5
+map.width = 7
+map.height = 7
 map.tiles = [
   [ # Layer 1
-    3,3,3, 3, 3,
-    3,3,3, 3, 3,
+    3,3,3,3,3,3,3,
+    3,3,3,3,3,3,3,
+    3,3,3,3,3,3,3,
+    3,3,3,3,3,3,3,
+    3,3,3,3,3,3,3,
+    3,3,3,3,3,3,3,
+    3,3,3,3,3,3,3,
+
     #3,3,16,17,3,
-    3,3,3, 3, 3,
     #3,3,24,25,3,
-    3,3,3, 3, 3,
-    3,3,3, 3, 3
   ],
   [ # Layer 2
-    nil,nil,nil,nil,nil,
-    nil,nil,nil,nil,nil,
-    nil,nil,nil,nil,nil,
-    nil,nil,nil,nil,nil,
-    nil,nil,nil,nil,nil,
+    nil,nil,nil,nil,nil,nil,nil,
+    nil,nil,nil,nil,nil,nil,nil,
+    nil,nil,nil,nil,nil,nil,nil,
+    nil,nil,nil,nil,nil,nil,nil,
+    nil,nil,nil,nil,nil,nil,nil,
+    nil,nil,nil,nil,nil,nil,nil,
+    nil,nil,nil,nil,nil,nil,nil,
   ]
 ]
 
-event = MKD::Event.new
-event.x = 1
-event.y = 3
-event.name = "New event"
-event.settings.passable = false
 
-page = MKD::Event::Page.new
-page.graphic.type = 0
-page.graphic.param = "gfx/characters/boy"
-page.graphic.direction = 6
-page.commands = [
-  [:move, {commands: :down}],
-  [:wait, {frames: 60}],
-  [:debug_print, {text: "Moving!"}]
-  #[:if, {
-  #  condition: [:switch, {switchid: 1, value: true}],
-  #  true: [
-  #    [:setswitch, {switchid: 1, value: false}],
-  #    [:debug_print, {text: "Switch 1 has been turned off"}]
-  #  ],
-  #  false: [
-  #    [:setswitch, {switchid: 1, value: true}],
-  #    [:debug_print, {text: "Switch 1 has been turned on"}]
-  #  ]
-  #}]
-]
-page.conditions = []
-# trigger modes
-# 0: interact (A)
-# 1: line of sight (param is amount of tiles, min: 1)
-page.trigger_mode = 0
-page.trigger_param = 0
+def create_event(map, id, x, y, dir)
+  event = MKD::Event.new
+  event.x = x
+  event.y = y
+  event.name = "New event"
+  event.settings.passable = false
 
-event.pages = [page]
-map.events = {1 => event}
+  page = MKD::Event::Page.new
+  page.graphic.type = 0
+  page.graphic.param = "gfx/characters/boy"
+  page.graphic.direction = dir
+  page.commands = [
+    [0, :move, {commands: [:down, :down, :down, :down], wait_for_completion: false}],
+
+    #[0, :move, {commands: [:right,:right,:up,:up], wait_for_completion: true}],
+    #[0, :debug_print, {text: "Done moving"}]
+
+    #[0, :debug_print, {text: "Wait 2 seconds"}],
+    #[0, :wait, {frames: 120}],
+    #[0, :debug_print, {text: "Done waiting"}]
+
+    #[0, :if, {condition: [:switch, {switchid: 1, value: true}]}],
+    #[1, :setswitch, {switchid: 1, value: false}],
+    #[1, :debug_print, {text: "Switch 1 has been turned off."}],
+    #[0, :else],
+    #[1, :setswitch, {switchid: 1, value: true}],
+    #[1, :debug_print, {text: "Switch 1 has been turned on."}],
+
+    #[0, :if, {condition: [:script, {code: "true"}]}],
+    #[1, :debug_print, {text: "Level 1"}],
+    #[1, :if, {condition: [:script, {code: "true"}]}],
+    #[2, :debug_print, {text: "Level 2"}],
+    #[2, :if, {condition: [:script, {code: "true"}]}],
+    #[3, :debug_print, {text: "Level 3"}],
+    #[2, :else],
+    #[3, :debug_print, {text: "Not level 3"}],
+    #[1, :else],
+    #[2, :debug_print, {text: "Not level 2"}],
+    #[0, :else],
+    #[1, :debug_print, {text: "Not level 1"}]
+  ]
+
+  page.conditions = []
+  # trigger modes
+  # 0: interact (A)
+  # 1: line of sight (param is amount of tiles, min: 1)
+  page.trigger_mode = 0
+  page.trigger_param = 0
+
+  event.pages = [page]
+  map.events[id] = event
+end
+
+create_event(map, 1, 1, 1, 2)
+create_event(map, 2, 2, 1, 2)
 
 # Overwrites tileset passability data for non-nil entries.
 map.passabilities = []

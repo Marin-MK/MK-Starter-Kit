@@ -6,6 +6,7 @@ module MKD
         hash ||= {}
         # Effectively turns {text: "This is text"} into @text = "This is text", for example
         hash.keys.each { |e| instance_variable_set("@#{e}", hash[e]) }
+        @interpreter = $game.map.event_interpreters.find { |i| i.event == @event }
       end
 
       def call
@@ -37,6 +38,7 @@ module MKD
     class MoveCommand < BasicCommand
       def call
         @event.move(@commands)
+        @interpreter.wait_for_move_completion = @wait_for_completion
       end
     end
 
@@ -44,12 +46,7 @@ module MKD
     class IfCommand < BasicCommand
       def call
         valid = MKD::Event::SymbolToCondition[@condition[0]].new(@event, @condition[1]).valid?
-        cmds = (valid ? @true : @false)
-        if cmds
-          cmds.each do |cmd, params|
-            MKD::Event::SymbolToCommand[cmd].new(@event, params).call
-          end
-        end
+        return valid
       end
     end
 
@@ -61,9 +58,23 @@ module MKD
     end
 
 
+    class SetVariableCommand < BasicCommand
+      def call
+        $game.variables[@variableid] = @value
+      end
+    end
+
+
     class WaitCommand < BasicCommand
       def call
-        # About to implement
+        $game.map.wait_count += @frames
+      end
+    end
+
+
+    class CallEventCommand < BasicCommand
+      def call
+        $game.map.events[@eventid].trigger
       end
     end
 
@@ -76,7 +87,9 @@ module MKD
       move: MoveCommand,
       if: IfCommand,
       setswitch: SetSwitchCommand,
+      setvariable: SetVariableCommand,
       wait: WaitCommand,
+      call_event: CallEventCommand,
     }
   end
 end

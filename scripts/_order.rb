@@ -22,5 +22,6 @@ game\event.rb: Event
 game\switches.rb: Game Switches
 game\variables.rb: Game Variables
 game\game.rb: Game
+interpreters\interpreter.rb: Interpreter
 pokemon\pokemon.rb: Pokemon
 main.rb: Main

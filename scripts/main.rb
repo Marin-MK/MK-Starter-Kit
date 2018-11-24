@@ -7,3 +7,6 @@ loop do
   end
   Graphics.update
 end
+
+# TODO:
+# - Make switching event states cancel any planned moveroutes
