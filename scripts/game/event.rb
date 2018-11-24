@@ -47,7 +47,7 @@ class Game
     end
 
     def move(*commands)
-      commands = [commands] unless commands[0].is_a?(Array)
+      commands = Array(commands)
       commands.each do |e|
         @moveroute.concat(e)
       end
