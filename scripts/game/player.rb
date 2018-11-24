@@ -99,6 +99,7 @@ class Game
         self.direction_noanim = :down if @direction != 2
         if $game.map.passable?(@x, @y + 1, :down)
           @y += 1
+          $game.map.move_interaction(@x, @y)
         else
           @fake_move = true
         end
@@ -116,6 +117,7 @@ class Game
         self.direction_noanim = :left if @direction != 4
         if $game.map.passable?(@x - 1, @y, :left)
           @x -= 1
+          $game.map.move_interaction(@x, @y)
         else
           @fake_move = true
         end
@@ -133,6 +135,7 @@ class Game
         self.direction_noanim = :right if @direction != 6
         if $game.map.passable?(@x + 1, @y, :right)
           @x += 1
+          $game.map.move_interaction(@x, @y)
         else
           @fake_move = true
         end
@@ -150,6 +153,7 @@ class Game
         self.direction_noanim = :up if @direction != 8
         if $game.map.passable?(@x, @y - 1, :up)
           @y -= 1
+          $game.map.move_interaction(@x, @y)
         else
           @fake_move = true
         end

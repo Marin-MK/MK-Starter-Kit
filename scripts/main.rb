@@ -7,9 +7,3 @@ loop do
   end
   Graphics.update
 end
-
-=begin
-
-- Events can now be in an inactive/nil state. This is when none of the states' conditions are true.
-
-=end

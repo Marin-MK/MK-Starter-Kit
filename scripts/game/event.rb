@@ -4,8 +4,8 @@ class Game
     attr_accessor :id
     attr_accessor :x
     attr_accessor :y
-    attr_accessor :states
-    attr_accessor :active_state
+    attr_accessor :pages
+    attr_accessor :current_page
     attr_accessor :settings
     attr_accessor :moveroute
     attr_accessor :speed
@@ -17,9 +17,9 @@ class Game
       @data = data
       @x = @data.x
       @y = @data.y
-      @states = @data.states
+      @pages = @data.pages
       @settings = @data.settings
-      @active_state = nil
+      @current_page = nil
       @moveroute = []
       @speed = 2.2
       @direction = nil
@@ -28,26 +28,27 @@ class Game
     end
 
     def update
-      for i in 0...@states.size
-        unless @states[i].conditions.any? { |e| !MKD::Event::SymbolToCondition[e[0]].new(self, e[1]).valid? }
-          if @active_state != @states[i]
-            @direction = @states[i].graphic.direction
-            # Switch event states
+      for i in 0...@pages.size
+        unless @pages[i].conditions.any? { |cond, params| !MKD::Event::SymbolToCondition[cond].new(self, params).valid? }
+          if @current_page != @pages[i]
+            # Switch event page
+            @direction = @pages[i].graphic.direction
           end
-          @active_state = @states[i]
+          @current_page = @pages[i]
           break
         end
       end
     end
 
     def trigger
-      @active_state.commands.each do |e|
-        MKD::Event::SymbolToCommand[e[0]].new(self, e[1]).call
+      @current_page.commands.each do |cmd, params|
+        MKD::Event::SymbolToCommand[cmd].new(self, params).call
       end
     end
 
-    def move(*args)
-      args.each do |e|
+    def move(*commands)
+      commands = [commands] unless commands[0].is_a?(Array)
+      commands.each do |e|
         @moveroute.concat(e)
       end
     end

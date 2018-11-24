@@ -4,7 +4,7 @@ module MKD
     attr_accessor :name
     attr_accessor :x
     attr_accessor :y
-    attr_accessor :states
+    attr_accessor :pages
     attr_accessor :settings
 
     def initialize(id = 0)
@@ -12,7 +12,7 @@ module MKD
       @name = ""
       @x = 0
       @y = 0
-      @states = [State.new]
+      @pages = [Page.new]
       @settings = MKD::Event::Settings.new
     end
   end
@@ -38,7 +38,7 @@ end
 
 module MKD
   class Event
-    class State
+    class Page
       attr_accessor :commands
       attr_accessor :conditions
       attr_accessor :graphic
@@ -58,7 +58,7 @@ end
 
 module MKD
   class Event
-    class State
+    class Page
       class Graphic
         attr_accessor :type
         attr_accessor :param

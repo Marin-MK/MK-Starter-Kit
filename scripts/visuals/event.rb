@@ -27,9 +27,9 @@ class Visuals
       end
 
       def update
-        if @oldstate != @game_event.active_state
-          state = @game_event.active_state
-          graphic = state.graphic
+        if @oldpage != @game_event.current_page
+          page = @game_event.current_page
+          graphic = page.graphic
           if graphic.type == 0 # Filename with src_rect
             @sprite.bitmap = Bitmap.new(graphic.param)
             @sprite.src_rect.width = @sprite.bitmap.width / 4
@@ -43,7 +43,7 @@ class Visuals
           @sprite.ox = @sprite.src_rect.width / 2
           @sprite.oy = @sprite.src_rect.height
         end
-        @oldstate = @game_event.active_state
+        @oldpage = @game_event.current_page
 
         # Queues movement commands
         if @moveroute_ready

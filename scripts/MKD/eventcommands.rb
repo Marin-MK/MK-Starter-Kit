@@ -41,12 +41,42 @@ module MKD
     end
 
 
+    class IfCommand < BasicCommand
+      def call
+        valid = MKD::Event::SymbolToCondition[@condition[0]].new(@event, @condition[1]).valid?
+        cmds = (valid ? @true : @false)
+        if cmds
+          cmds.each do |cmd, params|
+            MKD::Event::SymbolToCommand[cmd].new(@event, params).call
+          end
+        end
+      end
+    end
+
+
+    class SetSwitchCommand < BasicCommand
+      def call
+        $game.switches[@switchid] = @value
+      end
+    end
+
+
+    class WaitCommand < BasicCommand
+      def call
+        # About to implement
+      end
+    end
+
+
     SymbolToCommand = {
       basic: BasicCommand,
       debug_print: DebugPrintCommand,
       console_print: ConsolePrintCommand,
       script: ScriptCommand,
       move: MoveCommand,
+      if: IfCommand,
+      setswitch: SetSwitchCommand,
+      wait: WaitCommand,
     }
   end
 end
