@@ -10,6 +10,7 @@ class Game
     attr_accessor :moveroute
     attr_accessor :speed
     attr_accessor :direction
+    attr_accessor :moveroute_ignore_impassable
 
     def initialize(map_id, id, data)
       @map_id = map_id
@@ -23,6 +24,7 @@ class Game
       @moveroute = []
       @speed = 2.2
       @direction = nil
+      @moveroute_ignore_impassable = false
       update
       Visuals::Map::Event.create(self)
     end
@@ -61,6 +63,28 @@ class Game
 
     def moving?
       return @moveroute.size > 0
+    end
+
+    def moveroute_next
+      $visuals.map.events[@id].moveroute_ready = true
+      @moveroute.delete_at(0)
+      case @moveroute[0]
+      when :down, :left, :right, :up
+        newx = @x
+        newy = @y
+        dir = validate_direction(@moveroute[0])
+        newx -= 1 if [1, 4, 7].include?(dir)
+        newx += 1 if [3, 6, 9].include?(dir)
+        newy -= 1 if [7, 8, 9].include?(dir)
+        newy += 1 if [1, 2, 3].include?(dir)
+        if !$game.map.passable?(newx, newy, dir)
+          if @moveroute_ignore_impassable
+            moveroute_next
+          else
+            @moveroute.clear
+          end
+        end
+      end
     end
   end
 end

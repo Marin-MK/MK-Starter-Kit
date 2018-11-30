@@ -39,6 +39,7 @@ module MKD
       def call
         @event.move(@commands)
         @interpreter.wait_for_move_completion = @wait_for_completion
+        @event.moveroute_ignore_impassable = @ignore_impassable
       end
     end
 

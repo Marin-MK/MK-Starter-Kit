@@ -87,9 +87,10 @@ def create_event(map, id, x, y, dir)
   page.graphic.param = "gfx/characters/boy"
   page.graphic.direction = dir
   page.commands = [
-    [0, :move, {commands: [:down, :down, :down, :down], wait_for_completion: false}],
+    [0, :debug_print, {text: "Working."}]
 
     #[0, :move, {commands: [:right,:right,:up,:up], wait_for_completion: true}],
+    #[0, :move, {commands: [:right, :right, :down, :left, :left, :left, :left, :down], ignore_impassable: true}]
     #[0, :debug_print, {text: "Done moving"}]
 
     #[0, :debug_print, {text: "Wait 2 seconds"}],
@@ -128,8 +129,7 @@ def create_event(map, id, x, y, dir)
   map.events[id] = event
 end
 
-create_event(map, 1, 1, 1, 2)
-create_event(map, 2, 2, 1, 2)
+create_event(map, 1, 0, 1, 6)
 
 # Overwrites tileset passability data for non-nil entries.
 map.passabilities = []
