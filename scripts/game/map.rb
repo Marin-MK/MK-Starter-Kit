@@ -96,7 +96,7 @@ class Game
           next diff > 0 && diff <= maxdiff
         end
       end
-      event.each { |e| e.trigger(:line_of_sight) }
+      events.each { |e| e.trigger(:line_of_sight) }
 
       # On Tile triggers
       events = @events.values.select { |e| e.current_page && e.current_page.has_trigger?(:on_tile) }

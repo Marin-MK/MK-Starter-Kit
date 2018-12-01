@@ -27,8 +27,12 @@ class Game
         @wait_for_move_completion = false
       end
       if @index >= @commands.size
-        @done = true
-        return false
+        if @type == :autorun
+          restart
+        else
+          @done = true
+          return false
+        end
       end
       if @type == :event
         if $game.map.wait_count > 0 || $game.player.moving?

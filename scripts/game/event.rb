@@ -40,13 +40,11 @@ class Game
             if oldpage
               if oldpage.has_trigger?(:parallel_process)
                 $game.map.parallel_interpreters.delete_if { |i| i.event == self }
-              elsif oldpage.has_trigger?(:autorun)
-
               else
                 $game.map.event_interpreters.delete_if { |i| i.event == self }
               end
             end
-            if @current_page.has_trigger?(:parallel_process)
+            if @current_page.has_trigger?(:parallel_process) || @current_page.has_trigger?(:autorun)
               trigger
             end
           end
@@ -65,7 +63,8 @@ class Game
       if @current_page.has_trigger?(:parallel_process)
         $game.map.parallel_interpreters << Interpreter.new(self, @current_page.commands, :parallel, :parallel_process)
       elsif @current_page.has_trigger?(:autorun)
-        $game.map.autorun_interpreter = Interpreter.new(self, @current_page.commands, :main, :autorun)
+        autorun = Interpreter.new(self, @current_page.commands, :main, :autorun)
+        autorun.update until autorun.done?
       else
         unless $game.map.event_interpreters.any? { |i| i.event == self }
           $game.map.event_interpreters << Interpreter.new(self, @current_page.commands, :event, mode)

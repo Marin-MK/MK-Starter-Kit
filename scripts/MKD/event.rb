@@ -48,7 +48,7 @@ module MKD
         @commands = []
         @conditions = []
         @graphic = Graphic.new
-        @triggers = [:interaction]
+        @triggers = [:action]
       end
     end
   end
