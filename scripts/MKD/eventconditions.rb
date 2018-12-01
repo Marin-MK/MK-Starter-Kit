@@ -35,11 +35,19 @@ module MKD
     end
 
 
+    class TriggeredByCondition < BasicCondition
+      def valid?
+        return @interpreter.triggered_by == @mode
+      end
+    end
+
+
     SymbolToCondition = {
       basic: BasicCondition,
       switch: SwitchCondition,
       variable: VariableCondition,
       script: ScriptCondition,
+      triggered_by: TriggeredByCondition,
     }
   end
 end

@@ -31,16 +31,20 @@ class Visuals
       def update
         if @oldpage != @game_event.current_page
           page = @game_event.current_page
-          graphic = page.graphic
-          if graphic.type == 0 # Filename with src_rect
-            @sprite.bitmap = Bitmap.new(graphic.param)
-            @sprite.src_rect.width = @sprite.bitmap.width / 4
-            @sprite.src_rect.height = @sprite.bitmap.height / 4
-            @sprite.src_rect.y = (graphic.direction / 2 - 1) * @sprite.src_rect.height
-          elsif graphic.type == 1 # Filename without src_rect
-            @sprite.bitmap = Bitmap.new(graphic.param)
-          elsif graphic.type == 2 # Tile
+          if page
+            graphic = page.graphic
+            if graphic.type == 0 # Filename with src_rect
+              @sprite.bitmap = Bitmap.new(graphic.param)
+              @sprite.src_rect.width = @sprite.bitmap.width / 4
+              @sprite.src_rect.height = @sprite.bitmap.height / 4
+              @sprite.src_rect.y = (graphic.direction / 2 - 1) * @sprite.src_rect.height
+            elsif graphic.type == 1 # Filename without src_rect
+              @sprite.bitmap = Bitmap.new(graphic.param)
+            elsif graphic.type == 2 # Tile
 
+            end
+          else
+            @sprite.bitmap = nil
           end
           @sprite.ox = @sprite.src_rect.width / 2
           @sprite.oy = @sprite.src_rect.height

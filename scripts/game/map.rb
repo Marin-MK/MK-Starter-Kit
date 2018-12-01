@@ -6,6 +6,7 @@ class Game
     attr_accessor :height
     attr_accessor :events
     attr_accessor :event_interpreters
+    attr_accessor :parallel_interpreters
     attr_accessor :wait_count
 
     def initialize(id = 0)
@@ -20,14 +21,15 @@ class Game
       @events = {}
       Visuals::Map.create(self)
       @data.events.keys.each { |id| @events[id] = Game::Event.new(@id, id, @data.events[id]) }
-      @old_event_interpreters = []
       @event_interpreters = []
+      @parallel_interpreters = []
       @wait_count = 0
     end
 
     def passable?(x, y, direction = nil)
+      validate x => Fixnum, y => Fixnum
       return false if x < 0 || x >= @width || y < 0 || y >= @height
-      validate x => Fixnum, y => Fixnum, direction => [Fixnum, Symbol, NilClass]
+      validate direction => [Fixnum, Symbol, NilClass]
       direction = validate_direction(direction)
       event = @events.values.find { |e| e.x == x && e.y == y }
       return false if event && event.current_page && !event.settings.passable
@@ -59,21 +61,27 @@ class Game
           @event_interpreters.delete_at(0)
         end
       end
+      @parallel_interpreters.each do |i|
+        i.restart if i.done?
+        i.update
+      end
     end
 
+    # When interacting
     def tile_interaction(x, y)
+      validate x => Fixnum, y => Fixnum
       return if x < 0 || x >= @width || y < 0 || y >= @height
-      if e = @events.values.find { |e| e.x == x && e.y == y && e.current_page && e.current_page.trigger_mode == 0 }
-        e.trigger
+      if e = @events.values.find { |e| e.x == x && e.y == y && e.current_page && e.current_page.has_trigger?(:action) }
+        e.trigger(:action)
       end
     end
 
     def check_event_triggers
       # Line of Sight triggers
-      events = @events.values.select { |e| e.current_page && e.current_page.trigger_mode == 1 }
+      events = @events.values.select { |e| e.current_page && e.current_page.has_trigger?(:line_of_sight) }
       events.select! do |e|
         dir = e.direction
-        maxdiff = e.current_page.trigger_param
+        maxdiff = e.current_page.trigger_argument(:line_of_sight, :tiles)
         if dir == 2 && e.x == $game.player.x
           diff = $game.player.y - e.y
           next diff > 0 && diff <= maxdiff
@@ -88,7 +96,16 @@ class Game
           next diff > 0 && diff <= maxdiff
         end
       end
-      events.each(&:trigger)
+      event.each { |e| e.trigger(:line_of_sight) }
+
+      # On Tile triggers
+      events = @events.values.select { |e| e.current_page && e.current_page.has_trigger?(:on_tile) }
+      events.select! do |e|
+        tiles = e.current_page.trigger_argument(:on_tile, :tiles)
+        on_trigger_tile = tiles.any? { |e| e[0] == $game.player.x && e[1] == $game.player.y }
+        next on_trigger_tile
+      end
+      events.each { |e| e.trigger(:on_tile) }
     end
   end
 end

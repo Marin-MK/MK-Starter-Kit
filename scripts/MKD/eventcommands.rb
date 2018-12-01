@@ -75,7 +75,7 @@ module MKD
 
     class CallEventCommand < BasicCommand
       def call
-        $game.map.events[@eventid].trigger
+        $game.map.events[@eventid].trigger(:event)
       end
     end
 

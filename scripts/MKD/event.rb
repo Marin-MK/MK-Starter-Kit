@@ -42,15 +42,13 @@ module MKD
       attr_accessor :commands
       attr_accessor :conditions
       attr_accessor :graphic
-      attr_accessor :trigger_mode
-      attr_accessor :trigger_param
+      attr_accessor :triggers
 
       def initialize
         @commands = []
         @conditions = []
         @graphic = Graphic.new
-        @trigger_mode = 0
-        @trigger_param = 0
+        @triggers = [:interaction]
       end
     end
   end

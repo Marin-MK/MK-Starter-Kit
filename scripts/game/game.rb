@@ -87,7 +87,7 @@ def create_event(map, id, x, y, dir)
   page.graphic.param = "gfx/characters/boy"
   page.graphic.direction = dir
   page.commands = [
-    [0, :debug_print, {text: "Working."}]
+    [0, :console_print, {text: "Working."}]
 
     #[0, :move, {commands: [:right,:right,:up,:up], wait_for_completion: true}],
     #[0, :move, {commands: [:right, :right, :down, :left, :left, :left, :left, :down], ignore_impassable: true}]
@@ -118,18 +118,34 @@ def create_event(map, id, x, y, dir)
     #[1, :debug_print, {text: "Not level 1"}]
   ]
 
-  page.conditions = []
-  # trigger modes
-  # 0: interact (A)
-  # 1: line of sight (param is amount of tiles, min: 1)
-  page.trigger_mode = 0
-  page.trigger_param = 0
+  page.conditions = [
+    [:switch, {switchid: 1, value: false}]
+  ]
+  
+  page.triggers = [
+    #[:action],
+    #[:line_of_sight, {tiles: 6}],
+    #[:on_tile, {tiles: [[1, 1], [1, 2], [2, 1], [2, 2]]}],
+    [:parallel_process],
+    #[:autorun]
+  ]
 
   event.pages = [page]
   map.events[id] = event
 end
 
 create_event(map, 1, 0, 1, 6)
+create_event(map, 2, 0, 2, 6)
+map.events[2].pages[0].triggers = [[:action]]
+map.events[2].pages[0].conditions = []
+map.events[2].pages[0].commands = [
+  [0, :if, {condition: [:switch, {switchid: 1, value: true}]}],
+  [1, :setswitch, {switchid: 1, value: false}],
+  [1, :debug_print, {text: "Switch 1 has been turned off."}],
+  [0, :else],
+  [1, :setswitch, {switchid: 1, value: true}],
+  [1, :debug_print, {text: "Switch 1 has been turned on."}],
+]
 
 # Overwrites tileset passability data for non-nil entries.
 map.passabilities = []

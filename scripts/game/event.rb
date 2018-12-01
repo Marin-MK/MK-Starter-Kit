@@ -25,18 +25,31 @@ class Game
       @speed = 2.2
       @direction = nil
       @moveroute_ignore_impassable = false
-      update
       Visuals::Map::Event.create(self)
     end
 
     def update
+      oldpage = @current_page
+      @current_page = nil
       for i in 0...@pages.size
         if all_conditions_true_on_page(i)
-          if @current_page != @pages[i]
-            # Switch event page
-            @direction = @pages[i].graphic.direction
-          end
           @current_page = @pages[i]
+          if oldpage != @current_page
+            # Run only if the page actually changed
+            @direction = @current_page.graphic.direction
+            if oldpage
+              if oldpage.has_trigger?(:parallel_process)
+                $game.map.parallel_interpreters.delete_if { |i| i.event == self }
+              elsif oldpage.has_trigger?(:autorun)
+
+              else
+                $game.map.event_interpreters.delete_if { |i| i.event == self }
+              end
+            end
+            if @current_page.has_trigger?(:parallel_process)
+              trigger
+            end
+          end
           break
         end
       end
@@ -48,9 +61,15 @@ class Game
       end
     end
 
-    def trigger
-      unless $game.map.event_interpreters.any? { |i| i.event == self }
-        $game.map.event_interpreters << Interpreter.new(self, @current_page.commands)
+    def trigger(mode = :manual)
+      if @current_page.has_trigger?(:parallel_process)
+        $game.map.parallel_interpreters << Interpreter.new(self, @current_page.commands, :parallel, :parallel_process)
+      elsif @current_page.has_trigger?(:autorun)
+        $game.map.autorun_interpreter = Interpreter.new(self, @current_page.commands, :main, :autorun)
+      else
+        unless $game.map.event_interpreters.any? { |i| i.event == self }
+          $game.map.event_interpreters << Interpreter.new(self, @current_page.commands, :event, mode)
+        end
       end
     end
 
@@ -84,6 +103,23 @@ class Game
             @moveroute.clear
           end
         end
+      end
+    end
+  end
+end
+
+module MKD
+  class Event
+    class Page
+      def has_trigger?(mode)
+        return @triggers.any? { |e| e[0] == mode }
+      end
+
+      def trigger_argument(mode, key)
+        if m = @triggers.find { |e| e[0] == mode }
+          return m[1][key]
+        end
+        return nil
       end
     end
   end
