@@ -6,3 +6,10 @@ class Enum
     end
   end
 end
+
+# Ensure #msgbox always pops up a box, no matter the RGSS version
+unless defined?(msgbox) == "method"
+	def msgbox(*args)
+		p *args
+	end
+end

@@ -87,8 +87,10 @@ def create_event(map, id, x, y, dir)
   page.graphic.param = "gfx/characters/boy"
   page.graphic.direction = dir
   page.commands = [
-    [0, :script, {code: "2000.times { |i| puts i }"}],
-    [0, :setswitch, {switchid: 1, value: true}]
+    [0, :debug_print, {text: "Interaction."}]
+
+    #[0, :script, {code: "2000.times { |i| puts i }"}],
+    #[0, :setswitch, {switchid: 1, value: true}]
 
     #[0, :move, {commands: [:right,:right,:up,:up], wait_for_completion: true}],
     #[0, :move, {commands: [:right, :right, :down, :left, :left, :left, :left, :down], ignore_impassable: true}]
@@ -119,13 +121,11 @@ def create_event(map, id, x, y, dir)
     #[1, :debug_print, {text: "Not level 1"}]
   ]
 
-  page.conditions = [
-    [:switch, {switchid: 1, value: false}]
-  ]
+  page.conditions = []
   
   page.triggers = [
-    #[:action],
-    #[:line_of_sight, {tiles: 6}],
+    [:action],
+    #[:line_of_sight, {tiles: 3}],
     #[:on_tile, {tiles: [[1, 1], [1, 2], [2, 1], [2, 2]]}],
     #[:parallel_process],
     #[:autorun]
