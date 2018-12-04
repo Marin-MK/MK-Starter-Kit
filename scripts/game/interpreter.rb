@@ -43,6 +43,7 @@ class Game
     end
 
     def update
+      @event.triggered_by = @triggered_by
       return unless can_update?
       indent, cmd, params = @commands[@index]
       case cmd
@@ -97,7 +98,11 @@ class Game
     def execute_command(index)
       command = @commands[index][1]
       params = @commands[index][2]
-      MKD::Event::SymbolToCommand[command].new(@event, params).call
+      if MKD::Event::SymbolToCommand.has_key?(command)
+        MKD::Event::SymbolToCommand[command].new(@event, params).call
+      else
+        raise ArgumentError, "Could not find a command with identifier :#{command} in event ID #{@event.id}"
+      end
     end
 
     def done?

@@ -87,7 +87,15 @@ def create_event(map, id, x, y, dir)
   page.graphic.param = "gfx/characters/boy"
   page.graphic.direction = dir
   page.commands = [
-    [0, :debug_print, {text: "Interaction."}]
+    
+    #[0, :if, {condition: [:triggered_by, {mode: :line_of_sight}]}],
+    #[1, :debug_print, {text: "Moving!"}],
+    #[1, :move, {commands: [:right, :right, :right], ignore_impassable: true}],
+    #[0, :else],
+    #[1, :if, {condition: [:triggered_by, {mode: :action}]}],
+    #[2, :debug_print, {text: "Action!"}],
+    #[1, :else],
+    #[2, :debug_print, {text: "Event Touch"}]
 
     #[0, :script, {code: "2000.times { |i| puts i }"}],
     #[0, :setswitch, {switchid: 1, value: true}]
@@ -124,11 +132,13 @@ def create_event(map, id, x, y, dir)
   page.conditions = []
   
   page.triggers = [
-    [:action],
+    #[:action],
     #[:line_of_sight, {tiles: 3}],
     #[:on_tile, {tiles: [[1, 1], [1, 2], [2, 1], [2, 2]]}],
+    #[:player_touch],
+    #[:event_touch]
     #[:parallel_process],
-    #[:autorun]
+    #[:autorun],
   ]
 
   event.pages = [page]

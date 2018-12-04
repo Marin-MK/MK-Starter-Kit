@@ -24,14 +24,32 @@ class Game
     # Changes the player's direction with a turn animation.
     def direction=(value)
       value = validate_direction(value)
-      $visuals.player.set_direction(value) unless @direction == value
+      unless @direction == value
+        $visuals.player.set_direction(value)
+        newx, newy = facing_coordinates(@x, @y, value)
+        events = $game.map.events.values.select do |e|
+          e.current_page && e.current_page.has_trigger?(:player_touch) &&
+          e.x == newx &&
+          e.y == newy
+        end
+        events.each { |e| e.trigger(:touch) }
+      end
       @direction = value
     end
 
     # Changes the player's direction without a turn animation.
     def direction_noanim=(value)
       value = validate_direction(value)
-      $visuals.player.set_direction_noanim(value) unless @direction == value
+      unless @direction == value
+        $visuals.player.set_direction_noanim(value)
+        newx, newy = facing_coordinates(@x, @y, value)
+        events = $game.map.events.values.select do |e|
+          e.current_page && e.current_page.has_trigger?(:player_touch) &&
+          e.x == newx &&
+          e.y == newy
+        end
+        events.each { |e| e.trigger(:touch) }
+      end
       @direction = value
     end
 
@@ -50,12 +68,7 @@ class Game
 
     def update
       if Input.confirm? && !moving?
-        newx = @x
-        newy = @y
-        newx -= 1 if [1, 4, 7].include?(@direction)
-        newx += 1 if [3, 6, 9].include?(@direction)
-        newy -= 1 if [7, 8, 9].include?(@direction)
-        newy += 1 if [1, 2, 3].include?(@direction)
+        newx, newy = facing_coordinates(@x, @y, @direction)
         $game.map.tile_interaction(newx, newy)
       end
       @fake_move = false
@@ -97,9 +110,9 @@ class Game
         @downcount = 8
       elsif @downcount.nil? || @downcount == 0 || @fake_move
         self.direction_noanim = :down if @direction != 2
-        if $game.map.passable?(@x, @y + 1, :down)
+        if $game.map.passable?(@x, @y + 1, :down, self)
           @y += 1
-          $game.map.check_event_triggers
+          $game.map.check_event_triggers(true)
         else
           @fake_move = true
         end
@@ -115,9 +128,9 @@ class Game
         @leftcount = 8
       elsif @leftcount.nil? || @leftcount == 0 || @fake_move
         self.direction_noanim = :left if @direction != 4
-        if $game.map.passable?(@x - 1, @y, :left)
+        if $game.map.passable?(@x - 1, @y, :left, self)
           @x -= 1
-          $game.map.check_event_triggers
+          $game.map.check_event_triggers(true)
         else
           @fake_move = true
         end
@@ -133,9 +146,9 @@ class Game
         @rightcount = 8
       elsif @rightcount.nil? || @rightcount == 0 || @fake_move
         self.direction_noanim = :right if @direction != 6
-        if $game.map.passable?(@x + 1, @y, :right)
+        if $game.map.passable?(@x + 1, @y, :right, self)
           @x += 1
-          $game.map.check_event_triggers
+          $game.map.check_event_triggers(true)
         else
           @fake_move = true
         end
@@ -151,9 +164,9 @@ class Game
         @upcount = 8
       elsif @upcount.nil? || @upcount == 0 || @fake_move
         self.direction_noanim = :up if @direction != 8
-        if $game.map.passable?(@x, @y - 1, :up)
+        if $game.map.passable?(@x, @y - 1, :up, self)
           @y -= 1
-          $game.map.check_event_triggers
+          $game.map.check_event_triggers(true)
         else
           @fake_move = true
         end

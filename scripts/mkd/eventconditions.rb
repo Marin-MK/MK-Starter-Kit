@@ -37,7 +37,7 @@ module MKD
 
     class TriggeredByCondition < BasicCondition
       def valid?
-        return @interpreter.triggered_by == @mode
+        return @event.triggered_by == @mode
       end
     end
 

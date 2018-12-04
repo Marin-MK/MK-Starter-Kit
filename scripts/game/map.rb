@@ -26,11 +26,13 @@ class Game
       @wait_count = 0
     end
 
-    def passable?(x, y, direction = nil)
+    def passable?(x, y, direction = nil, checking_event = nil)
       validate x => Fixnum, y => Fixnum
       return false if x < 0 || x >= @width || y < 0 || y >= @height
       validate direction => [Fixnum, Symbol, NilClass]
       direction = validate_direction(direction)
+
+      return false if checking_event != $game.player && x == $game.player.x && y == $game.player.y
       event = @events.values.find { |e| e.x == x && e.y == y }
       return false if event && event.current_page && !event.settings.passable
       unless @passabilities[x + y * @height].nil?
@@ -76,7 +78,7 @@ class Game
       end
     end
 
-    def check_event_triggers
+    def check_event_triggers(new_step = false)
       # Line of Sight triggers
       events = @events.values.select { |e| e.current_page && e.current_page.has_trigger?(:line_of_sight) }
       events.select! do |e|
@@ -106,6 +108,18 @@ class Game
         next on_trigger_tile
       end
       events.each { |e| e.trigger(:on_tile) }
+
+      # If the check happens just after moving. This would trigger Player Touch events,
+      # where the player touches an event.
+      if new_step
+        newx, newy = facing_coordinates($game.player.x, $game.player.y, $game.player.direction)
+        events = @events.values.select do |e|
+          e.current_page && e.current_page.has_trigger?(:player_touch) &&
+          e.x == newx &&
+          e.y == newy
+        end
+        events.each { |e| e.trigger(:player_touch) }
+      end
     end
   end
 end

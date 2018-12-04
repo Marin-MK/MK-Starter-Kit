@@ -11,6 +11,7 @@ class Game
     attr_accessor :speed
     attr_accessor :direction
     attr_accessor :moveroute_ignore_impassable
+    attr_accessor :triggered_by
 
     def initialize(map_id, id, data)
       @map_id = map_id
@@ -85,21 +86,22 @@ class Game
 
     def moveroute_next
       $visuals.map.events[@id].moveroute_ready = true
-      @moveroute.delete_at(0)
-      case @moveroute[0]
-      when :down, :left, :right, :up
-        newx = @x
-        newy = @y
-        dir = validate_direction(@moveroute[0])
-        newx -= 1 if [1, 4, 7].include?(dir)
-        newx += 1 if [3, 6, 9].include?(dir)
-        newy -= 1 if [7, 8, 9].include?(dir)
-        newy += 1 if [1, 2, 3].include?(dir)
-        if !$game.map.passable?(newx, newy, dir)
-          if @moveroute_ignore_impassable
-            moveroute_next
-          else
-            @moveroute.clear
+      newx, newy = facing_coordinates(@x, @y, @direction)
+      if $game.player.x == newx && $game.player.y == newy && @current_page && @current_page.has_trigger?(:event_touch)
+        trigger(:event_touch)
+        @moveroute.clear
+      else
+        @moveroute.delete_at(0)
+        case @moveroute[0]
+        when :down, :left, :right, :up
+          dir = validate_direction(@moveroute[0])
+          newx, newy = facing_coordinates(@x, @y, dir)
+          if !$game.map.passable?(newx, newy, dir, self)
+            if @moveroute_ignore_impassable
+              moveroute_next
+            else
+              @moveroute.clear
+            end
           end
         end
       end
