@@ -16,8 +16,10 @@ class Game
       @height = @data.height
       @tiles = @data.tiles
       @passabilities = @data.passabilities
+      @tilesets = @data.tilesets
       # Fetch passability data from the tileset
-      @tileset_passabilities = MKD::Tileset.fetch(@data.tileset_id).passabilities
+      @tileset_passabilities = {}
+      @tilesets.each { |id| @tileset_passabilities[id] = MKD::Tileset.fetch(id).passabilities }
       @events = {}
       Visuals::Map.create(self)
       @data.events.keys.each { |id| @events[id] = Game::Event.new(@id, id, @data.events[id]) }
@@ -45,7 +47,9 @@ class Game
       for layer in 0...@tiles.size
         tile_id = @tiles[layer][x + y * @height]
         next unless tile_id
-        val = @tileset_passabilities[tile_id % 8 + (tile_id / 8).floor * 8]
+        tileset_id = @tilesets[1 - (tile_id / TILESETHEIGHT).floor]
+        tile_id %= TILESETHEIGHT
+        val = @tileset_passabilities[tileset_id][tile_id % 8 + (tile_id / 8).floor * 8]
         return false if val == 0
         next unless direction
         dirbit = [1, 2, 4, 8][(direction / 2) - 1]

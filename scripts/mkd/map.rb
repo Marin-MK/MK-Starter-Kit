@@ -7,7 +7,7 @@ module MKD
     attr_accessor :tiles
     attr_accessor :passabilities
     attr_accessor :tags
-    attr_accessor :tileset_id
+    attr_accessor :tilesets
     attr_accessor :events
 
     def initialize(id = 0)
@@ -18,7 +18,7 @@ module MKD
       @tiles = []
       @passabilities = []
       @tags = []
-      @tileset_id = 0
+      @tilesets = [0]
       @events = {}
     end
 

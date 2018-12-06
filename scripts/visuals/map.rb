@@ -29,15 +29,24 @@ class Visuals
     end
 
     def create_layers
-      tileset = MKD::Tileset.fetch(@game_map.data.tileset_id)
+      tilesets = {}
+      @game_map.data.tilesets.each do |tileset_id|
+        tilesets[tileset_id] = MKD::Tileset.fetch(tileset_id)
+      end
+      tileset_bitmaps = {}
+      @game_map.data.tilesets.each do |tileset_id|
+        tileset_bitmaps[tileset_id] = Bitmap.new("gfx/tilesets/" + tilesets[tileset_id].graphic_name)
+      end
       @layers = []
-      tilesetbmp = Bitmap.new("gfx/tilesets/" + tileset.graphic_name)
+
       for i in 0...@game_map.data.tiles.size
         for y in 0...@game_map.data.height
           for x in 0...@game_map.data.width
             tile_id = @game_map.data.tiles[i][x + y * @game_map.data.height]
             next unless tile_id
-            pty = tileset.priorities[tile_id] || 0
+            tileset_id = @game_map.data.tilesets[1 - (tile_id / TILESETHEIGHT).floor]
+            tile_id %= TILESETHEIGHT
+            pty = tilesets[tileset_id].priorities[tile_id] || 0
             if @layers[pty].nil?
               @layers[pty] = Sprite.new($visuals.viewport)
               @layers[pty].x = @real_x
@@ -45,7 +54,8 @@ class Visuals
               @layers[pty].z = 10 + pty * 3
               @layers[pty].bitmap = Bitmap.new(@game_map.data.width * 32, @game_map.data.height * 32)
             end
-            @layers[pty].bitmap.blt(x * 32, y * 32, tilesetbmp, Rect.new((tile_id % 8) * 32, (tile_id / 8).floor * 32, 32, 32))
+            @layers[pty].bitmap.blt(x * 32, y * 32, tileset_bitmaps[tileset_id],
+                Rect.new((tile_id % 8) * 32, (tile_id / 8).floor * 32, 32, 32))
           end
         end
       end
