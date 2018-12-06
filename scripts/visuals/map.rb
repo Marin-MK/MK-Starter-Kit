@@ -28,6 +28,8 @@ class Visuals
       create_layers
     end
 
+    # Subject to change!
+    #temp
     def create_layers
       tilesets = {}
       @game_map.data.tilesets.each do |tileset_id|
@@ -42,10 +44,9 @@ class Visuals
       for i in 0...@game_map.data.tiles.size
         for y in 0...@game_map.data.height
           for x in 0...@game_map.data.width
-            tile_id = @game_map.data.tiles[i][x + y * @game_map.data.height]
-            next unless tile_id
-            tileset_id = @game_map.data.tilesets[1 - (tile_id / TILESETHEIGHT).floor]
-            tile_id %= TILESETHEIGHT
+            tile_type, tile_id = @game_map.data.tiles[i][x + y * @game_map.data.height]
+            next if tile_type.nil?
+            tileset_id = @game_map.data.tilesets[tile_type]
             pty = tilesets[tileset_id].priorities[tile_id] || 0
             if @layers[pty].nil?
               @layers[pty] = Sprite.new($visuals.viewport)

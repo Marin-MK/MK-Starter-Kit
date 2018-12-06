@@ -45,10 +45,9 @@ class Game
         return (val & dirbit) == dirbit
       end
       for layer in 0...@tiles.size
-        tile_id = @tiles[layer][x + y * @height]
-        next unless tile_id
-        tileset_id = @tilesets[1 - (tile_id / TILESETHEIGHT).floor]
-        tile_id %= TILESETHEIGHT
+        tile_type, tile_id = @tiles[layer][x + y * @height]
+        next if tile_type.nil?
+        tileset_id = @tilesets[tile_type]
         val = @tileset_passabilities[tileset_id][tile_id % 8 + (tile_id / 8).floor * 8]
         return false if val == 0
         next unless direction

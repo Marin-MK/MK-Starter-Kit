@@ -134,7 +134,7 @@ tileset.passabilities = [
   0,  15, 15, 0,  0,  15, 0,  15,
   0,  15, 15, 0,  0,  15, 15, 15,
   # start mountain
-  0,  15,  0,  0,  0,  0,  15, 15,
+  0,  15, 0,  0,  0,  0,  15, 15,
   0,  15, 0,  0,  15, 0,  15, 0,
   0,  0,  0,  0,  0,  0,  15, 15,
   0,  0,  0,  0,  0,  0,  0,  0,
@@ -165,30 +165,31 @@ tileset.priorities = []
 tileset.tags = []
 tileset.save
 
+
 # Creates a new map (normally loaded from a file)
 map = MKD::Map.new(1)
 map.name = "Some Town"
 map.width = 7
 map.height = 7
-map.tilesets = [1,1]
+map.tilesets = [1, 1]
 map.tiles = [
   [ # Layer 1
-    4097,4097,4097,4097,4097,4097,4097,
-    4097,4097,4097,4097,4097,4097,4097,
-    4097,4097,4097,4097,4097,4097,4097,
-    4097,4097,4097,4097,4097,4097,4097,
-    4097,4097,4097,4097,4097,4097,4097,
-    4097,4097,4097,4097,4097,4097,4097,
-    4097,4097,4097,4097,4097,4097,4097,
+    [0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],
+    [0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],
+    [0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],
+    [0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],
+    [0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],
+    [0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],
+    [0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],
   ],
   [ # Layer 2
-    nil,nil,nil,nil,nil,nil,nil,
-    nil,nil,nil,nil,nil,nil,nil,
-    4096+948,nil,nil,nil,nil,nil,nil,
-    8192+815,nil,nil,nil,nil,nil,nil,
-    nil,nil,nil,nil,nil,nil,nil,
-    nil,nil,nil,nil,nil,nil,nil,
-    nil,nil,nil,nil,nil,nil,nil,
+    [nil],   [nil],[nil],[nil],[nil],[nil],[nil],
+    [nil],   [nil],[nil],[nil],[nil],[nil],[nil],
+    [0, 948],[nil],[nil],[nil],[nil],[nil],[nil],
+    [1, 815],[nil],[nil],[nil],[nil],[nil],[nil],
+    [nil],   [nil],[nil],[nil],[nil],[nil],[nil],
+    [nil],   [nil],[nil],[nil],[nil],[nil],[nil],
+    [nil],   [nil],[nil],[nil],[nil],[nil],[nil],
   ]
 ]
 
@@ -205,6 +206,7 @@ def create_event(map, id, x, y, dir)
   page.graphic.param = "gfx/characters/boy"
   page.graphic.direction = dir
   page.commands = [
+    [0, :debug_print, {text: "Greetings!"}]
     
     #[0, :if, {condition: [:triggered_by, {mode: :line_of_sight}]}],
     #[1, :debug_print, {text: "Moving!"}],
@@ -250,7 +252,7 @@ def create_event(map, id, x, y, dir)
   page.conditions = []
   
   page.triggers = [
-    #[:action],
+    [:action],
     #[:line_of_sight, {tiles: 3}],
     #[:on_tile, {tiles: [[1, 1], [1, 2], [2, 1], [2, 2]]}],
     #[:player_touch],
@@ -266,7 +268,10 @@ end
 create_event(map, 1, 0, 1, 6)
 
 # Overwrites tileset passability data for non-nil entries.
-map.passabilities = []
+map.passabilities = [
+  # Makes x=2,y=0 impassable
+  #15/nil, 15/nil, 0
+]
 map.save
 
 # Initializes the game
