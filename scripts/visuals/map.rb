@@ -1,5 +1,8 @@
 class Visuals
+  # The visual component of Game::Map objects.
   class Map
+    # Creates a new map linked to the map object.
+    # @param game_map [Game::Map] the map object.
     def self.create(game_map)
       $visuals.maps[game_map.id] = self.new(game_map)
     end
@@ -20,6 +23,7 @@ class Visuals
       @events.values.each { |e| e.sprite.y = @real_y + e.relative_y }
     end
 
+    # Creates a sprite for the map object.
     def initialize(game_map)
       @game_map = game_map
       @real_x = Graphics.width / 2 - 16
@@ -62,6 +66,7 @@ class Visuals
       end
     end
 
+    # Updates all this map's events.
     def update
       @events.values.each { |e| e.update }
     end

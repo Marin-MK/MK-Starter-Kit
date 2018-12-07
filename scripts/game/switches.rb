@@ -1,4 +1,5 @@
 class Game
+  # Logic related to game switches.
   class Switches
     def initialize
       @values = []

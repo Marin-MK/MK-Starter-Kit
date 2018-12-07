@@ -1,5 +1,6 @@
 module MKD
   class Event
+    # Provides the basic template for all other commands.
     class BasicCommand
       def initialize(event, hash)
         @event = event
@@ -80,6 +81,7 @@ module MKD
     end
 
 
+    # A Symbol -> Class table used to convert symbols to commands.
     SymbolToCommand = {
       basic: BasicCommand,
       debug_print: DebugPrintCommand,

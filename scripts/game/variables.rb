@@ -1,4 +1,5 @@
 class Game
+  # Logic related to game variables.
   class Variables
     def initialize
       @values = []

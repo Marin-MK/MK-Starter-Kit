@@ -1,4 +1,5 @@
 class Game
+  # Logic related to event interpreters.
   class Interpreter
     attr_accessor :event
     attr_accessor :index
@@ -12,10 +13,11 @@ class Game
       @type = type
       @triggered_by = triggered_by
       @wait_for_move_completion = false
+      @initial = true
     end
 
     private def can_update?
-      @event.update
+      @event.test_pages
       if !@event.current_page || @commands != @event.current_page.commands
         @done = true
         dispose
@@ -43,6 +45,10 @@ class Game
     end
 
     def update
+      if @initial
+        @event.turn_to_player
+        @initial = false
+      end
       @event.triggered_by = @triggered_by
       return unless can_update?
       indent, cmd, params = @commands[@index]

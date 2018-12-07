@@ -1,4 +1,5 @@
 class Game
+  # The logical component of map objects.
   class Map
     attr_accessor :id
     attr_accessor :data
@@ -61,9 +62,10 @@ class Game
       @events.values.each(&:update)
       @wait_count -= 1 if @wait_count > 0
       if @event_interpreters.size > 0
-        @event_interpreters[0].update
         if @event_interpreters[0].done?
           @event_interpreters.delete_at(0)
+        else
+          @event_interpreters[0].update
         end
       end
       @parallel_interpreters.each do |i|
@@ -76,7 +78,7 @@ class Game
     def tile_interaction(x, y)
       validate x => Fixnum, y => Fixnum
       return if x < 0 || x >= @width || y < 0 || y >= @height
-      if e = @events.values.find { |e| e.x == x && e.y == y && e.current_page && e.current_page.has_trigger?(:action) }
+      if e = @events.values.find { |e| e.x == x && e.y == y && e.current_page && e.current_page.has_trigger?(:action) && e.triggerable? }
         e.trigger(:action)
       end
     end

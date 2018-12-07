@@ -25,12 +25,14 @@ module MKD
       attr_accessor :passable
       attr_accessor :can_start_surfing_here
       attr_accessor :reset_position_on_transfer
+      attr_accessor :speed
 
       def initialize
         @priority = 1
         @passable = true
         @can_start_surfing_here = true
         @reset_position_on_transfer = true
+        @speed = 2.2
       end
     end
   end
@@ -43,12 +45,14 @@ module MKD
       attr_accessor :conditions
       attr_accessor :graphic
       attr_accessor :triggers
+      attr_accessor :automoveroute
 
       def initialize
         @commands = []
         @conditions = []
         @graphic = Graphic.new
         @triggers = [:action]
+        @automoveroute = {frequency: 80, commands: []}
       end
     end
   end

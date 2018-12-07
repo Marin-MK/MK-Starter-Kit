@@ -3,16 +3,18 @@ class Visuals
   attr_accessor :viewport
   attr_accessor :player
 
+  # Creates the main viewport and map list.
   def initialize
     @maps = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
   end
 
-  # Returns the visual data for the current map
+  # @return [Visuals::Map] the visual data for the current map.
   def map
     return @maps[$game.map.id]
   end
 
+  # Updates all active visuals.
   def update
     @maps.values.each(&:update)
     @player.update

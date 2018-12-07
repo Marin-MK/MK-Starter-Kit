@@ -1,5 +1,6 @@
 module MKD
   class Event
+    # Provides the basic template for all other conditions.
     class BasicCondition
       def initialize(event, hash)
         @event = event
@@ -42,6 +43,7 @@ module MKD
     end
 
 
+    # A Symbol -> Class table used to convert symbols to conditions.
     SymbolToCondition = {
       basic: BasicCondition,
       switch: SwitchCondition,

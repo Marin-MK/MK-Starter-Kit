@@ -1,3 +1,4 @@
+# Ensures the given keys have the same data type as their value. Raises an error if invalid.
 def validate(hash)
   errors = hash.map do |key, value|
     if value.is_a?(Array)
@@ -9,9 +10,12 @@ def validate(hash)
     end
   end
   return if errors.none?
-  raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ")
+  stack = caller.join("\n")
+  raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ") + "\n\n" + stack
 end
 
+# Ensures the given keys (variable names, not values like in #validate) have the same data as their value. Raises an error if invalid.
+# @param input_binding [Binding] a scope's binding to look up local variables with.
 def validate_binding(input_binding, **hash)
   errors = hash.map do |lv_name, value|
     if input_binding.local_variable_defined?(lv_name)
@@ -31,6 +35,9 @@ def validate_binding(input_binding, **hash)
   raise ArgumentError, errors.compact.join(", ")
 end
 
+# Ensures the direction is a symbol or a valid Fixnum. Raises an error if invalid.
+# @param dir [Symbol, Fixnum] the direction to validate.
+# @return [Fixnum] the numeric direction value.
 def validate_direction(dir)
   if dir.is_a?(Symbol)
     if [:down,:left,:right,:up].include?(dir)

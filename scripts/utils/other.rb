@@ -7,15 +7,18 @@ class Enum
   end
 end
 
-# Ensure #msgbox always pops up a box, no matter the RGSS version
+# Ensures #msgbox always pops up a box, no matter the RGSS version
 unless defined?(msgbox) == "method"
 	def msgbox(*args)
 		p *args
 	end
 end
 
-# Returns the coordinates of the tile based on an x,y value and the facing direction.
-# E.g. facing_coordinates(0, 0, 2) #=> [0, 1]
+# Returns the coordinates of the facing tile based on x,y,direction.
+# @param x [Fixnum] the current X value.
+# @param y [Fixnum] the current Y value.
+# @param direction [Fixnum, Symbol] the facing direction.
+# @return [Array] [x,y] the coordinates of the facing tile based on x, y, direction.
 def facing_coordinates(x, y, direction)
 	validate x => Fixnum, y => Fixnum
 	direction = validate_direction(direction)

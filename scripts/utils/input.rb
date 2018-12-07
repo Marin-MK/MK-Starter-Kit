@@ -1,6 +1,5 @@
 class << Input
-  # Returns 1, 2, 3, 4, 6, 7, 8 or 9 depending on the directional buttons.
-  # Allows diagonal.
+  # @return [Fixnum] one of the 8 directions based on the arrow keys.
   def dir8
     l = Input.press?(Input::LEFT)
     r = Input.press?(Input::RIGHT)
@@ -19,8 +18,7 @@ class << Input
     return 0
   end
 
-  # Returns 2, 4, 6, or 8 depending on the directional buttons.
-  # Prefers up/down over left/right.
+  # @return [Fixnum] one of the 4 directions based on the arrow keys.
   def dir4
     l = Input.press?(Input::LEFT)
     r = Input.press?(Input::RIGHT)
@@ -35,32 +33,32 @@ class << Input
     return 0
   end
 
-  # Whether the confirm button is triggered.
+  # @return [Boolean] whether the confirm button is triggered.
   def confirm?
     return Input.trigger?(Input::A)
   end
 
-  # Whether the cancel button is triggered.
+  # @return [Boolean] whether the cancel button is triggered.
   def cancel?
     return Input.trigger?(Input::B)
   end
 
-  # Whether the down button is triggered.
+  # @return [Boolean] whether the down button is triggered.
   def down?
     return Input.trigger?(Input::DOWN)
   end
 
-  # Whether the left button is triggered.
+  # @return [Boolean] whether the left button is triggered.
   def left?
     return Input.trigger?(Input::LEFT)
   end
 
-  # Whether the right button is triggered.
+  # @return [Boolean] whether the right button is triggered.
   def right?
     return Input.trigger?(Input::RIGHT)
   end
 
-  # Whether the up button is triggered.
+  # @return [Boolean] whether the up button is triggered.
   def up?
     return Input.trigger?(Input::UP)
   end

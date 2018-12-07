@@ -1,12 +1,15 @@
 class Visuals
+  # The visual component of Game::Player objects.
   class Player
+    # Creates a new player sprite linked to the player object.
+    # @param game_player [Game::Player] the player object.
     def self.create(game_player)
       $visuals.player = self.new(game_player)
     end
 
-    # Publicly available for $game.player
     attr_reader :fake_anim
 
+    # Creates a sprite for the player object.
     def initialize(game_player)
       @game_player = game_player
       @sprite = Sprite.new($visuals.viewport)
@@ -31,6 +34,8 @@ class Visuals
       @stop_fake_anim = false
     end
 
+    # Sets the direction of the sprite.
+    # @param value [Fixnum, Symbol] the direction value.
     def set_direction(value)
       value = validate_direction(value)
       @sprite.src_rect.y = @sprite.src_rect.height * (value / 2 - 1)
@@ -43,10 +48,13 @@ class Visuals
       @turncount = 6
     end
 
+    # Sets the direction of the sprite without showing a subtle turn animation.
+    # @param value [Fixnum, Symbol] the direction value.
     def set_direction_noanim(value)
       @sprite.src_rect.y = @sprite.src_rect.height * (value / 2 - 1)
     end
 
+    # Updates all the necessary variables and sprite properties to stay up-to-date with the player object's state.
     def update
       moving = moving?
       # Executes the animation when turning
@@ -179,24 +187,9 @@ class Visuals
       @oldpriority = @game_player.priority
     end
 
+    # @return [Boolean] whether or not the player is moving.
     def moving?
       return @ytrav[0] && @ydist[0] && @ytrav[0].abs < @ydist[0].abs || @xtrav[0] && @xdist[0] && @xtrav[0].abs < @xdist[0].abs
-    end
-
-    def moving_down?
-      return moving? && @ydist[0] && @ydist[0] > 0
-    end
-
-    def moving_left?
-      return moving? && @xdist[0] && @xdist[0] < 0
-    end
-
-    def moving_right?
-      return moving? && @xdist[0] && @xdist[0] > 0
-    end
-
-    def moving_up?
-      return moving? && @ydist[0] && @ydist[0] < 0
     end
   end
 end

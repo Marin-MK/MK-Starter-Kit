@@ -1,4 +1,5 @@
 class Game
+  # The logical component of player objects.
   class Player
     attr_accessor :map_id
     attr_accessor :x
