@@ -66,9 +66,7 @@ class Visuals
           @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
         end
       end
-      if @oldpriority != @game_player.priority
-        @sprite.z = 11 + 3 * (@game_player.priority - 1)
-      end
+      @sprite.z = @sprite.y + 32
       # Executes the animation when moving against an impassable tile
       if @fake_anim
         @fake_anim -= 1 if @fake_anim > 0

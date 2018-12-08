@@ -50,27 +50,9 @@ module MKD
       def initialize
         @commands = []
         @conditions = []
-        @graphic = Graphic.new
+        @graphic = {type: :file, direction: 2}
         @triggers = [:action]
         @automoveroute = {frequency: 80, commands: []}
-      end
-    end
-  end
-end
-
-module MKD
-  class Event
-    class Page
-      class Graphic
-        attr_accessor :type
-        attr_accessor :param
-        attr_accessor :direction
-
-        def initialize
-          @type = 0
-          @param = ""
-          @direction = 2
-        end
       end
     end
   end

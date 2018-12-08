@@ -28,7 +28,7 @@ class Game
       @current_page = nil
       @moveroute = []
       @speed = @settings.speed
-      @direction = nil
+      @direction = 2
       @moveroute_ignore_impassable = false
       @automoveroute_idx = 0
       @automove_wait = 0
@@ -37,7 +37,6 @@ class Game
 
     # Updates the event, but is only called once per frame.
     def update
-      puts moving?
       test_pages
       if @current_page && @current_page.automoveroute[:commands].size > 0
         run = true
@@ -72,7 +71,7 @@ class Game
           @current_page = @pages[i]
           if oldpage != @current_page
             # Run only if the page actually changed
-            @direction = @current_page.graphic.direction
+            @direction = @current_page.graphic[:direction] || 2
             # Delete any interpreters there may be left trying to run the old page
             if oldpage
               if oldpage.has_trigger?(:parallel_process)
@@ -106,7 +105,6 @@ class Game
     # Executes the event.
     # @param mode [NilClass, Symbol] how the event was triggered.
     def trigger(mode = :manual)
-      puts "==== TRIGGER ===== +++++ TRIGGER +++++"
       if @current_page.has_trigger?(:parallel_process)
         $game.map.parallel_interpreters << Interpreter.new(self, @current_page.commands, :parallel, :parallel_process)
       elsif @current_page.has_trigger?(:autorun)
@@ -183,9 +181,7 @@ class Game
 
     def move_command_possible?(command)
       validate command => [Symbol, Array]
-      if command.is_a?(Array)
-        command, args = command[0], command[1..-1]
-      end
+      command, *args = command if command.is_a?(Array)
       case command
       when :down, :left, :right, :up
         dir = validate_direction(command)

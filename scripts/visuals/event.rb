@@ -30,32 +30,67 @@ class Visuals
       @relative_y = @game_event.y * 32 + 32
       @moveroute_wait = 0
       @moveroute_moving_command = false
+      @setdir = true
+      @animate = true
       update
     end
 
     # Updates all the necessary variables and sprite properties to stay up-to-date with the event object's state.
     def update
+      oldbmp = @sprite.bitmap
       if @oldpage != @game_event.current_page
         page = @game_event.current_page
         if page
           graphic = page.graphic
-          if graphic.type == 0 # Filename with src_rect
-            @sprite.bitmap = Bitmap.new(graphic.param)
+          if graphic[:type] == :file # Filename with src_rect
+            @sprite.bitmap = Bitmap.new(graphic[:param])
             @sprite.src_rect.width = @sprite.bitmap.width / 4
             @sprite.src_rect.height = @sprite.bitmap.height / 4
-            @sprite.src_rect.y = (graphic.direction / 2 - 1) * @sprite.src_rect.height
-          elsif graphic.type == 1 # Filename without src_rect
-            @sprite.bitmap = Bitmap.new(graphic.param)
-          elsif graphic.type == 2 # Tile
-
+            @sprite.src_rect.y = (graphic[:direction] / 2 - 1) * @sprite.src_rect.height
+            @setdir = true
+            @animate = true
+          elsif graphic[:type] == :file_norect # Filename without src_rect
+            @sprite.bitmap = Bitmap.new(graphic[:param])
+            @setdir = false
+            @animate = false
+          elsif graphic[:type] == :tile # Tile
+            tileset_id, tile_id = graphic[:param]
+            tileset = MKD::Tileset.fetch(tileset_id)
+            @sprite.bitmap = Bitmap.new("gfx/tilesets/#{tileset.graphic_name}")
+            @sprite.src_rect.width = 32
+            @sprite.src_rect.height = 32
+            tile_id = graphic[:param][1]
+            @sprite.src_rect.x = (tile_id % 8) * 32
+            @sprite.src_rect.y = (tile_id / 8).floor * 32
+            @setdir = false
+            @animate = false
           end
         else
           @sprite.bitmap = nil
+          @setdir = false
+          @animate = false
+          @relative_x = @game_event.x * 32 + 16
+          @relative_y = @game_event.y * 32 + 32
         end
         @sprite.ox = @sprite.src_rect.width / 2
         @sprite.oy = @sprite.src_rect.height
       end
-      @oldpage = @game_event.current_page
+
+      if oldbmp != @sprite.bitmap && @sprite.bitmap.nil?
+        @xdist = []
+        @xtrav = []
+        @xstart = []
+        @ydist = []
+        @ytrav = []
+        @ystart = []
+        @anim = []
+        @moveroute_wait = 0
+        @moveroute_ready = true
+      end
+
+      if @olddirection != @game_event.direction && @setdir
+        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+      end
 
       # Queues movement commands
       if @moveroute_wait > 0
@@ -80,8 +115,10 @@ class Visuals
           @xtrav[0] = @xdist[0] < 0 ? [@xtrav[0], @xdist[0]].max : [@xtrav[0], @xdist[0]].min
           @relative_x = @xstart[0] + @xtrav[0]
           if @anim[0].size > 0 && (@xdist[0] > 0 && @xtrav[0] > @anim[0][0] || @xdist[0] < 0 && @xtrav[0] < @anim[0][0])
-            @sprite.src_rect.x += @sprite.src_rect.width
-            @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
+            if @animate
+              @sprite.src_rect.x += @sprite.src_rect.width
+              @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
+            end
             @anim[0].delete_at(0)
           end
         else
@@ -100,8 +137,10 @@ class Visuals
           @ytrav[0] = @ydist[0] < 0 ? [@ytrav[0], @ydist[0]].max : [@ytrav[0], @ydist[0]].min
           @relative_y = @ystart[0] + @ytrav[0]
           if @anim[0].size > 0 && (@ydist[0] > 0 && @ytrav[0] > @anim[0][0] || @ydist[0] < 0 && @ytrav[0] < @anim[0][0])
-            @sprite.src_rect.x += @sprite.src_rect.width
-            @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
+            if @animate
+              @sprite.src_rect.x += @sprite.src_rect.width
+              @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
+            end
             @anim[0].delete_at(0)
           end
         else
@@ -116,16 +155,19 @@ class Visuals
       # Sets the sprite's on-screen location based on the map's offset and the coordinates of the sprite relative to the map.
       map = $visuals.maps[@game_event.map_id]
       @sprite.x = map.real_x + @relative_x
+      oldy = @sprite.y
       @sprite.y = map.real_y + @relative_y
+      @sprite.z = @sprite.y + 32
+
+      @oldpage = @game_event.current_page
+      @olddirection = @game_event.direction
     end
 
     # Executes a move command.
     # @param command [Symbol, Array<Symbol>] the move command to execute.
     def execute_move_command(command)
       validate command => [Symbol, Array]
-      if command.is_a?(Array)
-        command, args = command[0], command[1..-1]
-      end
+      command, *args = command if command.is_a?(Array)
       case command
       when :down
         @ydist << 32
@@ -133,7 +175,7 @@ class Visuals
         @ystart << (@ystart[0] ? @ystart.last + @ydist.last : @relative_y)
         @anim << [0, 16]
         @game_event.direction = 2
-        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height if @setdir
         @game_event.y += 1
       when :left
         @xdist << -32
@@ -141,7 +183,7 @@ class Visuals
         @xstart << (@xstart[0] ? @xstart.last + @xdist.last : @relative_x)
         @anim << [0, -16]
         @game_event.direction = 4
-        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height if @setdir
         @game_event.x -= 1
       when :right
         @xdist << 32
@@ -149,7 +191,7 @@ class Visuals
         @xstart << (@xstart[0] ? @xstart.last + @xdist.last : @relative_x)
         @anim << [0, 16]
         @game_event.direction = 6
-        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height if @setdir
         @game_event.x += 1
       when :up
         @ydist << -32
@@ -157,23 +199,23 @@ class Visuals
         @ystart << (@ystart[0] ? @ystart.last + @ydist.last : @relative_y)
         @anim << [0, -16]
         @game_event.direction = 8
-        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height if @setdir
         @game_event.y -= 1
       when :turn_down
         @game_event.direction = 2
-        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height if @setdir
         next_move
       when :turn_left
         @game_event.direction = 4
-        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height if @setdir
         next_move
       when :turn_right
         @game_event.direction = 6
-        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height if @setdir
         next_move
       when :turn_up
         @game_event.direction = 8
-        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height
+        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height if @setdir
         next_move
       when :wait
         @moveroute_wait = args[0]

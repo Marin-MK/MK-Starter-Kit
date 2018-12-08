@@ -45,12 +45,13 @@ class Game
     end
 
     def update
+      return unless can_update?
       if @initial
         @event.turn_to_player
         @initial = false
+        @event.triggered_by = @triggered_by
+        return
       end
-      @event.triggered_by = @triggered_by
-      return unless can_update?
       indent, cmd, params = @commands[@index]
       case cmd
       when :if

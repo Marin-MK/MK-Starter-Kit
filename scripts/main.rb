@@ -1,5 +1,5 @@
 # Starts the main game loop required to keep the game running.
-msgbox Graphics.height
+
 loop do
   Input.update
   $game.update

@@ -10,7 +10,7 @@ def validate(hash)
     end
   end
   return if errors.none?
-  stack = caller.join("\n")
+  stack = caller.map { |e| "At " + e.gsub!(Dir.pwd + "/scripts/", "") }.join("\n")
   raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ") + "\n\n" + stack
 end
 
@@ -32,7 +32,8 @@ def validate_binding(input_binding, **hash)
     end
   end
   return if errors.none?
-  raise ArgumentError, errors.compact.join(", ")
+  stack = caller.map { |e| "At " + e.gsub!(Dir.pwd + "/scripts/", "") }.join("\n")
+  raise ArgumentError, errors.compact.join(", ") + "\n\n" + stack
 end
 
 # Ensures the direction is a symbol or a valid Fixnum. Raises an error if invalid.
@@ -43,10 +44,12 @@ def validate_direction(dir)
     if [:down,:left,:right,:up].include?(dir)
       dir = ([:down,:left,:right,:up].index(dir) + 1) * 2
     else
-      raise "Invalid direction value #{dir.inspect}"
+      stack = caller.join("\n")
+      raise "Invalid direction value #{dir.inspect}\n\n#{stack}"
     end
   elsif !dir.is_a?(Fixnum) || (dir.is_a?(Fixnum) && dir < 1 || dir > 9)
-    raise "Invalid direction value #{dir}"
+    stack = caller.map { |e| "At " + e.gsub(Dir.pwd + "/scripts/", "") }.join("\n")
+    raise "Invalid direction value #{dir}\n\n#{stack}"
   end
   return dir
 end

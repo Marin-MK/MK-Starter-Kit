@@ -28,12 +28,6 @@ class Game
       unless @direction == value
         $visuals.player.set_direction(value)
         newx, newy = facing_coordinates(@x, @y, value)
-        events = $game.map.events.values.select do |e|
-          e.current_page && e.current_page.has_trigger?(:player_touch) &&
-          e.x == newx &&
-          e.y == newy
-        end
-        events.each { |e| e.trigger(:touch) }
       end
       @direction = value
     end
@@ -44,12 +38,6 @@ class Game
       unless @direction == value
         $visuals.player.set_direction_noanim(value)
         newx, newy = facing_coordinates(@x, @y, value)
-        events = $game.map.events.values.select do |e|
-          e.current_page && e.current_page.has_trigger?(:player_touch) &&
-          e.x == newx &&
-          e.y == newy
-        end
-        events.each { |e| e.trigger(:touch) }
       end
       @direction = value
     end

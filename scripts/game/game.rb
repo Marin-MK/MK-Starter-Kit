@@ -169,8 +169,8 @@ tileset.save
 # Creates a new map (normally loaded from a file)
 map = MKD::Map.new(1)
 map.name = "Some Town"
-map.width = 10
-map.height = 10
+map.width = 25
+map.height = 25
 map.tilesets = [1, 1]
 map.tiles = [
   # Fills exactly the whole map with [0, 1]
@@ -184,16 +184,18 @@ def create_event(map, id, x, y, dir)
   event.y = y
   event.name = "New event"
   event.settings.passable = false
-  event.settings.speed = 1.0
 
   page = MKD::Event::Page.new
-  page.graphic.type = 0
-  page.graphic.param = "gfx/characters/boy"
-  page.graphic.direction = dir
+  page.graphic = {
+    type: :file,
+    direction: dir,
+    param: "gfx/characters/boy"
+  }
+
   page.commands = [
-    #[0, :debug_print, {text: "Hello nigger"}]
-    #[0, :move, {commands: [:right, :down]}]
-    
+    #[0, :script, {code: "msgbox @triggered_by"}],
+    #[0, :script, {code: "msgbox caller.join(\"\n\")"}]
+
     #[0, :if, {condition: [:triggered_by, {mode: :line_of_sight}]}],
     #[1, :debug_print, {text: "Moving!"}],
     #[1, :move, {commands: [:right, :right, :right], ignore_impassable: true}],
@@ -235,37 +237,28 @@ def create_event(map, id, x, y, dir)
     #[1, :debug_print, {text: "Not level 1"}]
   ]
 
-  page.conditions = []
-  
+  page.conditions = [
+    [:switch, {switchid: 1, value: false}]
+  ]
+
   page.triggers = [
     [:action],
     #[:line_of_sight, {tiles: 3}],
     #[:on_tile, {tiles: [[1, 1], [1, 2], [2, 1], [2, 2]]}],
-    #[:player_touch],
-    #[:event_touch]
+    [:player_touch],
+    [:event_touch]
     #[:parallel_process],
     #[:autorun],
   ]
 
-  page.automoveroute[:frequency] = 0
-  page.automoveroute[:commands] = [:down, :down, :right, :right, :up, :up, :left, :left]
+  #page.automoveroute[:frequency] = 0
+  #page.automoveroute[:commands] = [:down, :down, :right, :right, :up, :up, :left, :left]
 
   event.pages = [page]
   map.events[id] = event
 end
 
-create_event(map, 1, 0, 1, 2)
-create_event(map, 2, 0, 5, 2)
-create_event(map, 3, 4, 1, 2)
-create_event(map, 4, 4, 5, 2)
-create_event(map, 5, 7, 1, 2)
-create_event(map, 6, 7, 5, 2)
-
-map.events[2].settings.speed = 1.5
-map.events[3].settings.speed = 2.0
-map.events[4].settings.speed = 2.5
-map.events[5].settings.speed = 4.0
-map.events[6].settings.speed = 6.5
+create_event(map, 1, 7, 7, 2)
 
 # Overwrites tileset passability data for non-nil entries.
 map.passabilities = [
