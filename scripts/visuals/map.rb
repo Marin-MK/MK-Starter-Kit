@@ -80,7 +80,7 @@ class Visuals
             end
           end
         elsif @startx < 0
-          @startx.times do
+          @startx.abs.times do
             @tiles.move_right do |sprite|
               sprite.mapx -= 19
               sprite.real_x -= 32 * 19
