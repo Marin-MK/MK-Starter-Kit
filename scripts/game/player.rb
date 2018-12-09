@@ -1,14 +1,20 @@
 class Game
   # The logical component of player objects.
   class Player
+    # @return [Fixnum] the ID of the map the player is currently on.
     attr_accessor :map_id
+    # @return [Fixnum] the x position of the player.
     attr_accessor :x
+    # @return [Fixnum] the y position of the player.
     attr_accessor :y
+    # @return [String] the name of the graphic the player currently has applied.
     attr_accessor :graphic_name
+    # @return [Fixnum] the direction the player is currently facing in.
     attr_accessor :direction
+    # @return [Float] how fast the player can move.
     attr_accessor :speed
-    attr_accessor :priority
-    
+
+    # Creates a new Player object.
     def initialize
       @map_id = 0
       @x = 0
@@ -18,43 +24,36 @@ class Game
       @graphic_name = "boy"
       @running = false
       @runcount = 0
-      @priority = 1
       Visuals::Player.create(self)
     end
 
     # Changes the player's direction with a turn animation.
+    # @param value [Fixnum, Symbol] the new direction.
     def direction=(value)
       value = validate_direction(value)
-      unless @direction == value
-        $visuals.player.set_direction(value)
-        newx, newy = facing_coordinates(@x, @y, value)
-      end
+      $visuals.player.set_direction(value) unless @direction == value
       @direction = value
     end
 
     # Changes the player's direction without a turn animation.
+    # @param value [Fixnum, Symbol] the new direction.
     def direction_noanim=(value)
       value = validate_direction(value)
-      unless @direction == value
-        $visuals.player.set_direction_noanim(value)
-        newx, newy = facing_coordinates(@x, @y, value)
-      end
+      $visuals.player.set_direction_noanim(value) unless @direction == value
       @direction = value
     end
 
-    # Returns whether or not the player is moving.
+    # @return [Boolean] whether or not the player is currently moving.
     def moving?
       return $visuals.player.moving?
     end
 
+    # @return [Boolean] whether or not the player is currently running.
     def running?
       return @running
     end
 
-    def can_run?
-      return moving?
-    end
-
+    # Fetches button input to move, trigger events, run, etc.
     def update
       if Input.confirm? && !moving?
         newx, newy = facing_coordinates(@x, @y, @direction)
@@ -68,7 +67,7 @@ class Game
       else
         @runcount = 0
       end
-      @running = @runcount > 7 && can_run?
+      @running = @runcount > 7 && moving?
       @speed = @running ? PLAYERRUNSPEED : PLAYERWALKSPEED
       if oldrun != @running # Walking to running or running to walking
         @graphic_name = @running ? "boy_run" : "boy"
@@ -89,10 +88,7 @@ class Game
       @wasmoving = moving?
     end
 
-    # Publicly available for $visuals.player
-    attr_reader :fake_move
-
-    # Moves the player down one tile. Not to be manually called.
+    # Moves the player down one tile.
     private def move_down
       if @direction != 2 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :down
@@ -110,7 +106,7 @@ class Game
       @downcount -= 1 if @downcount
     end
 
-    # Moves the player down left tile. Not to be manually called.
+    # Moves the player down left tile.
     private def move_left
       if @direction != 4 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :left
@@ -128,7 +124,7 @@ class Game
       @leftcount -= 1 if @leftcount
     end
 
-    # Moves the player down right tile. Not to be manually called.
+    # Moves the player down right tile.
     private def move_right
       if @direction != 6 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :right
@@ -146,7 +142,7 @@ class Game
       @rightcount -= 1 if @rightcount
     end
 
-    # Moves the player up one tile. Not to be manually called.
+    # Moves the player up one tile.
     private def move_up
       if @direction != 8 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :up
@@ -163,5 +159,7 @@ class Game
       end
       @upcount -= 1 if @upcount
     end
+
+    attr_reader :fake_move
   end
 end

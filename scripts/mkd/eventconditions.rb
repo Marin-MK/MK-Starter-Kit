@@ -14,28 +14,28 @@ module MKD
       end
     end
 
-
+    # Tests a Game Switch for a value.
     class SwitchCondition < BasicCondition
       def valid?
         return $game.switches[@switchid] == @value
       end
     end
 
-
+    # Tests a Game Variable for a value.
     class VariableCondition < BasicCondition
       def valid?
         return $game.variables[@variableid] == @value
       end
     end
 
-
+    # Tests the return value of code that is evaluated.
     class ScriptCondition < BasicCondition
       def valid?
         return @event.instance_eval(@code)
       end
     end
 
-
+    # Tests the way this event was triggered.
     class TriggeredByCondition < BasicCondition
       def valid?
         return @event.triggered_by == @mode

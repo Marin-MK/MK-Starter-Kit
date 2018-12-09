@@ -1,12 +1,18 @@
 class Game
+  # @return [Game::Map] the map the player is currently on.
   attr_accessor :map
+  # @return [Game::Player] the player object.
   attr_accessor :player
+  # @return [Game::Switches] the global game switches.
   attr_accessor :switches
+  # @return [Game::Variables] the global game variables.
   attr_accessor :variables
 
+  # Creates a new Game object.
   def initialize
   end
 
+  # Updates the maps and player.
   def update
     @map.update
     @player.update
@@ -163,6 +169,9 @@ tileset.passabilities = [
 # Which z layer the tiles appear on. 0/nil = 10, 1 = 12, 2 = 14, etc.
 tileset.priorities = []
 tileset.tags = []
+tileset.priorities[420] = 1
+tileset.priorities[421] = 1
+tileset.priorities[7] = 1
 tileset.save
 
 
@@ -176,6 +185,15 @@ map.tiles = [
   # Fills exactly the whole map with [0, 1]
   [[0, 1]] * map.width * map.height
 ]
+
+map.tiles[0][0] = [0, 6]
+map.tiles[0][map.height * 4 + 4] = [0, 426]
+map.tiles[0][map.height * 4 + 5] = [0, 427]
+map.tiles[0][map.height * 5 + 4] = [0, 432]
+map.tiles[0][map.height * 5 + 5] = [0, 433]
+map.tiles[1] = []
+map.tiles[1][map.height * 3 + 4] = [0, 420]
+map.tiles[1][map.height * 3 + 5] = [0, 421]
 
 
 def create_event(map, id, x, y, dir)
@@ -193,7 +211,7 @@ def create_event(map, id, x, y, dir)
   }
 
   page.commands = [
-    #[0, :script, {code: "msgbox @triggered_by"}],
+    [0, :script, {code: "turn_to_player"}],
     #[0, :script, {code: "msgbox caller.join(\"\n\")"}]
 
     #[0, :if, {condition: [:triggered_by, {mode: :line_of_sight}]}],
@@ -245,8 +263,8 @@ def create_event(map, id, x, y, dir)
     [:action],
     #[:line_of_sight, {tiles: 3}],
     #[:on_tile, {tiles: [[1, 1], [1, 2], [2, 1], [2, 2]]}],
-    [:player_touch],
-    [:event_touch]
+    #[:player_touch],
+    #[:event_touch]
     #[:parallel_process],
     #[:autorun],
   ]
@@ -258,7 +276,7 @@ def create_event(map, id, x, y, dir)
   map.events[id] = event
 end
 
-create_event(map, 1, 7, 7, 2)
+create_event(map, 1, 3, 4, 2)
 
 # Overwrites tileset passability data for non-nil entries.
 map.passabilities = [

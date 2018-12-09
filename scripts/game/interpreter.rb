@@ -1,11 +1,16 @@
 class Game
   # Logic related to event interpreters.
   class Interpreter
+    # @return [Game::Event] the event related to the interpreter.
     attr_accessor :event
+    # @return [Fixnum] the execution index of the command list.
     attr_accessor :index
+    # @return [Boolean] whether or not the interpreter has to wait for any moveroutes to finish.
     attr_accessor :wait_for_move_completion
+    # @return [Symbol] how this interpreter was triggered.
     attr_accessor :triggered_by
 
+    # Creates a new Interpreter object.
     def initialize(event, commands, type, triggered_by)
       @event = event
       @commands = commands
@@ -16,13 +21,16 @@ class Game
       @initial = true
     end
 
+    # @return [Boolean] whether or not the interpreter can run the next command.
     private def can_update?
+      # Re-check the conditions in case they're no longer valid
       @event.test_pages
       if !@event.current_page || @commands != @event.current_page.commands
         @done = true
         dispose
-        return
+        return false
       end
+      # Wait if the event is moving
       if @event.moving? && @wait_for_move_completion
         return false
       else
@@ -44,6 +52,7 @@ class Game
       return true
     end
 
+    # Runs the next command if possible.
     def update
       return unless can_update?
       if @initial
@@ -97,11 +106,14 @@ class Game
       end
     end
 
+    # Restarts the interpreter.
     def restart
       @index = 0
       @done = false
     end
 
+    # Runs a command.
+    # @param index [Fixnum] the index of the command in the command list.
     def execute_command(index)
       command = @commands[index][1]
       params = @commands[index][2]
@@ -112,10 +124,12 @@ class Game
       end
     end
 
+    # @return [Fixnum] whether the interpreter is done running commands.
     def done?
       return @done
     end
 
+    # Disposes this interpreter if it's a Parallel Process.
     def dispose
       if @type == :parallel
         $game.map.parallel_interpreters.delete_if { |i| i == self }

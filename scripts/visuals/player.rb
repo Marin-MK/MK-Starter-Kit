@@ -7,9 +7,7 @@ class Visuals
       $visuals.player = self.new(game_player)
     end
 
-    attr_reader :fake_anim
-
-    # Creates a sprite for the player object.
+    # Creates a new Player object.
     def initialize(game_player)
       @game_player = game_player
       @sprite = Sprite.new($visuals.viewport)
@@ -20,7 +18,7 @@ class Visuals
       @sprite.oy = @sprite.src_rect.height
       @sprite.x = Graphics.width / 2
       @sprite.y = Graphics.height / 2 + 16
-      @sprite.z = 11 + 3 * (game_player.priority - 1)
+      @sprite.z = @sprite.y + 31
       @oldx = game_player.x
       @oldy = game_player.y
       @xdist = []
@@ -54,7 +52,7 @@ class Visuals
       @sprite.src_rect.y = @sprite.src_rect.height * (value / 2 - 1)
     end
 
-    # Updates all the necessary variables and sprite properties to stay up-to-date with the player object's state.
+    # Updates the player sprite and performs movement.
     def update
       moving = moving?
       # Executes the animation when turning
@@ -66,7 +64,7 @@ class Visuals
           @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
         end
       end
-      @sprite.z = @sprite.y + 32
+      @sprite.z = @sprite.y + 31
       # Executes the animation when moving against an impassable tile
       if @fake_anim
         @fake_anim -= 1 if @fake_anim > 0
@@ -189,5 +187,7 @@ class Visuals
     def moving?
       return @ytrav[0] && @ydist[0] && @ytrav[0].abs < @ydist[0].abs || @xtrav[0] && @xdist[0] && @xtrav[0].abs < @xdist[0].abs
     end
+
+    attr_reader :fake_anim
   end
 end

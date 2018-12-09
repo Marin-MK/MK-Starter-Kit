@@ -1,5 +1,7 @@
 class Pokemon
-  # Creates a new Pokemon object of the given species with the given level.
+  # Creates a new Pokemon object.
+  # @param species [Fixnum, Symbol, String] the species of the Pokemon.
+  # @param level [Fixnum] the level of the Pokemon.
   def initialize(species, level)
     @species = species
     @level = level

@@ -22,6 +22,8 @@ module MKD
       @events = {}
     end
 
+    # @param [id] the ID of the map to fetch.
+    # @return [Map] the map with the specified ID.
     def self.fetch(id)
       return FileUtils.load_data("data/maps/map#{id.to_digits(3)}.mkd")
     end

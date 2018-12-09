@@ -1,4 +1,5 @@
 # Ensures the given keys have the same data type as their value. Raises an error if invalid.
+# @param hash [Hash] the values to validate.
 def validate(hash)
   errors = hash.map do |key, value|
     if value.is_a?(Array)
@@ -16,6 +17,7 @@ end
 
 # Ensures the given keys (variable names, not values like in #validate) have the same data as their value. Raises an error if invalid.
 # @param input_binding [Binding] a scope's binding to look up local variables with.
+# @param hash [Hash] the values to validate.
 def validate_binding(input_binding, **hash)
   errors = hash.map do |lv_name, value|
     if input_binding.local_variable_defined?(lv_name)

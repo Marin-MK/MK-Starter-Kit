@@ -1,22 +1,28 @@
 class Game
+  # The logical component of event objects.
   class Event
-    # The logical component of event objects.
+    # @return [Fixnum] the ID of the map this event is on.
     attr_accessor :map_id
+    # @return [Fixnum] the ID of this event.
     attr_accessor :id
+    # @return [Fixnum] the x position of this event.
     attr_accessor :x
+    # @return [Fixnum] the y position of this event.
     attr_accessor :y
+    # @return [Array<Game::Event::Page>] an unchangeable list of possible active event pages.
     attr_accessor :pages
+    # @return [Game::Event::Page, NilClass] the currently active page.
     attr_accessor :current_page
+    # @return [Game::Event::Settings] configurable settings that change this event's behaviour.
     attr_accessor :settings
+    # @return [Array<Symbol, Array>] an array of move commands that are to be executed.
     attr_accessor :moveroute
+    # @return [Float] how fast the event moves.
     attr_accessor :speed
+    # @return [Fixnum] which direction the event is currently facing.
     attr_accessor :direction
 
-    # Interpreter/internal
-    attr_accessor :moveroute_ignore_impassable
-    attr_accessor :triggered_by
-    attr_accessor :automove_wait
-
+    # Creates a new Event object.
     def initialize(map_id, id, data)
       @map_id = map_id
       @id = id
@@ -94,8 +100,8 @@ class Game
       end
     end
 
-    # @param page_index (Fixnum) the index of the page to test the conditions of.
-    # @return [Boolean] if all the conditions on the page are true.
+    # @param page_index [Fixnum] the index of the page to test the conditions of.
+    # @return [Boolean] whether all the conditions on the page are true.
     def all_conditions_true_on_page(page_index)
       return !@pages[page_index].conditions.any? do |cond, params|
         !MKD::Event::SymbolToCondition[cond].new(self, params).valid?
@@ -117,8 +123,8 @@ class Game
       end
     end
 
-    # Performs a move route
-    # @param commands [Array<Symbol>, Symbol] list of move commands.
+    # Performs a move route.
+    # @param commands [Symbol, Array] list of move commands.
     def move(*commands)
       commands = [commands] unless commands[0].is_a?(Array)
       commands.each do |e|
@@ -153,6 +159,7 @@ class Game
     end
 
     # Executes the next move command in the moveroute, if present.
+    # @param automoveroute [Boolean] whether or not the previous move command was from an autonomous move route.
     def moveroute_next(automoveroute = false)
       newx, newy = facing_coordinates(@x, @y, @direction)
       if $game.player.x == newx && $game.player.y == newy && @current_page && @current_page.has_trigger?(:event_touch)
@@ -179,6 +186,8 @@ class Game
       end
     end
 
+    # @param command [Symbol, Array] the move command to test.
+    # @return [Boolean] whether or not the move command is executable.
     def move_command_possible?(command)
       validate command => [Symbol, Array]
       command, *args = command if command.is_a?(Array)
@@ -191,9 +200,9 @@ class Game
       return true
     end
 
-    def triggerable?
-      return !$game.map.event_interpreters.any? { |i| i.event == self }
-    end
+    attr_accessor :moveroute_ignore_impassable
+    attr_accessor :triggered_by
+    attr_accessor :automove_wait
   end
 end
 

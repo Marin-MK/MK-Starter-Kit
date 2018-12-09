@@ -30,3 +30,14 @@ def facing_coordinates(x, y, direction)
   newy += 1 if [1, 2, 3].include?(direction)
   return newx, newy
 end
+
+class Sprite
+  # Empty hash that can be used to store some data on a sprite.
+  attr_accessor :hash
+
+  alias old_initialize initialize
+  def initialize(viewport = nil, hash = {})
+    old_initialize(viewport)
+    @hash = hash
+  end
+end

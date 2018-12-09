@@ -1,15 +1,24 @@
 class Game
   # The logical component of map objects.
   class Map
+    # @return [Fixnum] the ID of this map.
     attr_accessor :id
+    # @return [MKD::Map] the unchangeable data of the map.
     attr_accessor :data
+    # @return [Fixnum] the width of the map in tiles.
     attr_accessor :width
+    # @return [Fixnum] the height of the map in tiles.
     attr_accessor :height
+    # @return [Hash<Game::Event>] the hash of events on this map stored by ID.
     attr_accessor :events
+    # @return [Array<Interpreter>] list of active event interpreters.
     attr_accessor :event_interpreters
+    # @return [Array<Interpreter>] list of active event interpreters for parallel processes.
     attr_accessor :parallel_interpreters
+    # @return [Fixnum] how long to wait before updating the active event interpreters again.
     attr_accessor :wait_count
 
+    # Creates a new Map object.
     def initialize(id = 0)
       @id = id
       @data = MKD::Map.fetch(id)
@@ -29,6 +38,12 @@ class Game
       @wait_count = 0
     end
 
+    # Tests if the specified tile is passable.
+    # @param x [Fixnum] the x position to test.
+    # @param y [Fixnum] the y position to test.
+    # @param direction [Fixnum, Symbol, NilClass] the direction at which the event would step on the tile.
+    # @param checking_event [Game::Event, NilClass] the event object that is performing the test.
+    # @return [Boolean] whether the tile is passable.
     def passable?(x, y, direction = nil, checking_event = nil)
       validate x => Fixnum, y => Fixnum
       return false if x < 0 || x >= @width || y < 0 || y >= @height
@@ -58,6 +73,7 @@ class Game
       return true
     end
 
+    # Updates this map's events and interpreters.
     def update
       @events.values.each(&:update)
       @wait_count -= 1 if @wait_count > 0
@@ -74,15 +90,19 @@ class Game
       end
     end
 
-    # When interacting
+    # Called when the player presses A on a tile. Triggers events if conditions are met.
+    # @param x [Fixnum] the x position of the tile to interact with.
+    # @param y [Fixnum] the y position of the tile to interact with.
     def tile_interaction(x, y)
       validate x => Fixnum, y => Fixnum
       return if x < 0 || x >= @width || y < 0 || y >= @height
-      if e = @events.values.find { |e| e.x == x && e.y == y && e.current_page && e.current_page.has_trigger?(:action) && e.triggerable? }
+      if e = @events.values.find { |e| e.x == x && e.y == y && e.current_page && e.current_page.has_trigger?(:action) }
         e.trigger(:action)
       end
     end
 
+    # Tests event triggers that happen with ranges or lines of sight.
+    # @param new_step [Boolean] whether the player has just moved.
     def check_event_triggers(new_step = false)
       # Line of Sight triggers
       events = @events.values.select { |e| e.current_page && e.current_page.has_trigger?(:line_of_sight) }

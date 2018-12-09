@@ -1,5 +1,5 @@
 class Numeric
-  # Ensures the integer has n digits and converts to string.
+  # Ensures the integer has the specified number of digits and converts to string.
   # @param n [Fixnum] the amount of digits.
   # @return [String] the number with at least N digits.
   def to_digits(n = 3)

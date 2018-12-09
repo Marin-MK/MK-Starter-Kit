@@ -1,20 +1,23 @@
 class Visuals
+  # @return [Hash<Visuals::Map>] the list of maps stored by ID.
   attr_accessor :maps
+  # @return [Viewport] the main viewport for all maps and events.
   attr_accessor :viewport
+  # @return [Visuals::Player] the player object.
   attr_accessor :player
 
-  # Creates the main viewport and map list.
+  # Creates a new Visuals object.
   def initialize
     @maps = {}
     @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
   end
 
-  # @return [Visuals::Map] the visual data for the current map.
+  # @return [Visuals::Map] the current map object.
   def map
     return @maps[$game.map.id]
   end
 
-  # Updates all active visuals.
+  # Updates the maps and player.
   def update
     @maps.values.each(&:update)
     @player.update

@@ -7,10 +7,15 @@ class Visuals
       $visuals.maps[game_event.map_id].events[game_event.id] = self.new(game_event)
     end
 
+    # @return [Sprite] the actual sprite object.
     attr_accessor :sprite
+    # @return [Fixnum] the x position of this event relative to the map.
     attr_accessor :relative_x
+    # @return [Fixnum] the y position of this event relative to the map.
     attr_accessor :relative_y
+    # @return [Boolean] whether the move route is ready for the next move command.
     attr_accessor :moveroute_ready
+    # @return [Boolean] whether the current move route command is seen as "moving".
     attr_accessor :moveroute_moving_command
 
     # Creates a new sprite for the event object.
@@ -155,9 +160,8 @@ class Visuals
       # Sets the sprite's on-screen location based on the map's offset and the coordinates of the sprite relative to the map.
       map = $visuals.maps[@game_event.map_id]
       @sprite.x = map.real_x + @relative_x
-      oldy = @sprite.y
       @sprite.y = map.real_y + @relative_y
-      @sprite.z = @sprite.y + 32
+      @sprite.z = @sprite.y + 31
 
       @oldpage = @game_event.current_page
       @olddirection = @game_event.direction
@@ -231,6 +235,7 @@ class Visuals
       @isauto = false if @isauto # Disable autonomous move route flag
     end
 
+    # @return [Boolean] whether the event is actually moving.
     def moving?
       return @moveroute_moving_command if !@moveroute_ready
       return false

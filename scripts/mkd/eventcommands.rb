@@ -14,28 +14,28 @@ module MKD
       end
     end
 
-
+    # Prints a message in a pop-up window.
     class DebugPrintCommand < BasicCommand
       def call
         msgbox @text
       end
     end
 
-
+    # Prints a message to the console.
     class ConsolePrintCommand < BasicCommand
       def call
         puts @text
       end
     end
 
-
+    # Evaluates code.
     class ScriptCommand < BasicCommand
       def call
         @event.instance_eval(@code)
       end
     end
 
-
+    # Performs a move route.
     class MoveCommand < BasicCommand
       def call
         @event.move(@commands)
@@ -44,7 +44,7 @@ module MKD
       end
     end
 
-
+    # If-statement.
     class IfCommand < BasicCommand
       def call
         valid = MKD::Event::SymbolToCondition[@condition[0]].new(@event, @condition[1]).valid?
@@ -52,28 +52,32 @@ module MKD
       end
     end
 
-
+    # Changes the value of a Game Switch.
     class SetSwitchCommand < BasicCommand
       def call
-        $game.switches[@switchid] = @value
+        if @value == :inverted
+          $game.switches[@switchid] = !$game.switches[@switchid]
+        else
+          $game.switches[@switchid] = @value
+        en
       end
     end
 
-
+    # Changes the value of a Game Variable.
     class SetVariableCommand < BasicCommand
       def call
         $game.variables[@variableid] = @value
       end
     end
 
-
+    # Waits a certain number of frames.
     class WaitCommand < BasicCommand
       def call
         $game.map.wait_count += @frames
       end
     end
 
-
+    # Triggers another event.
     class CallEventCommand < BasicCommand
       def call
         $game.map.events[@eventid].trigger(:event)
