@@ -41,3 +41,36 @@ class Sprite
     @hash = hash
   end
 end
+
+module MemInfo
+  # This uses backticks to figure out the pagesize, but only once
+  # when loading this module.
+  # You might want to move this into some kind of initializer
+  # that is loaded when your app starts and not when autoload
+  # loads this module.
+  KERNEL_PAGE_SIZE = `getconf PAGESIZE`.chomp.to_i rescue 4096
+  STATM_PATH       = "/proc/#{Process.pid}/statm"
+  STATM_FOUND      = File.exist?(STATM_PATH)
+
+  def self.rss
+    STATM_FOUND ? (File.read(STATM_PATH).split(' ')[1].to_i * KERNEL_PAGE_SIZE) / 1024 : 0
+  end
+end
+
+# @return [Fixnum] the amount of memory the game is currently using.
+def get_memory
+  ret = `pmap #{Process.pid} | tail -1`.reverse
+  return ret[2...ret.index(' ')].reverse.to_i
+end
+
+# Performs a memory and speed test.
+# @param abort_after [Boolean] whether or not to shut down after performing the test.
+def perform_test(abort_after = true)
+  t = Time.now
+  smem = get_memory
+  yield
+  emem = get_memory
+  msgbox "Memory Before: #{smem}\nMemory After: #{emem}\nMemory Difference: #{emem > smem ? "+" : "-"}#{emem - smem}\n----------------------\n" +
+      "Time: #{(Time.now - t).round(4)} seconds"
+  abort if abort_after
+end

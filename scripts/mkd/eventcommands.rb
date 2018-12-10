@@ -59,7 +59,7 @@ module MKD
           $game.switches[@switchid] = !$game.switches[@switchid]
         else
           $game.switches[@switchid] = @value
-        en
+        end
       end
     end
 

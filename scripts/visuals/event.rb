@@ -171,7 +171,7 @@ class Visuals
     # @param command [Symbol, Array<Symbol>] the move command to execute.
     def execute_move_command(command)
       validate command => [Symbol, Array]
-      command, *args = command if command.is_a?(Array)
+      command, args = command if command.is_a?(Array)
       case command
       when :down
         @ydist << 32
@@ -222,7 +222,7 @@ class Visuals
         @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height if @setdir
         next_move
       when :wait
-        @moveroute_wait = args[0]
+        @moveroute_wait = args[:frames]
       else
         raise "Invalid move route command #{command.inspect}"
       end

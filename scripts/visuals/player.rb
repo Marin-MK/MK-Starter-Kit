@@ -180,7 +180,6 @@ class Visuals
       @oldy = @game_player.y
       @oldgraphic = @game_player.graphic_name
       @oldfake_move = @game_player.fake_move
-      @oldpriority = @game_player.priority
     end
 
     # @return [Boolean] whether or not the player is moving.

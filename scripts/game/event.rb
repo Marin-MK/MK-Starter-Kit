@@ -26,11 +26,10 @@ class Game
     def initialize(map_id, id, data)
       @map_id = map_id
       @id = id
-      @data = data
-      @x = @data.x
-      @y = @data.y
-      @pages = @data.pages
-      @settings = @data.settings
+      @x = data.x
+      @y = data.y
+      @pages = data.pages
+      @settings = data.settings
       @current_page = nil
       @moveroute = []
       @speed = @settings.speed
@@ -39,6 +38,10 @@ class Game
       @automoveroute_idx = 0
       @automove_wait = 0
       Visuals::Event.create(self)
+    end
+
+    def data
+      return MKD::Map.fetch(@map_id).events[@id]
     end
 
     # Updates the event, but is only called once per frame.
@@ -57,6 +60,10 @@ class Game
             @automoveroute_idx += 1
             @automoveroute_idx = 0 if @automoveroute_idx >= @current_page.automoveroute[:commands].size
             command = @current_page.automoveroute[:commands][@automoveroute_idx]
+            command, args = command if command.is_a?(Array)
+            command = [:down, :left, :right, :up].sample if command == :move_random
+            command = [:turn_down, :turn_left, :turn_right, :turn_up].sample if command == :turn_random
+            command = [command, args] if args
             if move_command_possible?(command)
               $visuals.maps[@map_id].events[@id].automoveroute(command)
             else
@@ -171,6 +178,11 @@ class Game
       else # Next move command for a normal moveroute
         @moveroute.delete_at(0)
         if @moveroute.size > 0
+          command = @moveroute[0]
+          command, args = command if command.is_a?(Array)
+          command = [:down, :left, :right, :up].sample if command == :move_random
+          command = [:turn_down, :turn_left, :turn_right, :turn_up].sample if command == :turn_random
+          @moveroute[0] = args ? [command, args] : command
           if !move_command_possible?(@moveroute[0])
             if @moveroute_ignore_impassable
               moveroute_next

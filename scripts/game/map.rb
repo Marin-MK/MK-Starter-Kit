@@ -4,7 +4,7 @@ class Game
     # @return [Fixnum] the ID of this map.
     attr_accessor :id
     # @return [MKD::Map] the unchangeable data of the map.
-    attr_accessor :data
+    #attr_accessor :data
     # @return [Fixnum] the width of the map in tiles.
     attr_accessor :width
     # @return [Fixnum] the height of the map in tiles.
@@ -21,21 +21,24 @@ class Game
     # Creates a new Map object.
     def initialize(id = 0)
       @id = id
-      @data = MKD::Map.fetch(id)
-      @width = @data.width
-      @height = @data.height
-      @tiles = @data.tiles
-      @passabilities = @data.passabilities
-      @tilesets = @data.tilesets
+      @width = data.width
+      @height = data.height
+      @passabilities = data.passabilities
+      @tiles = data.tiles
+      @tilesets = data.tilesets
       # Fetch passability data from the tileset
       @tileset_passabilities = {}
       @tilesets.each { |id| @tileset_passabilities[id] = MKD::Tileset.fetch(id).passabilities }
       @events = {}
       Visuals::Map.create(self)
-      @data.events.keys.each { |id| @events[id] = Game::Event.new(@id, id, @data.events[id]) }
+      data.events.keys.each { |id| @events[id] = Game::Event.new(@id, id, data.events[id]) }
       @event_interpreters = []
       @parallel_interpreters = []
       @wait_count = 0
+    end
+
+    def data
+      return MKD::Map.fetch(@id)
     end
 
     # Tests if the specified tile is passable.
