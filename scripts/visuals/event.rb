@@ -221,6 +221,10 @@ class Visuals
         @game_event.direction = 8
         @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height if @setdir
         next_move
+      when :turn_to_player
+        @game_event.turn_to_player
+        @sprite.src_rect.y = (@game_event.direction / 2 - 1) * @sprite.src_rect.height if @setdir
+        next_move
       when :wait
         @moveroute_wait = args[:frames]
       else

@@ -15,8 +15,8 @@ class Game
     attr_accessor :speed
 
     # Creates a new Player object.
-    def initialize
-      @map_id = 0
+    def initialize(map_id = 0)
+      @map_id = map_id
       @x = 0
       @y = 0
       @direction = 2

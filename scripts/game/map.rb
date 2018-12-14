@@ -107,6 +107,7 @@ class Game
     # Tests event triggers that happen with ranges or lines of sight.
     # @param new_step [Boolean] whether the player has just moved.
     def check_event_triggers(new_step = false)
+      return if $game.map != self
       # Line of Sight triggers
       events = @events.values.select { |e| e.current_page && e.current_page.has_trigger?(:line_of_sight) }
       events.select! do |e|
