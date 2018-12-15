@@ -106,13 +106,14 @@ class Visuals
         @sprite.src_rect.y = frame_y * @sprite.src_rect.height
       end
       # Add a horizontal movement to the move queue
-      if @game_player.x != @oldx
+      if @game_player.x != @oldx && !@skip_movement
         @xdist << 32 * (@game_player.x - @oldx)
         @xtrav << 0
         @xstart << (@xstart[0] ? @xstart.last + @xdist.last : $visuals.map.real_x)
         anims = []
         pos = @game_player.x - @oldx > 0
-        (2 * (@game_player.x - @oldx).abs).times { |i| anims << 16 * i * (pos ? 1 : -1) }
+        aframes = 2
+        (aframes * (@game_player.x - @oldx).abs).times { |i| anims << (32.0 / aframes) * i * (pos ? 1 : -1) }
         @anim << anims
         if @xtrav.size == 1
           @sprite.src_rect.x += @sprite.src_rect.width if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 != 0
@@ -122,13 +123,14 @@ class Visuals
         @stop_fake_anim = false
       end
       # Add a vertical movement to the move queue
-      if @game_player.y != @oldy
+      if @game_player.y != @oldy && !@skip_movement
         @ydist << 32 * (@game_player.y - @oldy)
         @ytrav << 0
         @ystart << (@ystart[0] ? @ystart.last + @ydist.last : $visuals.map.real_y)
         anims = []
         pos = @game_player.y - @oldy > 0
-        (2 * (@game_player.y - @oldy).abs).times { |i| anims << 16 * i * (pos ? 1 : -1) }
+        aframes = 2
+        (aframes * (@game_player.y - @oldy).abs).times { |i| anims << (32.0 / aframes) * i * (pos ? 1 : -1) }
         @anim << anims
         if @ytrav.size == 1
           @sprite.src_rect.x += @sprite.src_rect.width if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 != 0
@@ -184,6 +186,11 @@ class Visuals
       @oldy = @game_player.y
       @oldgraphic = @game_player.graphic_name
       @oldfake_move = @game_player.fake_move
+      @skip_movement = false if @skip_movement
+    end
+
+    def skip_movement
+      @skip_movement = true
     end
 
     # @return [Boolean] whether or not the player is moving.

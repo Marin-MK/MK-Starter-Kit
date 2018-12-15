@@ -165,29 +165,12 @@ class Visuals
       if mapx >= 0 && mapx < $game.map.width && mapy >= 0 && mapy < $game.map.height
         id = $game.map.id
       elsif $game.map.connection
-        mx, my = $game.map.connection[1], $game.map.connection[2]
-        gx, gy = mx + mapx, my + mapy
-        if gx >= 0 && gy >= 0
-          maps = MKD::MapConnections.fetch.maps[$game.map.connection[0]]
-          maps.keys.each do |x,y|
-            mid = maps[[x, y]]
-            next if mid == $game.map.id
-            map = MKD::Map.fetch(mid)
-            width, height = map.width, map.height
-            if gx >= x && gy >= y && gx < x + width && gy < y + height
-              #msgbox "(#{x},#{y},#{width},#{height}) <-> (#{gx},#{gy})"
-              mapx = gx - x
-              mapy = gy - y
-              id = mid
-              break
-            end
-          end
-        end
+        id, mapx, mapy = $game.get_map_from_connection($game.map, mapx, mapy)
+        #if Input.press?(Input::A)
+        #  msgbox "MapX: #{sprite.mapx}\nMapY: #{sprite.mapy}\nMap ID: #{id}\nX: #{mapx}\nY: #{mapy}"
+        #end
       end
       if id
-        if id != $game.map.id
-          #msgbox "MapX: #{sprite.mapx}\nMapY: #{sprite.mapy}\nMap ID: #{id}\nX: #{mapx}\nY: #{mapy}"
-        end
         for layer in 0...$game.maps[id].data.tiles.size
           tile_type, tile_id = $game.maps[id].data.tiles[layer][mapx + $game.maps[id].height * mapy]
           next if tile_type.nil?

@@ -54,7 +54,15 @@ class Game
     # @return [Boolean] whether the tile is passable.
     def passable?(x, y, direction = nil, checking_event = nil)
       validate x => Fixnum, y => Fixnum
-      return false if x < 0 || x >= @width || y < 0 || y >= @height
+      if x < 0 || x >= @width || y < 0 || y >= @height
+        if @connection
+          map_id, mapx, mapy = $game.get_map_from_connection(self, x, y)
+          if map_id
+            return $game.maps[map_id].passable?(mapx, mapy, direction, checking_event)
+          end
+        end
+        return false
+      end
       validate direction => [Fixnum, Symbol, NilClass]
       direction = validate_direction(direction)
 

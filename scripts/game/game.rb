@@ -44,6 +44,29 @@ class Game
     end
   end
 
+  def get_map_from_connection(map, mapx, mapy)
+    if mapx >= 0 && mapy >= 0 && mapx < map.width && mapy < map.height
+      return [map.id, mapx, mapy]
+    end
+    mx, my = map.connection[1], map.connection[2]
+    gx, gy = mx + mapx, my + mapy
+    if gx >= 0 && gy >= 0
+      maps = MKD::MapConnections.fetch.maps[map.connection[0]]
+      maps.keys.each do |x,y|
+        mid = maps[[x, y]]
+        next if mid == $game.map.id
+        map = MKD::Map.fetch(mid)
+        width, height = map.width, map.height
+        if gx >= x && gy >= y && gx < x + width && gy < y + height
+          mapx = gx - x
+          mapy = gy - y
+          return [mid, mapx, mapy]
+        end
+      end
+    end
+    return nil
+  end
+
   # Updates the maps and player.
   def update
     @maps.values.each(&:update)

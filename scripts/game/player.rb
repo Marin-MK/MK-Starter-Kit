@@ -97,6 +97,7 @@ class Game
         self.direction_noanim = :down if @direction != 2
         if $game.map.passable?(@x, @y + 1, :down, self)
           @y += 1
+          try_transfer
           $game.map.check_event_triggers(true)
         else
           @fake_move = true
@@ -115,6 +116,7 @@ class Game
         self.direction_noanim = :left if @direction != 4
         if $game.map.passable?(@x - 1, @y, :left, self)
           @x -= 1
+          try_transfer
           $game.map.check_event_triggers(true)
         else
           @fake_move = true
@@ -133,6 +135,7 @@ class Game
         self.direction_noanim = :right if @direction != 6
         if $game.map.passable?(@x + 1, @y, :right, self)
           @x += 1
+          try_transfer
           $game.map.check_event_triggers(true)
         else
           @fake_move = true
@@ -151,6 +154,7 @@ class Game
         self.direction_noanim = :up if @direction != 8
         if $game.map.passable?(@x, @y - 1, :up, self)
           @y -= 1
+          try_transfer
           $game.map.check_event_triggers(true)
         else
           @fake_move = true
@@ -158,6 +162,37 @@ class Game
         @upcount = nil
       end
       @upcount -= 1 if @upcount
+    end
+
+    # Performs a map transfer on the player if its x or y position are out of the current map.
+    private def try_transfer
+      xsmall = @x < 0
+      ysmall = @y < 0
+      xbig = @x >= $game.map.width
+      ybig = @y >= $game.map.height
+      if xsmall || ysmall || xbig || ybig
+        if $game.map.connection
+          map_id, mapx, mapy = $game.get_map_from_connection($game.map, @x, @y)
+          oldmap = $game.map
+          @map_id = map_id
+          @x = mapx
+          @y = mapy
+          t = $visuals.map_renderer[Visuals::MapRenderer::XSIZE * 6 + 8]
+          diffx = t.mapx - @x
+          diffx += xbig ? 1 : xsmall ? -1 : 0
+          diffy = t.mapy - @y
+          diffy += ybig ? 1 : ysmall ? -1 : 0
+          $visuals.map_renderer.each do |sprite|
+            sprite.mapx -= diffx
+            sprite.mapy -= diffy
+          end
+          @x += xsmall ? 1 : xbig ? -1 : 0
+          @y += ysmall ? 1 : ybig ? -1 : 0
+          $visuals.player.skip_movement
+        else
+          raise "Player is off the active game map, but no map connection was specified for that map."
+        end
+      end
     end
 
     attr_reader :fake_move
