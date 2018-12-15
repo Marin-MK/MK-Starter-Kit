@@ -28,11 +28,19 @@ module MKD
 
     # @param [id] the ID of the map to fetch.
     # @return [Map] the map with the specified ID.
-    def self.fetch(idx = nil)
-      return Cache if Cache
-      self.const_set(:Cache, FileUtils.load_data("data/maps/connections.mkd"))
-      return Cache[idx] if idx
-      return Cache
+    def self.fetch(id = nil)
+      if Cache
+        if id
+          c = Cache.maps.find { |h| h.has_value?(id) }
+          return nil unless c
+          return [Cache.maps.index(c)].concat(c.keys.find { |k| c[k] == id })
+        else
+          return Cache
+        end
+      else
+        self.const_set(:Cache, FileUtils.load_data("data/maps/connections.mkd"))
+        return self.fetch(id)
+      end
     end
 
     #temp

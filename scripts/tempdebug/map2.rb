@@ -1,4 +1,4 @@
-map = MKD::Map.new(1)
+map = MKD::Map.new(2)
 map.name = "Some Town"
 map.width = 7
 map.height = 7

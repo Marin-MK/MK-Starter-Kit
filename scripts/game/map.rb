@@ -17,20 +17,25 @@ class Game
     attr_accessor :parallel_interpreters
     # @return [Fixnum] how long to wait before updating the active event interpreters again.
     attr_accessor :wait_count
+    # @return [Array<Fixnum>] map connection data (idx, x, y).
+    attr_accessor :connection
 
     # Creates a new Map object.
-    def initialize(id = 0)
+    def initialize(id = 0, x = 0, y = 0)
       @id = id
+      @x = x
+      @y = y
       @width = data.width
       @height = data.height
       @passabilities = data.passabilities
       @tiles = data.tiles
       @tilesets = data.tilesets
+      @connection = MKD::MapConnections.fetch(id)
       # Fetch passability data from the tileset
       @tileset_passabilities = {}
       @tilesets.each { |id| @tileset_passabilities[id] = MKD::Tileset.fetch(id).passabilities }
       @events = {}
-      Visuals::Map.create(self)
+      Visuals::Map.create(self, x, y)
       data.events.keys.each { |id| @events[id] = Game::Event.new(@id, id, data.events[id]) }
       @event_interpreters = []
       @parallel_interpreters = []

@@ -62,6 +62,16 @@ class Visuals
       end
     end
 
+    def move_x(diff)
+      @array.each { |e| e.real_x -= diff }
+      $visuals.map_renderer.refresh_tiles
+    end
+
+    def move_y(diff)
+      @array.each { |e| e.real_y -= diff }
+      $visuals.map_renderer.refresh_tiles
+    end
+
     # Moves the top-most row to the bottom.
     def move_up
       @array[0...XSIZE].each_with_index { |e, x| yield e, x } if block_given?
@@ -81,15 +91,15 @@ class Visuals
       tiles = []
       (TOTALSIZE).times { tiles << TileSprite.new($visuals.viewport) }
       @array = tiles
-      startx = $visuals.maps[$game.map.id].real_x / -32 - XBUFFER
-      starty = $visuals.maps[$game.map.id].real_y / -32 - YBUFFER
+      startx = $visuals.map.real_x / -32 - XBUFFER
+      starty = $visuals.map.real_y / -32 - YBUFFER
       for y in 0...YSIZE
         for x in 0...XSIZE
           mapx = startx + x
           mapy = starty + y
           idx = x + y * XSIZE
-          @array[idx].real_x = $visuals.maps[$game.map.id].real_x + mapx * 32
-          @array[idx].real_y = $visuals.maps[$game.map.id].real_y + mapy * 32
+          @array[idx].real_x = $visuals.map.real_x + mapx * 32
+          @array[idx].real_y = $visuals.map.real_y + mapy * 32
           draw_tile(@array[idx], mapx, mapy)
         end
       end
@@ -153,10 +163,35 @@ class Visuals
       sprite.mapy = mapy
       # Reconfigure if it's a valid and visible tile
       if mapx >= 0 && mapx < $game.map.width && mapy >= 0 && mapy < $game.map.height
-        for layer in 0...$game.map.data.tiles.size
-          tile_type, tile_id = $game.map.data.tiles[layer][mapx + $game.map.height * mapy]
+        id = $game.map.id
+      elsif $game.map.connection
+        mx, my = $game.map.connection[1], $game.map.connection[2]
+        gx, gy = mx + mapx, my + mapy
+        if gx >= 0 && gy >= 0
+          maps = MKD::MapConnections.fetch.maps[$game.map.connection[0]]
+          maps.keys.each do |x,y|
+            mid = maps[[x, y]]
+            next if mid == $game.map.id
+            map = MKD::Map.fetch(mid)
+            width, height = map.width, map.height
+            if gx >= x && gy >= y && gx < x + width && gy < y + height
+              #msgbox "(#{x},#{y},#{width},#{height}) <-> (#{gx},#{gy})"
+              mapx = gx - x
+              mapy = gy - y
+              id = mid
+              break
+            end
+          end
+        end
+      end
+      if id
+        if id != $game.map.id
+          #msgbox "MapX: #{sprite.mapx}\nMapY: #{sprite.mapy}\nMap ID: #{id}\nX: #{mapx}\nY: #{mapy}"
+        end
+        for layer in 0...$game.maps[id].data.tiles.size
+          tile_type, tile_id = $game.maps[id].data.tiles[layer][mapx + $game.maps[id].height * mapy]
           next if tile_type.nil?
-          tileset_id = $game.map.data.tilesets[tile_type]
+          tileset_id = $game.maps[id].data.tilesets[tile_type]
           tileset = MKD::Tileset.fetch(tileset_id)
           # Temporary bitmap cache
           if $temp_bitmaps[tileset.graphic_name]

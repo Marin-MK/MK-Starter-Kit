@@ -18,6 +18,32 @@ class Game
     return @maps[$game.player.map_id]
   end
 
+  def load_map(id)
+    # Dispose all game maps/visual maps (might need to add here later)
+    # Haven't implemented Game::Map#dispose yet
+    @maps.values.each { |e| e.dispose if e.respond_to?(:dispose) }
+    @maps = {}
+    c = MKD::MapConnections.fetch(id)
+    if c
+      idx = c[0]
+      maps = MKD::MapConnections.fetch.maps[idx]
+      maps.keys.each do |x,y|
+        id = maps[[x, y]]
+        @maps[id] = Game::Map.new(id, x, y)
+      end
+      x, y = self.map.connection[1], self.map.connection[2]
+      diffx = @player.x - x
+      diffy = @player.y - y
+      @maps.values.each do |m|
+        map = $visuals.maps[m.id]
+        map.real_x += diffx * 32
+        map.real_y += diffy * 32
+      end
+    else
+      @maps[id] = Game::Map.new(id)
+    end
+  end
+
   # Updates the maps and player.
   def update
     @maps.values.each(&:update)
@@ -29,6 +55,6 @@ end
 $game = Game.new
 $game.switches = Game::Switches.new
 $game.variables = Game::Variables.new
-$game.maps[1] = Game::Map.new(1)
 $game.player = Game::Player.new(1)
+$game.load_map(1)
 $visuals.map_renderer.create_tiles if $visuals.map_renderer.empty?

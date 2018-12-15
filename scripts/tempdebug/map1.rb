@@ -1,5 +1,5 @@
 # Creates a new map (normally loaded from a file)
-map = MKD::Map.new(2)
+map = MKD::Map.new(1)
 map.name = "Some Town"
 map.width = 25
 map.height = 25

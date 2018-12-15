@@ -1,6 +1,6 @@
 module MKD
   class Map
-    Cache = nil
+    Cache = []
 
     attr_accessor :id
     attr_accessor :name
@@ -27,9 +27,9 @@ module MKD
     # @param [id] the ID of the map to fetch.
     # @return [Map] the map with the specified ID.
     def self.fetch(id)
-      return Cache if Cache
-      self.const_set(:Cache, FileUtils.load_data("data/maps/map#{id.to_digits(3)}.mkd"))
-      return Cache
+      return Cache[id] if Cache[id]
+      Cache[id] = FileUtils.load_data("data/maps/map#{id.to_digits(3)}.mkd")
+      return Cache[id]
     end
 
     #temp

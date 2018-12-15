@@ -19,8 +19,8 @@ class Visuals
       @sprite.x = Graphics.width / 2
       @sprite.y = Graphics.height / 2 + 16
       @sprite.z = @sprite.y + 31
-      @oldx = game_player.x
-      @oldy = game_player.y
+      @oldx = @game_player.x
+      @oldy = @game_player.y
       @xdist = []
       @xtrav = []
       @xstart = []
@@ -141,6 +141,7 @@ class Visuals
       if @xtrav[0] && @xdist[0]
         if @xtrav[0].abs < @xdist[0].abs
           dist = @game_player.speed * (@xdist[0] < 0 ? -1 : 1)
+          oldtrav = @xtrav[0]
           @xtrav[0] += dist
           @xtrav[0] = @xdist[0] < 0 ? [@xtrav[0], @xdist[0]].max : [@xtrav[0], @xdist[0]].min
           if @anim[0].size > 0 && (@xdist[0] > 0 && @xtrav[0] > @anim[0][0] || @xdist[0] < 0 && @xtrav[0] < @anim[0][0])
@@ -149,6 +150,7 @@ class Visuals
             @anim[0].delete_at(0)
           end
           $visuals.map.real_x = @xstart[0] - @xtrav[0]
+          $visuals.map_renderer.move_x(@xtrav[0] - oldtrav)
         else
           @xtrav.delete_at(0)
           @xdist.delete_at(0)
@@ -160,6 +162,7 @@ class Visuals
       if @ytrav[0] && @ydist[0]
         if @ytrav[0].abs < @ydist[0].abs
           dist = @game_player.speed * (@ydist[0] < 0 ? -1 : 1)
+          oldtrav = @ytrav[0]
           @ytrav[0] += dist
           @ytrav[0] = @ydist[0] < 0 ? [@ytrav[0], @ydist[0]].max : [@ytrav[0], @ydist[0]].min
           if @anim[0].size > 0 && (@ydist[0] > 0 && @ytrav[0] > @anim[0][0] || @ydist[0] < 0 && @ytrav[0] < @anim[0][0])
@@ -168,6 +171,7 @@ class Visuals
             @anim[0].delete_at(0)
           end
           $visuals.map.real_y = @ystart[0] - @ytrav[0]
+          $visuals.map_renderer.move_y(@ytrav[0] - oldtrav)
         else
           @ytrav.delete_at(0)
           @ydist.delete_at(0)
