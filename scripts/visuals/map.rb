@@ -13,26 +13,29 @@ class Visuals
     attr_reader :real_x
     # @return [Fixnum] the y position of the top-left corner of the map.
     attr_reader :real_y
+    # @return [Fixnum] the ID of this map.
+    attr_reader :id
 
     def real_x=(value)
-      #diff = @real_x - value
-      #$visuals.map_renderer.each { |e| e.real_x -= diff }
       @real_x = value
-      #$visuals.map_renderer.refresh_tiles
+      if $game.player.map_id == 1
+        #msgbox "RealX: #{@real_x}\nRelativeX: #{@events.values.map { |e| e.relative_x }[0]}"
+      end
       @events.values.each { |e| e.sprite.x = @real_x + e.relative_x }
     end
 
     def real_y=(value)
-      #diff = @real_y - value
-      #$visuals.map_renderer.each { |e| e.real_y -= diff }
       @real_y = value
-      #$visuals.map_renderer.refresh_tiles
+      if $game.player.map_id == 1
+        #msgbox "RealY: #{@real_y}\nRelativeY: #{@events.values.map { |e| e.relative_y }[0]}"
+      end
       @events.values.each { |e| e.sprite.y = @real_y + e.relative_y }
     end
 
     # Creates a new Map object.
     def initialize(game_map, x = 0, y = 0)
       @game_map = game_map
+      @id = @game_map.id
       @real_x = Graphics.width / 2 - 16 + 32 * x
       @real_y = Graphics.height / 2 - 16 + 32 * y
       @events = {}

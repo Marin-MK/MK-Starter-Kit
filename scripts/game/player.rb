@@ -168,27 +168,17 @@ class Game
     private def try_transfer
       xsmall = @x < 0
       ysmall = @y < 0
-      xbig = @x >= $game.map.width
-      ybig = @y >= $game.map.height
-      if xsmall || ysmall || xbig || ybig
+      xgreat = @x >= $game.map.width
+      ygreat = @y >= $game.map.height
+      if xsmall || ysmall || xgreat || ygreat
         if $game.map.connection
           map_id, mapx, mapy = $game.get_map_from_connection($game.map, @x, @y)
-          oldmap = $game.map
           @map_id = map_id
+          oldx = @x
+          oldy = @y
           @x = mapx
           @y = mapy
-          t = $visuals.map_renderer[Visuals::MapRenderer::XSIZE * 6 + 8]
-          diffx = t.mapx - @x
-          diffx += xbig ? 1 : xsmall ? -1 : 0
-          diffy = t.mapy - @y
-          diffy += ybig ? 1 : ysmall ? -1 : 0
-          $visuals.map_renderer.each do |sprite|
-            sprite.mapx -= diffx
-            sprite.mapy -= diffy
-          end
-          @x += xsmall ? 1 : xbig ? -1 : 0
-          @y += ysmall ? 1 : ybig ? -1 : 0
-          $visuals.player.skip_movement
+          $visuals.map_renderer.adjust_to_player(oldx, oldy)
         else
           raise "Player is off the active game map, but no map connection was specified for that map."
         end

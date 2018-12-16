@@ -48,10 +48,14 @@ class Visuals
         if page
           graphic = page.graphic
           if graphic[:type] == :file # Filename with src_rect
-            @sprite.bitmap = Bitmap.new(graphic[:param])
-            @sprite.src_rect.width = @sprite.bitmap.width / 4
-            @sprite.src_rect.height = @sprite.bitmap.height / 4
-            @sprite.src_rect.y = (graphic[:direction] / 2 - 1) * @sprite.src_rect.height
+            if graphic[:param] && graphic[:param].size > 0
+              @sprite.bitmap = Bitmap.new(graphic[:param])
+              @sprite.src_rect.width = @sprite.bitmap.width / 4
+              @sprite.src_rect.height = @sprite.bitmap.height / 4
+              @sprite.src_rect.y = (graphic[:direction] / 2 - 1) * @sprite.src_rect.height
+            else
+              @sprite.bitmap = nil
+            end
             @setdir = true
             @animate = true
           elsif graphic[:type] == :file_norect # Filename without src_rect

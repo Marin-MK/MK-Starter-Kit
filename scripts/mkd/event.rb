@@ -12,7 +12,7 @@ module MKD
       @name = ""
       @x = 0
       @y = 0
-      @pages = [Page.new]
+      @pages = []
       @settings = MKD::Event::Settings.new
     end
   end

@@ -7,4 +7,23 @@ map.tiles = [[]]
 for i in 0...map.width * map.height
   map.tiles[0] << [0, i % 2 == 0 ? 6 : 1]
 end
+
+e = MKD::Event.new(1)
+e.x = 1
+e.y = 0
+e.settings.passable = false
+p = MKD::Event::Page.new
+p.graphic = {
+  type: :file,
+  direction: 4,
+  param: "gfx/characters/boy"
+}
+p.commands = [
+  [0, :transfer, {mapid: 1, x: 34, y: 2}]
+]
+p.triggers = [[:action]]
+e.pages << p
+
+map.events[1] = e
+
 map.save

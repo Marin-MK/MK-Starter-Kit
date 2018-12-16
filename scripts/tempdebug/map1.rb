@@ -1,7 +1,7 @@
 # Creates a new map (normally loaded from a file)
 map = MKD::Map.new(1)
 map.name = "Some Town"
-map.width = 25
+map.width = 35
 map.height = 25
 map.tilesets = [1, 1]
 map.tiles = [
@@ -10,13 +10,13 @@ map.tiles = [
 ]
 
 map.tiles[0][0] = [0, 6]
-map.tiles[0][map.height * 4 + 6] = [0, 426]
-map.tiles[0][map.height * 4 + 7] = [0, 427]
-map.tiles[0][map.height * 5 + 6] = [0, 432]
-map.tiles[0][map.height * 5 + 7] = [0, 433]
-map.tiles[1] = []
-map.tiles[1][map.height * 3 + 6] = [0, 420]
-map.tiles[1][map.height * 3 + 7] = [0, 421]
+#map.tiles[0][map.width * 4 + 6] = [0, 426]
+#map.tiles[0][map.width * 4 + 7] = [0, 427]
+#map.tiles[0][map.width * 5 + 6] = [0, 432]
+#map.tiles[0][map.width * 5 + 7] = [0, 433]
+#map.tiles[1] = []
+#map.tiles[1][map.width * 3 + 6] = [0, 420]
+#map.tiles[1][map.width * 3 + 7] = [0, 421]
 
 
 def create_event(map, id, x, y, dir)
@@ -100,6 +100,7 @@ def create_event(map, id, x, y, dir)
 end
 
 create_event(map, 1, 3, 4, 2)
+map.tiles[0][35] = [1, 6]
 
 # Overwrites tileset passability data for non-nil entries.
 map.passabilities = [

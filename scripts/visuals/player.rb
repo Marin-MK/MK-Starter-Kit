@@ -109,7 +109,8 @@ class Visuals
       if @game_player.x != @oldx && !@skip_movement
         @xdist << 32 * (@game_player.x - @oldx)
         @xtrav << 0
-        @xstart << (@xstart[0] ? @xstart.last + @xdist.last : $visuals.map.real_x)
+        h = {}
+        @xstart << (@xstart[0] ? @xstart.last + @xdist.last : $visuals.maps.keys.each { |id| h[id] = $visuals.maps[id].real_x }; h)
         anims = []
         pos = @game_player.x - @oldx > 0
         aframes = 2
@@ -126,7 +127,8 @@ class Visuals
       if @game_player.y != @oldy && !@skip_movement
         @ydist << 32 * (@game_player.y - @oldy)
         @ytrav << 0
-        @ystart << (@ystart[0] ? @ystart.last + @ydist.last : $visuals.map.real_y)
+        h = {}
+        @ystart << (@ystart[0] ? @ystart.last + @ydist.last : $visuals.maps.keys.each { |id| h[id] = $visuals.maps[id].real_y }; h)
         anims = []
         pos = @game_player.y - @oldy > 0
         aframes = 2
@@ -151,7 +153,7 @@ class Visuals
             @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
             @anim[0].delete_at(0)
           end
-          $visuals.map.real_x = @xstart[0] - @xtrav[0]
+          $visuals.maps.values.each { |m| m.real_x = @xstart[0][m.id] - @xtrav[0] }
           $visuals.map_renderer.move_x(@xtrav[0] - oldtrav)
         else
           @xtrav.delete_at(0)
@@ -172,7 +174,7 @@ class Visuals
             @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
             @anim[0].delete_at(0)
           end
-          $visuals.map.real_y = @ystart[0] - @ytrav[0]
+          $visuals.maps.values.each { |m| m.real_y = @ystart[0][m.id] - @ytrav[0] }
           $visuals.map_renderer.move_y(@ytrav[0] - oldtrav)
         else
           @ytrav.delete_at(0)
@@ -191,6 +193,21 @@ class Visuals
 
     def skip_movement
       @skip_movement = true
+    end
+
+    # Moves the screen without animation.
+    def move(xdiff, ydiff, xtilediff, ytilediff)
+      if xdiff != 0
+        xdiff *= 32
+        $visuals.maps.values.each { |m| m.real_x -= xtilediff * 32 }
+        $visuals.map_renderer.move_x(xdiff)
+      end
+      if ydiff != 0
+        ydiff *= 32
+        $visuals.maps.values.each { |m| m.real_y -= ytilediff * 32 }
+        $visuals.map_renderer.move_y(ydiff)
+      end
+      skip_movement
     end
 
     # @return [Boolean] whether or not the player is moving.

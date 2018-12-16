@@ -7,11 +7,9 @@ class Visuals
   class MapRenderer
     TILECOUNTX = (SCREENWIDTH / 32.0).ceil
     TILECOUNTY = (SCREENHEIGHT / 32.0).ceil
-    XBUFFER = 1
-    YBUFFER = 1
 
-    XSIZE = TILECOUNTX + XBUFFER * 2
-    YSIZE = TILECOUNTY + YBUFFER * 2
+    XSIZE = TILECOUNTX + 2
+    YSIZE = TILECOUNTY + 2
     TOTALSIZE = XSIZE * YSIZE
 
     attr_accessor :array
@@ -40,6 +38,16 @@ class Visuals
       return @array.empty?
     end
 
+    def move_x(diff)
+      @array.each { |e| e.real_x -= diff }
+      $visuals.map_renderer.refresh_tiles
+    end
+
+    def move_y(diff)
+      @array.each { |e| e.real_y -= diff }
+      $visuals.map_renderer.refresh_tiles
+    end
+
     # Moves the right-most column to the left.
     def move_right
       for i in 0...@array.size
@@ -62,37 +70,27 @@ class Visuals
       end
     end
 
-    def move_x(diff)
-      @array.each { |e| e.real_x -= diff }
-      $visuals.map_renderer.refresh_tiles
-    end
-
-    def move_y(diff)
-      @array.each { |e| e.real_y -= diff }
-      $visuals.map_renderer.refresh_tiles
-    end
-
     # Moves the top-most row to the bottom.
     def move_up
-      @array[0...XSIZE].each_with_index { |e, x| yield e, x } if block_given?
-      oldsize = @array.size
+      @array[0...XSIZE].each_with_index { |e, x| yield e } if block_given?
       @array = @array[XSIZE..-1].concat(@array[0...XSIZE])
     end
 
     # Moves the bottom-most row to the top.
     def move_down
-      @array[-XSIZE..-1].each_with_index { |e, x| yield e, x } if block_given?
+      @array[-XSIZE..-1].each_with_index { |e, x| yield e } if block_given?
       @array = @array[-XSIZE..-1].concat(@array[0...-XSIZE])
     end
 
+    # Initializes the tile array based on the currently active map.
     def create_tiles
-      # Screen fits exactly 15x10 tiles, but it has a configurable buffer around it
+      # Screen fits exactly 15x10 tiles (for 480x320), but it has a buffer around it
       # so the game has time to refresh without showing a black border during movement.
       tiles = []
       (TOTALSIZE).times { tiles << TileSprite.new($visuals.viewport) }
       @array = tiles
-      startx = $visuals.map.real_x / -32 - XBUFFER
-      starty = $visuals.map.real_y / -32 - YBUFFER
+      startx = $visuals.map.real_x / -32 - 1
+      starty = $visuals.map.real_y / -32 - 1
       for y in 0...YSIZE
         for x in 0...XSIZE
           mapx = startx + x
@@ -107,10 +105,11 @@ class Visuals
       # Don't dispose the bitmaps hash because tiles reference these instances; they're not clones.
     end
 
+    # Determines if new tiles should be rendered and if so, renders them.
     def refresh_tiles
       return if empty?
-      xdiff = @array[0].real_x.round / -32 - XBUFFER
-      ydiff = @array[0].real_y.round / -32 - YBUFFER
+      xdiff = @array[0].real_x.round / -32 - 1
+      ydiff = @array[0].real_y.round / -32 - 1
       if ydiff > 0
         ydiff.times do
           move_up do |sprite|
@@ -151,6 +150,31 @@ class Visuals
       end
     end
 
+    # @return [TileSprite] the tile the player would be standing on if the player is centered.
+    # If the player is not centered to the screen, it will still return the center tile.
+    def player_tile
+      return $visuals.map_renderer[XSIZE * (YSIZE / 2) + (XSIZE / 2.0).floor]
+    end
+
+    def adjust_to_player(x, y)
+      xsmall = x < 0
+      ysmall = y < 0
+      xgreat = x >= $game.map.width
+      ygreat = y >= $game.map.height
+      t = player_tile
+      diffx = t.mapx - $game.player.x
+      diffx += xgreat ? 1 : xsmall ? -1 : 0
+      diffy = t.mapy - $game.player.y
+      diffy += ygreat ? 1 : ysmall ? -1 : 0
+      self.each do |sprite|
+        sprite.mapx -= diffx
+        sprite.mapy -= diffy
+      end
+      $game.player.x += xsmall ? 1 : xgreat ? -1 : 0
+      $game.player.y += ysmall ? 1 : ygreat ? -1 : 0
+      $visuals.player.skip_movement
+    end
+
     # Draws all tiles in a certain position to a sprite.
     # @param sprite [TileSprite] the tile sprite to draw to.
     # @param mapx [Fixnum] the x position of the tile on the map.
@@ -172,7 +196,7 @@ class Visuals
       end
       if id
         for layer in 0...$game.maps[id].data.tiles.size
-          tile_type, tile_id = $game.maps[id].data.tiles[layer][mapx + $game.maps[id].height * mapy]
+          tile_type, tile_id = $game.maps[id].data.tiles[layer][mapx + $game.maps[id].width * mapy]
           next if tile_type.nil?
           tileset_id = $game.maps[id].data.tilesets[tile_type]
           tileset = MKD::Tileset.fetch(tileset_id)
@@ -195,6 +219,7 @@ class Visuals
     attr_reader :real_y
     attr_accessor :mapx
     attr_accessor :mapy
+    attr_accessor :sprites
 
     def initialize(viewport)
       @sprites = [Sprite.new(viewport, {priority: 0, tile_id: 0})]
@@ -207,13 +232,25 @@ class Visuals
     end
 
     def real_x=(value)
+      value = value.round(6)
       @real_x = value
+      if value < 0
+        value = value.round
+      else
+        value = value.floor
+      end
       @sprites.each { |s| s.x = value.round if s }
     end
 
     def real_y=(value)
+      value = value.round(6)
       @real_y = value
-      @sprites.each { |s| s.y = value.round if s }
+      if value < 0
+        value = value.round
+      else
+        value = value.floor
+      end
+      @sprites.each { |s| s.y = value if s }
       @sprites.each { |s| s.z = s.y + s.hash[:priority] * 32 + 32 if s }
     end
 

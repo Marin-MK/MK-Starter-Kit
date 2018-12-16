@@ -66,11 +66,12 @@ end
 # Performs a memory and speed test.
 # @param abort_after [Boolean] whether or not to shut down after performing the test.
 def perform_test(abort_after = true)
-  t = Time.now
   smem = get_memory
+  st = Time.now
   yield
+  et = (Time.now - st).round(4)
   emem = get_memory
-  msgbox "Memory Before: #{smem}\nMemory After: #{emem}\nMemory Difference: #{emem > smem ? "+" : "-"}#{emem - smem}\n----------------------\n" +
-      "Time: #{(Time.now - t).round(4)} seconds"
+  msgbox "Memory Before: #{smem}\nMemory After: #{emem}\nMemory Difference: #{emem > smem ? "+" : emem < smem ? "-" : ""}#{emem - smem}\n----------------------\n" +
+      "Time: #{et} seconds"
   abort if abort_after
 end
