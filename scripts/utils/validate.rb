@@ -3,7 +3,7 @@
 def validate(hash)
   errors = hash.map do |key, value|
     if value.is_a?(Array)
-      "Expected #{key} to be one of [#{value.join(", ")}], but got #{key.class}." unless value.include?(key.class)
+      "Expected #{key} to be one of [#{value.join(", ")}], but got #{key.class}." unless value.any? { |c| key.is_a?(c) }
     elsif value.is_a?(Symbol)
       "Expected #{key} to respond_to #{value}." unless key.respond_to?(value)
     else
@@ -23,11 +23,11 @@ def validate_binding(input_binding, **hash)
     if input_binding.local_variable_defined?(lv_name)
       key = input_binding.local_variable_get(lv_name)
       if value.is_a?(Array)
-        "Expected `#{lv_name}` to be one of [#{value.join(", ")}], got #{key.class}." unless value.include?(key.class)
+        "Expected `#{lv_name}` to be one of [#{value.join(", ")}], but got #{key.class}." unless value.any? { |c| key.is_a?(c) }
       elsif value.is_a?(Symbol)
         "Expected `#{lv_name}` (#{key}) to respond_to #{value}." unless key.respond_to?(value)
       else
-        "Expected `#{lv_name}` to be a #{value}, got #{key.class}." unless key.is_a?(value)
+        "Expected `#{lv_name}` to be a #{value}, but got #{key.class}." unless key.is_a?(value)
       end
     else
       "Expected the `#{lv_name}` argument to be defined, did you miss-use validate_binding?"

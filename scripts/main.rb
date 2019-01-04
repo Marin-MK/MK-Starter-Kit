@@ -7,7 +7,8 @@ loop do
   if Input.trigger?(Input::CTRL)
     #t = $visuals.map_renderer.player_tile
     #msgbox [$game.player.x, $game.player.y].inspect + "\n" + [t.mapx, t.mapy].inspect
-    msgbox $visuals.maps[2].real_x
+    #msgbox $visuals.maps[2].real_x
+    abort
   end
   #unless $visuals.map_renderer.empty?
   #  str = ""

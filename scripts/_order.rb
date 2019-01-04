@@ -12,7 +12,6 @@ mkd/event.rb: Event
 mkd/eventcommands.rb: Event Commands
 mkd/eventconditions.rb: Event Conditions
 mkd/mapconnections.rb: Map Connections
-species.rb: Species
 visuals/map.rb: Map
 visuals/player.rb: Player
 visuals/event.rb: Event
@@ -29,5 +28,12 @@ tempdebug/map1.rb: Temp Debug Map 1
 tempdebug/map2.rb: Temp Debug Map 2
 tempdebug/connections.rb: Temp Debug Connections
 game/game.rb: Game
+pokemon_data/exp.rb: EXP
+pokemon_data/nature.rb: Nature
+pokemon_data/ability.rb: Ability
+pokemon_data/item.rb: Item
+pokemon_data/move.rb: Move
+pokemon_data/species.rb: Species
+pokemon/usable_move.rb: Usable Move
 pokemon/pokemon.rb: Pokemon
 main.rb: Main
