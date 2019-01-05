@@ -36,4 +36,6 @@ pokemon_data/move.rb: Move
 pokemon_data/species.rb: Species
 pokemon/usable_move.rb: Usable Move
 pokemon/pokemon.rb: Pokemon
+pokemon/pc.rb: PC
+pokemon/trainer.rb: Trainer
 main.rb: Main

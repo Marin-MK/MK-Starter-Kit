@@ -26,5 +26,3 @@ class Visuals
     @player.update
   end
 end
-
-$visuals = Visuals.new

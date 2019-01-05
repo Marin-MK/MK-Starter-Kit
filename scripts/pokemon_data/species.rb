@@ -4,10 +4,14 @@ class Stats
   alias atk= attack=
   alias def defense
   alias def= defense=
+  alias defence defense
+  alias defence= defense=
   alias specialattack spatk
   alias specialattack= spatk=
   alias specialdefense spdef
   alias specialdefense= spdef=
+  alias specialdefence spdef
+  alias specialdefence= spdef=
   alias spd speed
   alias spd= speed=
 end
@@ -88,11 +92,9 @@ class Species
         @friendship => Integer,
         @moveset => Moveset,
         @evolutions => Array
-    @stats.each { |s| validate s => Numeric }
-    @abilities.each { |a| validate a => Symbol }
-    @ev_yield.each { |e| validate e => Integer }
-    @egg_groups.each { |e| validate e => Symbol }
-    @evolutions.each { |e| validate e => Hash, e[:mode] => Symbol, e[:species] => [Symbol, Integer] }
+    validate_array @abilities => Symbol,
+        @egg_groups => Symbol,
+        @evolutions => Hash
     raise "Cannot have an ID of 0 or lower for new Species object" if @id < 1
   end
 

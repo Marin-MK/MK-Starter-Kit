@@ -114,6 +114,7 @@ class Pokemon
     return (((((2.0 * species.stats.defense + @ivs.defense + (@evs.defense / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
   end
   alias def defense
+  alias defence defense
 
   def spatk
     mod = 1.0
@@ -121,6 +122,7 @@ class Pokemon
     mod = 0.9 if self.nature.debuff == :spatk
     return (((((2.0 * species.stats.spatk + @ivs.spatk + (@evs.spatk / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
   end
+  alias specialattack spatk
 
   def spdef
     mod = 1.0
@@ -128,6 +130,8 @@ class Pokemon
     mod = 0.9 if self.nature.debuff == :spdef
     return (((((2.0 * species.stats.spdef + @ivs.spdef + (@evs.spdef / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
   end
+  alias specialdefense spdef
+  alias specialdefence spdef
 
   def speed
     mod = 1.0
@@ -137,5 +141,3 @@ class Pokemon
   end
   alias spd speed
 end
-
-p = Pokemon.new(:BULBASAUR, 100)

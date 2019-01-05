@@ -1,3 +1,13 @@
+def format_stack(stack)
+  stack.map! do |e|
+    full = e.gsub(Dir.pwd + "/scripts/", "")
+    file, line, *details = full.split(':')
+    next if file == 'ruby' || file == 'scripts/start.rb' || file == 'utils/validate.rb'
+    next "At " + file + " line " + line + ": " + details.join(':')
+  end
+  return stack.compact.join("\n")
+end
+
 # Ensures the given keys have the same data type as their value. Raises an error if invalid.
 # @param hash [Hash] the values to validate.
 def validate(hash)
@@ -11,8 +21,7 @@ def validate(hash)
     end
   end
   return if errors.none?
-  stack = caller.map { |e| "At " + e.gsub!(Dir.pwd + "/scripts/", "") }.join("\n")
-  raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ") + "\n\n" + stack
+  raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ") + "\n\n" + format_stack(caller)
 end
 
 # Ensures the given keys (variable names, not values like in #validate) have the same data as their value. Raises an error if invalid.
@@ -34,8 +43,7 @@ def validate_binding(input_binding, **hash)
     end
   end
   return if errors.none?
-  stack = caller.map { |e| "At " + e.gsub!(Dir.pwd + "/scripts/", "") }.join("\n")
-  raise ArgumentError, errors.compact.join(", ") + "\n\n" + stack
+  raise ArgumentError, errors.compact.join(", ") + "\n\n" + format_stack(caller)
 end
 
 # Ensures the direction is a symbol or a valid Fixnum. Raises an error if invalid.
@@ -50,8 +58,26 @@ def validate_direction(dir)
       raise "Invalid direction value #{dir.inspect}\n\n#{stack}"
     end
   elsif !dir.is_a?(Fixnum) || (dir.is_a?(Fixnum) && dir < 1 || dir > 9)
-    stack = caller.map { |e| "At " + e.gsub(Dir.pwd + "/scripts/", "") }.join("\n")
-    raise "Invalid direction value #{dir}\n\n#{stack}"
+    raise "Invalid direction value #{dir}\n\n#{format_stack(caller)}"
   end
   return dir
+end
+
+def validate_array(hash)
+  errors = hash.map do |key, value|
+    validate key => Array
+    suberrors = key.map do |e|
+      if value.is_a?(Array)
+        "Expected #{key} to contain elements of [#{value.join(", ")}], but got #{e.class}." unless value.any? { |c| e.is_a?(c) }
+      elsif value.is_a?(Symbol)
+        "Expected #{key} to contain elements that respond_to #{value}." unless e.respond_to?(value)
+      else
+        "Expected #{key} to contain elements of #{value}, but got #{e.class}." unless e.is_a?(value)
+      end
+    end
+    next if suberrors.none?
+    next suberrors.find { |e| !e.nil? }
+  end
+  return if errors.none?
+  raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ") + "\n\n" + format_stack(caller)
 end

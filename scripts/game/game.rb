@@ -73,11 +73,3 @@ class Game
     @player.update
   end
 end
-
-# Initializes the game
-$game = Game.new
-$game.switches = Game::Switches.new
-$game.variables = Game::Variables.new
-$game.player = Game::Player.new(2)
-$game.load_map(2)
-$visuals.map_renderer.create_tiles if $visuals.map_renderer.empty?
