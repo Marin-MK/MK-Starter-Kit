@@ -33,7 +33,7 @@ class Visuals
     end
 
     # Sets the direction of the sprite.
-    # @param value [Fixnum, Symbol] the direction value.
+    # @param value [Integer, Symbol] the direction value.
     def set_direction(value)
       value = validate_direction(value)
       @sprite.src_rect.y = @sprite.src_rect.height * (value / 2 - 1)
@@ -47,7 +47,7 @@ class Visuals
     end
 
     # Sets the direction of the sprite without showing a subtle turn animation.
-    # @param value [Fixnum, Symbol] the direction value.
+    # @param value [Integer, Symbol] the direction value.
     def set_direction_noanim(value)
       @sprite.src_rect.y = @sprite.src_rect.height * (value / 2 - 1)
     end
@@ -197,12 +197,12 @@ class Visuals
 
     # Moves the screen without animation.
     def move(xdiff, ydiff, xtilediff, ytilediff)
-      if xdiff != 0
+      if xtilediff != 0
         xdiff *= 32
         $visuals.maps.values.each { |m| m.real_x -= xtilediff * 32 }
         $visuals.map_renderer.move_x(xdiff)
       end
-      if ydiff != 0
+      if ytilediff != 0
         ydiff *= 32
         $visuals.maps.values.each { |m| m.real_y -= ytilediff * 32 }
         $visuals.map_renderer.move_y(ydiff)

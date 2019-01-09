@@ -7,19 +7,19 @@ class Game
     end
 
     # Fetches the value of the game variable with the specified ID.
-    # @param id [Fixnum] the ID of the variable to fetch.
+    # @param id [Integer] the ID of the variable to fetch.
     # @return [Object] the value of the variable.
     def get(id)
-      validate id => Fixnum
+      validate id => Integer
       return @values[id]
     end
     alias [] get
 
     # Sets the value of the game variable with the specified ID.
-    # @param id [Fixnum] the ID of the variable to set.
+    # @param id [Integer] the ID of the variable to set.
     # @param value [Object] the new value for the variable.
     def set(id, value)
-      validate id => Fixnum
+      validate id => Integer
       @values[id] = value
     end
     alias []= set

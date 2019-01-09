@@ -1,15 +1,15 @@
 class Game
   # The logical component of player objects.
   class Player
-    # @return [Fixnum] the ID of the map the player is currently on.
+    # @return [Integer] the ID of the map the player is currently on.
     attr_accessor :map_id
-    # @return [Fixnum] the x position of the player.
+    # @return [Integer] the x position of the player.
     attr_accessor :x
-    # @return [Fixnum] the y position of the player.
+    # @return [Integer] the y position of the player.
     attr_accessor :y
     # @return [String] the name of the graphic the player currently has applied.
     attr_accessor :graphic_name
-    # @return [Fixnum] the direction the player is currently facing in.
+    # @return [Integer] the direction the player is currently facing in.
     attr_accessor :direction
     # @return [Float] how fast the player can move.
     attr_accessor :speed
@@ -28,7 +28,7 @@ class Game
     end
 
     # Changes the player's direction with a turn animation.
-    # @param value [Fixnum, Symbol] the new direction.
+    # @param value [Integer, Symbol] the new direction.
     def direction=(value)
       value = validate_direction(value)
       $visuals.player.set_direction(value) unless @direction == value
@@ -36,7 +36,7 @@ class Game
     end
 
     # Changes the player's direction without a turn animation.
-    # @param value [Fixnum, Symbol] the new direction.
+    # @param value [Integer, Symbol] the new direction.
     def direction_noanim=(value)
       value = validate_direction(value)
       $visuals.player.set_direction_noanim(value) unless @direction == value
@@ -72,7 +72,7 @@ class Game
       if oldrun != @running # Walking to running or running to walking
         @graphic_name = @running ? "boy_run" : "boy"
       end
-      if !moving? && !@wasmoving && $game.map.event_interpreters.size == 0
+      if !moving? && !@wasmoving && !$game.any_events_running?
         case input = Input.dir4
         when 2
           move_down
@@ -153,6 +153,7 @@ class Game
       elsif @upcount.nil? || @upcount == 0 || @fake_move
         self.direction_noanim = :up if @direction != 8
         if $game.map.passable?(@x, @y - 1, :up, self)
+          p "move up"
           @y -= 1
           try_transfer
           $game.map.check_event_triggers(true)
@@ -164,7 +165,7 @@ class Game
       @upcount -= 1 if @upcount
     end
 
-    # Performs a map transfer on the player if its x or y position are out of the current map.
+    # Switches active map and position of the player if its x or y position are out of the current map.
     private def try_transfer
       xsmall = @x < 0
       ysmall = @y < 0
@@ -181,6 +182,36 @@ class Game
           $visuals.map_renderer.adjust_to_player(oldx, oldy)
         else
           raise "Player is off the active game map, but no map connection was specified for that map."
+        end
+      end
+    end
+
+    def transfer(x, y, map_id = nil)
+      xdiff = x - @x
+      ydiff = y - @y
+      if map_id == @map_id
+        # Transfer on the same map
+        @x = x
+        @y = y
+        $visuals.player.move(xdiff, ydiff, xdiff, ydiff)
+      else
+        # If the new map is already loaded into $game.maps, that means it's part of the connection
+        # system of the current map and therefore doesn't need to be re-initialized or anything.
+        if $game.maps[map_id]
+          oldgx = $game.map.connection[1] + @x
+          oldgy = $game.map.connection[2] + @y
+          $game.player.map_id = map_id
+          @x = x
+          @y = y
+          newgx = $game.map.connection[1] + x
+          newgy = $game.map.connection[2] + y
+          # xdiff & ydiff:
+          # Difference in logical location (e.g. from (x,y) = (1, 1) to (34, 2) would be (33, 1))
+          # newgx - oldgx & newgy - oldgy
+          # Actual tile distance between old and new position.
+          $visuals.player.move(xdiff, ydiff, newgx - oldgx, newgy - oldgy)
+        else
+          # Load new map with its own connection system.
         end
       end
     end

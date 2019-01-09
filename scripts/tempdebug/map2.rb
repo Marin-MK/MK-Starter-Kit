@@ -5,7 +5,7 @@ map.height = 7
 map.tilesets = [1, 1]
 map.tiles = [[]]
 for i in 0...map.width * map.height
-  map.tiles[0] << [0, i % 2 == 0 ? 6 : 1]
+  map.tiles[0] << [0, i % 2 == 0 ? 9 : 0]
 end
 
 e = MKD::Event.new(1)

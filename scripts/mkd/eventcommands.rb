@@ -87,29 +87,7 @@ module MKD
 
     class TransferCommand < BasicCommand
       def call
-        xdiff = @x - $game.player.x
-        ydiff = @y - $game.player.y
-        if @mapid == $game.player.map_id
-          # Transfer on the same map
-          $game.player.x = @x
-          $game.player.y = @y
-          $visuals.player.move(xdiff, ydiff)
-        else
-          # If it's loaded into $game.maps, that means it's part of the connection
-          # system of the current map (meaning it's been loaded already)
-          if $game.maps[@mapid]
-            oldgx = $game.map.connection[1] + $game.player.x
-            oldgy = $game.map.connection[2] + $game.player.y
-            $game.player.map_id = @mapid
-            $game.player.x = @x
-            $game.player.y = @y
-            newgx = $game.map.connection[1] + @x
-            newgy = $game.map.connection[2] + @y
-            $visuals.player.move(xdiff, ydiff, newgx - oldgx, newgy - oldgy)
-          else
-
-          end
-        end
+        $game.player.transfer(@x, @y, @mapid)
       end
     end
 

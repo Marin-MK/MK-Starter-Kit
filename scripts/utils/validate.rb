@@ -46,9 +46,9 @@ def validate_binding(input_binding, **hash)
   raise ArgumentError, errors.compact.join(", ") + "\n\n" + format_stack(caller)
 end
 
-# Ensures the direction is a symbol or a valid Fixnum. Raises an error if invalid.
-# @param dir [Symbol, Fixnum] the direction to validate.
-# @return [Fixnum] the numeric direction value.
+# Ensures the direction is a symbol or a valid Integer. Raises an error if invalid.
+# @param dir [Symbol, Integer] the direction to validate.
+# @return [Integer] the numeric direction value.
 def validate_direction(dir)
   if dir.is_a?(Symbol)
     if [:down,:left,:right,:up].include?(dir)
@@ -57,7 +57,7 @@ def validate_direction(dir)
       stack = caller.join("\n")
       raise "Invalid direction value #{dir.inspect}\n\n#{stack}"
     end
-  elsif !dir.is_a?(Fixnum) || (dir.is_a?(Fixnum) && dir < 1 || dir > 9)
+  elsif !dir.is_a?(Integer) || (dir.is_a?(Integer) && dir < 1 || dir > 9)
     raise "Invalid direction value #{dir}\n\n#{format_stack(caller)}"
   end
   return dir

@@ -15,12 +15,12 @@ unless defined?(msgbox) == "method"
 end
 
 # Returns the coordinates of the facing tile based on x,y,direction.
-# @param x [Fixnum] the current X value.
-# @param y [Fixnum] the current Y value.
-# @param direction [Fixnum, Symbol] the facing direction.
+# @param x [Integer] the current X value.
+# @param y [Integer] the current Y value.
+# @param direction [Integer, Symbol] the facing direction.
 # @return [Array] [x,y] the coordinates of the facing tile based on x, y, direction.
 def facing_coordinates(x, y, direction)
-	validate x => Fixnum, y => Fixnum
+	validate x => Integer, y => Integer
 	direction = validate_direction(direction)
 	newx = x
   newy = y
@@ -42,7 +42,7 @@ class Sprite
   end
 end
 
-# @return [Fixnum] the amount of memory the game is currently using.
+# @return [Integer] the amount of memory the game is currently using.
 def get_memory
   ret = `pmap #{Process.pid} | tail -1`.reverse
   return ret[2...ret.index(' ')].reverse.to_i

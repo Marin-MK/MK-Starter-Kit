@@ -18,7 +18,7 @@ module MKD
 			@tags = []
 		end
 
-		# @param id [Fixnum, NilClass] the ID of the tileset to fetch.
+		# @param id [Integer, NilClass] the ID of the tileset to fetch.
 		# @return [Tileset, Array] the tileset with the specified ID or the list of tilesets.
 		def self.fetch(id = nil)
 			if Cache

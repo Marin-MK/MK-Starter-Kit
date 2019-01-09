@@ -5,7 +5,7 @@ class Game
   attr_accessor :switches
   # @return [Game::Variables] the global game variables.
   attr_accessor :variables
-  # @return [Hash<Fixnum, Game::Map>] the global collection of game maps.
+  # @return [Hash<Integer, Game::Map>] the global collection of game maps.
   attr_accessor :maps
 
   # Creates a new Game object.
@@ -65,6 +65,11 @@ class Game
       end
     end
     return nil
+  end
+
+  # @return [Boolean] whether there are any active events on any map.
+  def any_events_running?
+    return @maps.values.any? { |m| m.event_running? }
   end
 
   # Updates the maps and player.

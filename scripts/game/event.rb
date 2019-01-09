@@ -1,13 +1,13 @@
 class Game
   # The logical component of event objects.
   class Event
-    # @return [Fixnum] the ID of the map this event is on.
+    # @return [Integer] the ID of the map this event is on.
     attr_accessor :map_id
-    # @return [Fixnum] the ID of this event.
+    # @return [Integer] the ID of this event.
     attr_accessor :id
-    # @return [Fixnum] the x position of this event.
+    # @return [Integer] the x position of this event.
     attr_accessor :x
-    # @return [Fixnum] the y position of this event.
+    # @return [Integer] the y position of this event.
     attr_accessor :y
     # @return [Array<Game::Event::Page>] an unchangeable list of possible active event pages.
     attr_accessor :pages
@@ -19,7 +19,7 @@ class Game
     attr_accessor :moveroute
     # @return [Float] how fast the event moves.
     attr_accessor :speed
-    # @return [Fixnum] which direction the event is currently facing.
+    # @return [Integer] which direction the event is currently facing.
     attr_accessor :direction
 
     # Creates a new Event object.
@@ -107,7 +107,7 @@ class Game
       end
     end
 
-    # @param page_index [Fixnum] the index of the page to test the conditions of.
+    # @param page_index [Integer] the index of the page to test the conditions of.
     # @return [Boolean] whether all the conditions on the page are true.
     def all_conditions_true_on_page(page_index)
       return !@pages[page_index].conditions.any? do |cond, params|

@@ -9,9 +9,9 @@ class Visuals
 
     # @return [Sprite] the actual sprite object.
     attr_accessor :sprite
-    # @return [Fixnum] the x position of this event relative to the map.
+    # @return [Integer] the x position of this event relative to the map.
     attr_accessor :relative_x
-    # @return [Fixnum] the y position of this event relative to the map.
+    # @return [Integer] the y position of this event relative to the map.
     attr_accessor :relative_y
     # @return [Boolean] whether the move route is ready for the next move command.
     attr_accessor :moveroute_ready

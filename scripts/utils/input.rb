@@ -1,5 +1,5 @@
 class << Input
-  # @return [Fixnum] one of the 8 directions based on the arrow keys.
+  # @return [Integer] one of the 8 directions based on the arrow keys.
   def dir8
     l = Input.press?(Input::LEFT)
     r = Input.press?(Input::RIGHT)
@@ -18,7 +18,7 @@ class << Input
     return 0
   end
 
-  # @return [Fixnum] one of the 4 directions based on the arrow keys.
+  # @return [Integer] one of the 4 directions based on the arrow keys.
   def dir4
     l = Input.press?(Input::LEFT)
     r = Input.press?(Input::RIGHT)

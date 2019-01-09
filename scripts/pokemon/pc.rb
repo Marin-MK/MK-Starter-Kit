@@ -9,7 +9,7 @@ class Trainer
     def initialize
       @boxes = []
       @current_box = 0
-      INITIAL_BOXES.times { |i| @boxes << Box.new("Box #{i + 1}") }
+      INITIAL_BOXES.times { |i| @boxes << Box.new("BOX#{i + 1}") }
     end
 
     def [](key)
@@ -24,7 +24,22 @@ class Trainer
       if self.full?
         return false
       elsif @boxes[@current_box].full?
-        # Not sure if it tests starting at the next or the first - will try later.
+        idx = @current_box + 1
+        loop do
+          if @boxes[idx].full?
+            idx += 1
+            idx = 0 if idx >= @boxes.size
+            if idx == @current_box
+              # Back to starting box, means PC is full
+              # Should not be possible to get to this point
+              # because of the self.full? check above
+              return false
+            end
+          else
+            @boxes[idx].add_pokemon(poke)
+            return true
+          end
+        end
       else
         return @boxes[@current_box].add_pokemon(poke)
       end

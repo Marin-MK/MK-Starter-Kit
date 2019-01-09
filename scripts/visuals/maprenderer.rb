@@ -177,8 +177,8 @@ class Visuals
 
     # Draws all tiles in a certain position to a sprite.
     # @param sprite [TileSprite] the tile sprite to draw to.
-    # @param mapx [Fixnum] the x position of the tile on the map.
-    # @param mapy [Fixnum] the y position of the tile on the map.
+    # @param mapx [Integer] the x position of the tile on the map.
+    # @param mapy [Integer] the y position of the tile on the map.
     def draw_tile(sprite, mapx, mapy)
       $temp_bitmaps ||= {}
       # Reset the sprite to a blank tilesprite

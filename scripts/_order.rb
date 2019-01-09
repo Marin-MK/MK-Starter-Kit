@@ -24,6 +24,11 @@ game/switches.rb: Game Switches
 game/variables.rb: Game Variables
 game/interpreter.rb: Interpreter
 tempdebug/tileset1.rb: Temp Debug Tileset 1
+tempdebug/tileset2.rb: Temp Debug Tileset 2
+tempdebug/tileset3.rb: Temp Debug Tileset 3
+tempdebug/tileset4.rb: Temp Debug Tileset 4
+tempdebug/tileset5.rb: Temp Debug Tileset 5
+tempdebug/tileset6.rb: Temp Debug Tileset 6
 tempdebug/map1.rb: Temp Debug Map 1
 tempdebug/map2.rb: Temp Debug Map 2
 tempdebug/connections.rb: Temp Debug Connections

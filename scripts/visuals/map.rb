@@ -9,11 +9,11 @@ class Visuals
 
     # @return [Hash<Visuals::Event>] the hash of event visuals.
     attr_accessor :events
-    # @return [Fixnum] the x position of the top-left corner of the map.
+    # @return [Integer] the x position of the top-left corner of the map.
     attr_reader :real_x
-    # @return [Fixnum] the y position of the top-left corner of the map.
+    # @return [Integer] the y position of the top-left corner of the map.
     attr_reader :real_y
-    # @return [Fixnum] the ID of this map.
+    # @return [Integer] the ID of this map.
     attr_reader :id
 
     def real_x=(value)

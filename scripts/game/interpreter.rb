@@ -3,7 +3,7 @@ class Game
   class Interpreter
     # @return [Game::Event] the event related to the interpreter.
     attr_accessor :event
-    # @return [Fixnum] the execution index of the command list.
+    # @return [Integer] the execution index of the command list.
     attr_accessor :index
     # @return [Boolean] whether or not the interpreter has to wait for any moveroutes to finish.
     attr_accessor :wait_for_move_completion
@@ -113,7 +113,7 @@ class Game
     end
 
     # Runs a command.
-    # @param index [Fixnum] the index of the command in the command list.
+    # @param index [Integer] the index of the command in the command list.
     def execute_command(index)
       command = @commands[index][1]
       params = @commands[index][2]
@@ -124,7 +124,7 @@ class Game
       end
     end
 
-    # @return [Fixnum] whether the interpreter is done running commands.
+    # @return [Integer] whether the interpreter is done running commands.
     def done?
       return @done
     end

@@ -1,13 +1,13 @@
 class Game
   # The logical component of map objects.
   class Map
-    # @return [Fixnum] the ID of this map.
+    # @return [Integer] the ID of this map.
     attr_accessor :id
     # @return [MKD::Map] the unchangeable data of the map.
     #attr_accessor :data
-    # @return [Fixnum] the width of the map in tiles.
+    # @return [Integer] the width of the map in tiles.
     attr_accessor :width
-    # @return [Fixnum] the height of the map in tiles.
+    # @return [Integer] the height of the map in tiles.
     attr_accessor :height
     # @return [Hash<Game::Event>] the hash of events on this map stored by ID.
     attr_accessor :events
@@ -15,9 +15,9 @@ class Game
     attr_accessor :event_interpreters
     # @return [Array<Interpreter>] list of active event interpreters for parallel processes.
     attr_accessor :parallel_interpreters
-    # @return [Fixnum] how long to wait before updating the active event interpreters again.
+    # @return [Integer] how long to wait before updating the active event interpreters again.
     attr_accessor :wait_count
-    # @return [Array<Fixnum>] map connection data (idx, x, y).
+    # @return [Array<Integer>] map connection data (idx, x, y).
     attr_accessor :connection
 
     # Creates a new Map object.
@@ -47,13 +47,13 @@ class Game
     end
 
     # Tests if the specified tile is passable.
-    # @param x [Fixnum] the x position to test.
-    # @param y [Fixnum] the y position to test.
-    # @param direction [Fixnum, Symbol, NilClass] the direction at which the event would step on the tile.
+    # @param x [Integer] the x position to test.
+    # @param y [Integer] the y position to test.
+    # @param direction [Integer, Symbol, NilClass] the direction at which the event would step on the tile.
     # @param checking_event [Game::Event, NilClass] the event object that is performing the test.
     # @return [Boolean] whether the tile is passable.
     def passable?(x, y, direction = nil, checking_event = nil)
-      validate x => Fixnum, y => Fixnum
+      validate x => Integer, y => Integer
       if x < 0 || x >= @width || y < 0 || y >= @height
         if @connection
           map_id, mapx, mapy = $game.get_map_from_connection(self, x, y)
@@ -63,21 +63,23 @@ class Game
         end
         return false
       end
-      validate direction => [Fixnum, Symbol, NilClass]
+      validate direction => [Integer, Symbol, NilClass]
       direction = validate_direction(direction)
+      # Invert direction: if player is facing left, they're coming from the right, etc.
+      direction = 10 - direction if direction.is_a?(Integer)
 
       return false if checking_event != $game.player && x == $game.player.x && y == $game.player.y
       event = @events.values.find { |e| e.x == x && e.y == y }
       return false if event && event.current_page && !event.settings.passable
-      unless @passabilities[x + y * @height].nil?
-        val = @passabilities[x + y * @height]
+      unless @passabilities[x + y * @width].nil?
+        val = @passabilities[x + y * @width]
         return false if val == 0
         return true if val == 15 || !direction
         dirbit = [1, 2, 4, 8][(direction / 2) - 1]
         return (val & dirbit) == dirbit
       end
       for layer in 0...@tiles.size
-        tile_type, tile_id = @tiles[layer][x + y * @height]
+        tile_type, tile_id = @tiles[layer][x + y * @width]
         next if tile_type.nil?
         tileset_id = @tilesets[tile_type]
         val = @tileset_passabilities[tileset_id][tile_id % 8 + (tile_id / 8).floor * 8]
@@ -106,11 +108,16 @@ class Game
       end
     end
 
+    # @return [Boolean] whether or not there's currently an event running.
+    def event_running?
+      return @event_interpreters[0] && !@event_interpreters[0].done?
+    end
+
     # Called when the player presses A on a tile. Triggers events if conditions are met.
-    # @param x [Fixnum] the x position of the tile to interact with.
-    # @param y [Fixnum] the y position of the tile to interact with.
+    # @param x [Integer] the x position of the tile to interact with.
+    # @param y [Integer] the y position of the tile to interact with.
     def tile_interaction(x, y)
-      validate x => Fixnum, y => Fixnum
+      validate x => Integer, y => Integer
       return if x < 0 || x >= @width || y < 0 || y >= @height
       if e = @events.values.find { |e| e.x == x && e.y == y && e.current_page && e.current_page.has_trigger?(:action) }
         e.trigger(:action)

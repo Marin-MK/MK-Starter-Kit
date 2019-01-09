@@ -1,23 +1,97 @@
 # Creates a new map (normally loaded from a file)
 map = MKD::Map.new(1)
 map.name = "Some Town"
-map.width = 35
+map.width = 15
 map.height = 25
-map.tilesets = [1, 1]
+map.tilesets = [1, 2, 3, 4, 5, 6]
 map.tiles = [
   # Fills exactly the whole map with [0, 1]
-  [[0, 1]] * map.width * map.height
+  [[0, 0]] * map.width * map.height
 ]
 
-map.tiles[0][0] = [0, 6]
-#map.tiles[0][map.width * 4 + 6] = [0, 426]
-#map.tiles[0][map.width * 4 + 7] = [0, 427]
-#map.tiles[0][map.width * 5 + 6] = [0, 432]
-#map.tiles[0][map.width * 5 + 7] = [0, 433]
-#map.tiles[1] = []
-#map.tiles[1][map.width * 3 + 6] = [0, 420]
-#map.tiles[1][map.width * 3 + 7] = [0, 421]
+# Top-left grass
+map.tiles[0][0] = [0, 9]
 
+# Path
+map.tiles[0][map.width * 2 + 4] = [1, 0]
+map.tiles[0][map.width * 2 + 5] = [1, 1]
+map.tiles[0][map.width * 2 + 6] = [1, 2]
+map.tiles[0][map.width * 3 + 3] = [1, 0]
+map.tiles[0][map.width * 3 + 4] = [1, 33]
+map.tiles[0][map.width * 3 + 5] = [1, 24]
+map.tiles[0][map.width * 3 + 6] = [1, 18]
+map.tiles[0][map.width * 4 + 3] = [1, 8]
+map.tiles[0][map.width * 4 + 4] = [1, 24]
+map.tiles[0][map.width * 4 + 5] = [1, 18]
+map.tiles[0][map.width * 5 + 3] = [1, 16]
+map.tiles[0][map.width * 5 + 4] = [1, 18]
+
+# Tree
+map.tiles[1] = []
+map.tiles[1][map.width * 5 + 11] = [2, 68]
+map.tiles[1][map.width * 6 + 10] = [2, 75]
+map.tiles[1][map.width * 6 + 11] = [2, 76]
+map.tiles[1][map.width * 6 + 12] = [2, 77]
+map.tiles[1][map.width * 7 + 10] = [2, 83]
+map.tiles[1][map.width * 7 + 11] = [2, 84]
+map.tiles[1][map.width * 7 + 12] = [2, 85]
+map.tiles[1][map.width * 8 + 10] = [2, 91]
+map.tiles[1][map.width * 8 + 11] = [2, 92]
+map.tiles[1][map.width * 8 + 12] = [2, 93]
+
+# Boat
+map.tiles[1][map.width * 6 + 3] = [3, 122]
+map.tiles[1][map.width * 6 + 4] = [3, 123]
+map.tiles[1][map.width * 6 + 5] = [3, 124]
+map.tiles[1][map.width * 6 + 6] = [3, 125]
+map.tiles[1][map.width * 6 + 7] = [3, 126]
+map.tiles[1][map.width * 6 + 8] = [3, 127]
+map.tiles[1][map.width * 7 + 1] = [3, 128]
+map.tiles[1][map.width * 7 + 2] = [3, 129]
+map.tiles[1][map.width * 7 + 3] = [3, 130]
+map.tiles[1][map.width * 7 + 4] = [3, 131]
+map.tiles[1][map.width * 7 + 5] = [3, 132]
+map.tiles[1][map.width * 7 + 6] = [3, 133]
+map.tiles[1][map.width * 7 + 7] = [3, 134]
+map.tiles[1][map.width * 7 + 8] = [3, 135]
+map.tiles[1][map.width * 8 + 1] = [3, 136]
+map.tiles[1][map.width * 8 + 2] = [3, 137]
+map.tiles[1][map.width * 8 + 3] = [3, 138]
+map.tiles[1][map.width * 8 + 4] = [3, 139]
+map.tiles[1][map.width * 8 + 5] = [3, 140]
+map.tiles[1][map.width * 8 + 6] = [3, 141]
+map.tiles[1][map.width * 8 + 7] = [3, 142]
+map.tiles[1][map.width * 8 + 8] = [3, 143]
+map.tiles[1][map.width * 9 + 1] = [3, 144]
+map.tiles[1][map.width * 9 + 2] = [3, 145]
+map.tiles[1][map.width * 9 + 3] = [3, 146]
+map.tiles[1][map.width * 9 + 4] = [3, 147]
+map.tiles[1][map.width * 9 + 5] = [3, 148]
+map.tiles[1][map.width * 9 + 6] = [3, 149]
+map.tiles[1][map.width * 9 + 7] = [3, 150]
+map.tiles[1][map.width * 9 + 8] = [3, 151]
+
+# Rock
+map.tiles[1][map.width * 1 + 8] = [4, 57]
+map.tiles[1][map.width * 1 + 9] = [4, 58]
+map.tiles[1][map.width * 2 + 8] = [4, 65]
+map.tiles[1][map.width * 2 + 9] = [4, 66]
+map.tiles[1][map.width * 3 + 8] = [4, 73]
+map.tiles[1][map.width * 3 + 9] = [4, 74]
+map.tiles[1][map.width * 4 + 7] = [4, 80]
+map.tiles[1][map.width * 4 + 8] = [4, 81]
+map.tiles[1][map.width * 4 + 9] = [4, 82]
+map.tiles[1][map.width * 4 + 10] = [4, 83]
+
+# Rails
+map.tiles[1][map.width * 1 + 12] = [5, 88]
+map.tiles[1][map.width * 1 + 13] = [5, 89]
+map.tiles[1][map.width * 1 + 14] = [5, 90]
+map.tiles[1][map.width * 2 + 12] = [5, 96]
+map.tiles[1][map.width * 2 + 14] = [5, 98]
+map.tiles[1][map.width * 3 + 12] = [5, 104]
+map.tiles[1][map.width * 3 + 13] = [5, 105]
+map.tiles[1][map.width * 3 + 14] = [5, 106]
 
 def create_event(map, id, x, y, dir)
   event = MKD::Event.new
@@ -99,8 +173,7 @@ def create_event(map, id, x, y, dir)
   map.events[id] = event
 end
 
-create_event(map, 1, 3, 4, 2)
-map.tiles[0][35] = [1, 6]
+create_event(map, 1, 7, 1, 2)
 
 # Overwrites tileset passability data for non-nil entries.
 map.passabilities = [
