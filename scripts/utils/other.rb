@@ -14,6 +14,10 @@ unless defined?(msgbox) == "method"
 	end
 end
 
+def warn(*args)
+  p *args
+end
+
 # Returns the coordinates of the facing tile based on x,y,direction.
 # @param x [Integer] the current X value.
 # @param y [Integer] the current Y value.
@@ -69,6 +73,19 @@ end
       return v if length < 1
       return v if v.size <= length
       return v[0...length] + "..."
+    end
+  end
+end
+
+class Struct
+  class << self
+    alias oldnew new
+    def new(*args)
+      r = oldnew(*args)
+      r.send(:define_method, :keys) { next args }
+      r.send(:define_method, :get) { |key| method(key).call }
+      r.send(:define_method, :set) { |key, value| method(key.to_s + '=').call(value) }
+      return r
     end
   end
 end

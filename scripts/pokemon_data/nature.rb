@@ -1,12 +1,18 @@
 class Nature
   Cache = {}
 
+  # @return [String] the internal name of the nature.
   attr_reader :intname
+  # @return [Integer] the ID of the nature.
   attr_reader :id
+  # @return [String] the name of the nature.
   attr_reader :name
+  # @return [Symbol, NilClass] the stat this nature increases by x1.1.
   attr_reader :buff
+  # @return [Symbol, NilClass] the stat this nature decreases by x0.9.
   attr_reader :debuff
 
+  # Creates a new Nature object.
   def initialize(&block)
     validate block => Proc
     @id = 0
@@ -17,6 +23,7 @@ class Nature
     self.class.const_set(@intname, self)
   end
 
+  # Ensures this nature contains valid data.
   def validate_nature
     validate @intname => Symbol,
         @id => Integer,
@@ -26,6 +33,8 @@ class Nature
     raise "Cannot have an ID of 0 or lower for new Nature object" if @id < 1
   end
 
+  # @param nature [Symbol, Integer] the nature to look up.
+  # @return [Nature]
   def self.get(nature)
     validate nature => [Symbol, Integer]
     unless Nature.exists?(nature)
@@ -34,18 +43,23 @@ class Nature
     return Nature.try_get(nature)
   end
 
+  # @param nature [Symbol, Integer] the nature to look up.
+  # @return [Nature, NilClass]
   def self.try_get(nature)
     validate nature => [Symbol, Integer]
     return Cache[nature] if nature.is_a?(Symbol)
     return Cache.values.find { |n| n.id == nature }
   end
 
+  # @param nature [Symbol, Integer] the nature to look up.
+  # @return [Boolean] whether or not the nature exists.
   def self.exists?(nature)
     validate nature => [Symbol, Integer]
     return Cache.has_key?(nature) if nature.is_a?(Symbol)
     return Cache.values.any? { |n| n.id == nature }
   end
 
+  # @return [Nature] a randomly chosen nature's internal name.
   def self.random
     return Cache.keys.sample
   end

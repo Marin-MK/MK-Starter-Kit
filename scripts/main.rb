@@ -17,6 +17,9 @@ loop do
   Input.update
   $game.update
   $visuals.update
+  if Input.trigger?(Input::SHIFT)
+    $visuals.map_renderer.toggle_grid
+  end
   if Input.trigger?(Input::CTRL)
     #t = $visuals.map_renderer.player_tile
     #msgbox [$game.player.x, $game.player.y].inspect + "\n" + [t.mapx, t.mapy].inspect

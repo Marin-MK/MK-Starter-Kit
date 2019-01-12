@@ -1,14 +1,23 @@
 class Trainer
+  # The trainer's PC. Stores items and Pokemon.
   class PC
+    # @return [Integer] How many boxes a new trainer starts with.
     INITIAL_BOXES = 14
+    # @return [Integer] How many Pokemon a Box in the PC can store.
     BOX_SIZE = 30
 
+    # @return [Array<Box>] the array of boxes that store Pokemon.
     attr_accessor :boxes
+    # @return [Integer] the index of the current box.
     attr_accessor :current_box
+    # @return [Array<Hash>] the list of items that are currently in the PC.
+    attr_accessor :items
 
+    # Creates a new PC object.
     def initialize
       @boxes = []
       @current_box = 0
+      @items = [{item: :POTION, count: 1}]
       INITIAL_BOXES.times { |i| @boxes << Box.new("BOX#{i + 1}") }
     end
 
@@ -16,10 +25,14 @@ class Trainer
       return @boxes[key]
     end
 
+    # @return [Boolean] whether or not the PC is full.
     def full?
       return !@boxes.any? { |b| !b.full? }
     end
 
+    # Adds the Pokemon to the current box, or the next box if it's full.
+    # @param poke [Pokemon] the Pokemon to add to the storage system.
+    # @return [Boolean] whether or not the Pokemon could be added.
     def add_pokemon(poke)
       if self.full?
         return false
@@ -50,36 +63,44 @@ end
 class Trainer
   class PC
     class Box
-      attr_accessor :pokemon
+      # @return [Array<Pokemon, NilClass>] the array of Pokemon in this box.
+      attr_accessor :slots
+      # @return [String] the name of this box.
       attr_accessor :name
+      # @return [Integer] the ID of the wallpaper this box has.
       attr_accessor :wallpaper
 
       def initialize(name)
-        @pokemon = [nil] * BOX_SIZE
+        @slots = [nil] * BOX_SIZE
         @name = name
-        @wallpaper = nil
+        @wallpaper = 0
       end
 
       def [](key)
-        return @pokemon[key]
+        return @slots[key]
       end
 
       def []=(key, value)
-        @pokemon[key] = value
+        @slots[key] = value
       end
 
+      # @return [Boolean] whether or not this box is full.
       def full?
-        return @pokemon.count { |e| !e.nil? } == BOX_SIZE
+        return @slots.count { |e| !e.nil? } == BOX_SIZE
       end
 
+      # Adds the Pokemon to this box if possible.
+      # @param poke [Pokemon] the Pokemon to add.
+      # @param index [NilClass, Integer] sets or overwrites the Pokemon in the given slot index.
+      # @return [Boolean] whether or not the Pokemon could be added.
       def add_pokemon(poke, index = nil)
         if index
-          @pokemon[index] = poke
+          @slots[index] = poke
           return true
         else
-          for i in 0...@pokemon.size
-            unless @pokemon[i]
-              @pokemon[i] = poke
+          for i in 0...@slots.size
+            unless @slots[i]
+              @slots[i] = poke
               return true
             end
           end

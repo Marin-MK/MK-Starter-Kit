@@ -12,7 +12,16 @@ class Visuals
     YSIZE = TILECOUNTY + 2
     TOTALSIZE = XSIZE * YSIZE
 
+    GRIDBITMAP = Bitmap.new(32, 32)
+    for x in 0...32
+      for y in 0...32
+        next unless x % 32 == 0 || y % 32 == 0
+        GRIDBITMAP.set_pixel(x, y, Color.new(0, 0, 0))
+      end
+    end
+
     attr_accessor :array
+    attr_reader :show_grid
 
     def initialize(array = [])
       @array = array
@@ -153,9 +162,10 @@ class Visuals
     # @return [TileSprite] the tile the player would be standing on if the player is centered.
     # If the player is not centered to the screen, it will still return the center tile.
     def player_tile
-      return $visuals.map_renderer[XSIZE * (YSIZE / 2) + (XSIZE / 2.0).floor]
+      return @array[XSIZE * (YSIZE / 2) + (XSIZE / 2.0).floor]
     end
 
+    # Adjusts the map renderer to center on the player.
     def adjust_to_player(x, y)
       xsmall = x < 0
       ysmall = y < 0
@@ -175,6 +185,39 @@ class Visuals
       $visuals.player.skip_movement
     end
 
+    def toggle_grid
+      if @show_grid
+        self.show_grid = false
+      else
+        self.show_grid = true
+      end
+    end
+
+    # Changes what the show_grid variable is set to. If true, a grid will be displayed on the map on layer 1000.
+    # If false, it will delete any remaining grid tiles and turn the variable off again.
+    def show_grid=(value)
+      old = @show_grid
+      @show_grid = value
+      if old != @show_grid
+        @array.each do |tile|
+          if @show_grid
+            if !tile.sprites[999]
+              tile.sprites[999] = Sprite.new($visuals.viewport, {special: true})
+              tile.sprites[999].bitmap = GRIDBITMAP
+              tile.sprites[999].x = tile.sprites[0].x
+              tile.sprites[999].y = tile.sprites[0].y
+              tile.sprites[999].z = 999
+            end
+          else
+            if tile.sprites[999]
+              tile.sprites[999].dispose
+              tile.sprites.delete(999)
+            end
+          end
+        end
+      end
+    end
+
     # Draws all tiles in a certain position to a sprite.
     # @param sprite [TileSprite] the tile sprite to draw to.
     # @param mapx [Integer] the x position of the tile on the map.
@@ -190,9 +233,6 @@ class Visuals
         id = $game.map.id
       elsif $game.map.connection
         id, mapx, mapy = $game.get_map_from_connection($game.map, mapx, mapy)
-        #if Input.press?(Input::A)
-        #  msgbox "MapX: #{sprite.mapx}\nMapY: #{sprite.mapy}\nMap ID: #{id}\nX: #{mapx}\nY: #{mapy}"
-        #end
       end
       if id
         for layer in 0...$game.maps[id].data.tiles.size
@@ -210,76 +250,6 @@ class Visuals
           sprite.set(layer, bmp, tile_id, priority)
         end
       end
-    end
-  end
-
-  # One sprite for one (x,y) position. Holds multiple sprites for multiple layers.
-  class TileSprite
-    attr_reader :real_x
-    attr_reader :real_y
-    attr_accessor :mapx
-    attr_accessor :mapy
-    attr_accessor :sprites
-
-    def initialize(viewport)
-      @sprites = [Sprite.new(viewport, {priority: 0, tile_id: 0})]
-      @viewport = viewport
-      @real_x = 0
-      @real_y = 0
-      @priority = 0
-      @mapx = 0
-      @mapy = 0
-    end
-
-    def real_x=(value)
-      value = value.round(6)
-      @real_x = value
-      if value < 0
-        value = value.round
-      else
-        value = value.floor
-      end
-      @sprites.each { |s| s.x = value.round if s }
-    end
-
-    def real_y=(value)
-      value = value.round(6)
-      @real_y = value
-      if value < 0
-        value = value.round
-      else
-        value = value.floor
-      end
-      @sprites.each { |s| s.y = value if s }
-      @sprites.each { |s| s.z = s.y + s.hash[:priority] * 32 + 32 if s }
-    end
-
-    def priority=(value)
-      @sprites.each { |s| s.z = s.y + s.hash[:priority] * 32 + 32 if s }
-    end
-
-    def clear
-      @sprites.each do |s|
-        if s
-          s.bitmap = nil
-          s.z = 0
-        end
-      end
-    end
-
-    def set(layer, bitmap, tile_id, priority = 0)
-      if !@sprites[layer]
-        @sprites[layer] = Sprite.new(@viewport)
-        @sprites[layer].x = @real_x
-        @sprites[layer].y = @real_y
-      end
-      @sprites[layer].bitmap = bitmap
-      @sprites[layer].src_rect.width = 32
-      @sprites[layer].src_rect.height = 32
-      @sprites[layer].src_rect.x = tile_id % 8 * 32
-      @sprites[layer].src_rect.y = (tile_id / 8).floor * 32
-      @sprites[layer].z = @sprites[layer].y + priority * 32 + 32
-      @sprites[layer].hash = {priority: priority, tile_id: tile_id}
     end
   end
 end

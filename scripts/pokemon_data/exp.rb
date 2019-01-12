@@ -107,11 +107,17 @@ module EXP
   ]
 
   module_function
+  # @param rate [Symbol, String] the leveling rate.
+  # @param level [Integer] the level to determine the EXP of.
+  # @return [Integer] the minimum EXP requirement for this level.
   def get_exp(rate, level)
     validate rate => [Symbol, String], level => Integer
     return const_get(rate)[level]
   end
 
+  # @param rate [Symbol, String] the leveling rate.
+  # @param exp [Integer] the EXP to determine the level with.
+  # @return [Integer] the highest level you are with this EXP.
   def get_level(rate, exp)
     validate rate => [Symbol, String], exp => Integer
     a = const_get(rate)

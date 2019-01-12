@@ -153,7 +153,6 @@ class Game
       elsif @upcount.nil? || @upcount == 0 || @fake_move
         self.direction_noanim = :up if @direction != 8
         if $game.map.passable?(@x, @y - 1, :up, self)
-          p "move up"
           @y -= 1
           try_transfer
           $game.map.check_event_triggers(true)

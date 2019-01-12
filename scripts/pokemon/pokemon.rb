@@ -1,9 +1,16 @@
 class Pokemon
+  # @return [Integer] the amount of EXP this Pokemon has.
   attr_reader :exp
+  # @return [Stats] the IV statistics of this Pokemon.
   attr_reader :ivs
+  # @return [Stats] the EV statistics of this Pokemon.
   attr_reader :evs
+  # @return [Array<UsableMove>] the moves this Pokemon currently knows.
   attr_reader :moves
 
+  # Creates a new Pokemon object.
+  # @param species [Symbol, Integer] the species of the Pokemon.
+  # @param level [Integer] the level of the Pokemon.
   def initialize(species, level)
     validate species => [Symbol, Integer], level => Integer
     # Ensure the species exists and set some initial values
@@ -31,10 +38,12 @@ class Pokemon
     set_initial_moves
   end
 
+  # @return [Species] the species object associated with this Pokemon.
   def species
     return Species.get(@species_intname)
   end
 
+  # Sets the initial moves for this Pokemon based on its current level.
   def set_initial_moves
     moveset = species.moveset.level
     keys = moveset.keys.select { |k| k <= level }
@@ -49,6 +58,7 @@ class Pokemon
     end
   end
 
+  # @return [Ability] the current ability of this Pokemon.
   def ability
     return Ability.get(@ability) if @ability
     if @ability_index == 1 && species.abilities.size == 1
@@ -58,6 +68,10 @@ class Pokemon
     end
   end
 
+  # Changes the ability of this Pokemon.
+  # Overwrites the natural ability.
+  # Set to nil to remove the override.
+  # @param value [Symbol] the new ability to give this Pokemon.
   def ability=(value)
     validate value => Symbol
     if Ability.exists?(value)
@@ -67,24 +81,32 @@ class Pokemon
     end
   end
 
+  # Changes the amount of EXP this Pokemon has.
+  # @param value [Integer] the new EXP amount.
   def exp=(value)
     validate value => Integer
     @exp = value
   end
 
+  # @return [Integer] the level this Pokemon is currently at.
   def level
     return EXP.get_level(species.leveling_rate, @exp)
   end
 
+  # Changes the level of this Pokemon.
+  # @param value [Integer] the new level of this Pokemon.
   def level=(value)
     validate value => Integer
     @exp = EXP.get_exp(species.leveling_rate, value)
   end
 
+  # @return [Nature] the nature this Pokemon has.
   def nature
     return Nature.get(@nature_intname)
   end
 
+  # Changes the nature of this Pokemon.
+  # @param value [Symbol] the new nature to give this Pokemon.
   def nature=(value)
     validate value => Symbol
     if Nature.exists?(value)
@@ -94,11 +116,13 @@ class Pokemon
     end
   end
 
+  # @return [Integer] the total amount of HP this Pokemon has.
   def totalhp
     return (((2.0 * species.stats.hp + @ivs.hp + (@evs.hp / 4.0)) * level.to_f) / 100.0).floor + level + 10
   end
   alias fullhp totalhp
 
+  # @return [Integer] the total amount of Attack points this Pokemon has.
   def attack
     mod = 1.0
     mod = 1.1 if self.nature.buff == :attack
@@ -107,6 +131,7 @@ class Pokemon
   end
   alias atk attack
 
+  # @return [Integer] the total amount of Defense points this Pokemon has.
   def defense
     mod = 1.0
     mod = 1.1 if self.nature.buff == :defense
@@ -116,6 +141,7 @@ class Pokemon
   alias def defense
   alias defence defense
 
+  # @return [Integer] the total amount of Special Attack points this Pokemon has.
   def spatk
     mod = 1.0
     mod = 1.1 if self.nature.buff == :spatk
@@ -124,6 +150,7 @@ class Pokemon
   end
   alias specialattack spatk
 
+  # @return [Integer] the total amount of Special Defense points this Pokemon has.
   def spdef
     mod = 1.0
     mod = 1.1 if self.nature.buff == :spdef
@@ -133,6 +160,7 @@ class Pokemon
   alias specialdefense spdef
   alias specialdefence spdef
 
+  # @return [Integer] the total amount of Speed points this Pokemon has.
   def speed
     mod = 1.0
     mod = 1.1 if self.nature.buff == :speed

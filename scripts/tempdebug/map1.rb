@@ -166,8 +166,8 @@ def create_event(map, id, x, y, dir)
     #[:autorun],
   ]
 
-  page.automoveroute[:frequency] = 0
-  page.automoveroute[:commands] = [:turn_to_player]
+  #page.automoveroute[:frequency] = 0
+  #page.automoveroute[:commands] = [:turn_to_player]
 
   event.pages = [page]
   map.events[id] = event

@@ -15,7 +15,8 @@ mkd/mapconnections.rb: Map Connections
 visuals/map.rb: Map
 visuals/player.rb: Player
 visuals/event.rb: Event
-visuals/maprenderer.rb: Map Renderer
+visuals/tilesprite.rb: Tile Sprite
+visuals/map_renderer.rb: Map Renderer
 visuals/visuals.rb: Visuals
 game/map.rb: Map
 game/player.rb: Player
@@ -42,5 +43,6 @@ pokemon_data/species.rb: Species
 pokemon/usable_move.rb: Usable Move
 pokemon/pokemon.rb: Pokemon
 pokemon/pc.rb: PC
+pokemon/bag.rb: Bag
 pokemon/trainer.rb: Trainer
 main.rb: Main
