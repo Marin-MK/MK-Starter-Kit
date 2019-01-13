@@ -180,9 +180,6 @@ class Visuals
         sprite.mapx -= diffx
         sprite.mapy -= diffy
       end
-      $game.player.x += xsmall ? 1 : xgreat ? -1 : 0
-      $game.player.y += ysmall ? 1 : ygreat ? -1 : 0
-      $visuals.player.skip_movement
     end
 
     def toggle_grid

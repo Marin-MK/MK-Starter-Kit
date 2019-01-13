@@ -24,6 +24,9 @@ class Game
       @graphic_name = "boy"
       @running = false
       @runcount = 0
+    end
+
+    def setup
       Visuals::Player.create(self)
     end
 
@@ -96,6 +99,7 @@ class Game
       elsif @downcount.nil? || @downcount == 0 || @fake_move
         self.direction_noanim = :down if @direction != 2
         if $game.map.passable?(@x, @y + 1, :down, self)
+          p "before: " + [global_x, global_y].inspect
           @y += 1
           try_transfer
           $game.map.check_event_triggers(true)
@@ -164,21 +168,37 @@ class Game
       @upcount -= 1 if @upcount
     end
 
+    def global_x
+      c = MKD::MapConnections.fetch(@map_id)
+      return c ? c[1] + @x : @x
+    end
+
+    def global_y
+      c = MKD::MapConnections.fetch(@map_id)
+      return c ? c[2] + @y : @y
+    end
+
     # Switches active map and position of the player if its x or y position are out of the current map.
-    private def try_transfer
+    def try_transfer
       xsmall = @x < 0
       ysmall = @y < 0
       xgreat = @x >= $game.map.width
       ygreat = @y >= $game.map.height
       if xsmall || ysmall || xgreat || ygreat
         if $game.map.connection
+          p "try transfer"
+          p [@map_id, @x, @y].inspect
+          p [global_x, global_y].inspect
           map_id, mapx, mapy = $game.get_map_from_connection($game.map, @x, @y)
           @map_id = map_id
           oldx = @x
           oldy = @y
           @x = mapx
           @y = mapy
+          p [@map_id, @x, @y].inspect
+          p [global_x, global_y].inspect
           $visuals.map_renderer.adjust_to_player(oldx, oldy)
+          p [global_x, global_y].inspect
         else
           raise "Player is off the active game map, but no map connection was specified for that map."
         end

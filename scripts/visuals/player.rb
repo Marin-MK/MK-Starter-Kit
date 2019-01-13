@@ -19,8 +19,8 @@ class Visuals
       @sprite.x = Graphics.width / 2
       @sprite.y = Graphics.height / 2 + 16
       @sprite.z = @sprite.y + 31
-      @oldx = @game_player.x
-      @oldy = @game_player.y
+      @oldx = @game_player.global_x
+      @oldy = @game_player.global_y
       @xdist = []
       @xtrav = []
       @xstart = []
@@ -105,16 +105,21 @@ class Visuals
         @sprite.src_rect.x = frame_x * @sprite.src_rect.width
         @sprite.src_rect.y = frame_y * @sprite.src_rect.height
       end
-      # Add a horizontal movement to the move queue
-      if @game_player.x != @oldx && !@skip_movement
-        @xdist << 32 * (@game_player.x - @oldx)
+      # Add horizontal movement to the move queue
+      if @game_player.global_x != @oldx && !@skip_movement
+        @xdist << 32 * (@game_player.global_x - @oldx)
         @xtrav << 0
         h = {}
-        @xstart << (@xstart[0] ? @xstart.last + @xdist.last : $visuals.maps.keys.each { |id| h[id] = $visuals.maps[id].real_x }; h)
+        if @xstart[0]
+          @xstart.last.each_key { |k| h[k] = @xstart.last[k] - @xdist.last }
+        else
+          $visuals.maps.each_key { |k| h[k] = $visuals.maps[k].real_x }
+        end
+        @xstart << h
         anims = []
-        pos = @game_player.x - @oldx > 0
+        pos = @game_player.global_x - @oldx > 0
         aframes = 2
-        (aframes * (@game_player.x - @oldx).abs).times { |i| anims << (32.0 / aframes) * i * (pos ? 1 : -1) }
+        (aframes * (@game_player.global_x - @oldx).abs).times { |i| anims << (32.0 / aframes) * i * (pos ? 1 : -1) }
         @anim << anims
         if @xtrav.size == 1
           @sprite.src_rect.x += @sprite.src_rect.width if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 != 0
@@ -123,16 +128,22 @@ class Visuals
         @fake_anim = nil
         @stop_fake_anim = false
       end
-      # Add a vertical movement to the move queue
-      if @game_player.y != @oldy && !@skip_movement
-        @ydist << 32 * (@game_player.y - @oldy)
+      p "VISUALS VISUALS VISUALS... old: #{@oldy} new: #{@game_player.global_y}"
+      # Add vertical movement to the move queue
+      if @game_player.global_y != @oldy && !@skip_movement
+        @ydist << 32 * (@game_player.global_y - @oldy)
         @ytrav << 0
         h = {}
-        @ystart << (@ystart[0] ? @ystart.last + @ydist.last : $visuals.maps.keys.each { |id| h[id] = $visuals.maps[id].real_y }; h)
+        if @ystart[0]
+          @ystart.last.each_key { |k| h[k] = @ystart.last[k] - @ydist.last }
+        else
+          $visuals.maps.each_key { |k| h[k] = $visuals.maps[k].real_y }
+        end
+        @ystart << h
         anims = []
-        pos = @game_player.y - @oldy > 0
+        pos = @game_player.global_y - @oldy > 0
         aframes = 2
-        (aframes * (@game_player.y - @oldy).abs).times { |i| anims << (32.0 / aframes) * i * (pos ? 1 : -1) }
+        (aframes * (@game_player.global_y - @oldy).abs).times { |i| anims << (32.0 / aframes) * i * (pos ? 1 : -1) }
         @anim << anims
         if @ytrav.size == 1
           @sprite.src_rect.x += @sprite.src_rect.width if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 != 0
@@ -184,8 +195,8 @@ class Visuals
         end
       end
       # Stores old values for comparison in the next #update call
-      @oldx = @game_player.x
-      @oldy = @game_player.y
+      @oldx = @game_player.global_x
+      @oldy = @game_player.global_y
       @oldgraphic = @game_player.graphic_name
       @oldfake_move = @game_player.fake_move
       @skip_movement = false if @skip_movement

@@ -16,6 +16,9 @@ class Game
   # @return [Game::Map] the map the player is currently on.
   def map
     return @maps[$game.player.map_id]
+  rescue
+    msgbox caller
+    abort
   end
 
   def load_map(id)

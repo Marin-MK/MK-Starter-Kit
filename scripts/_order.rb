@@ -32,6 +32,8 @@ tempdebug/tileset5.rb: Temp Debug Tileset 5
 tempdebug/tileset6.rb: Temp Debug Tileset 6
 tempdebug/map1.rb: Temp Debug Map 1
 tempdebug/map2.rb: Temp Debug Map 2
+tempdebug/map3.rb: Temp Debug Map 3
+tempdebug/map4.rb: Temp Debug Map 4
 tempdebug/connections.rb: Temp Debug Connections
 game/game.rb: Game
 pokemon_data/exp.rb: EXP
@@ -45,4 +47,5 @@ pokemon/pokemon.rb: Pokemon
 pokemon/pc.rb: PC
 pokemon/bag.rb: Bag
 pokemon/trainer.rb: Trainer
+sprites/splitsprite.rb: Split Sprite
 main.rb: Main
