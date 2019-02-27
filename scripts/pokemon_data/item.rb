@@ -70,6 +70,10 @@ class Item
   def self.random
     return Cache.keys.sample
   end
+
+  def self.count
+    return Cache.size
+  end
 end
 
 # This would be loaded from a data file

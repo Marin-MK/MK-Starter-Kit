@@ -7,12 +7,18 @@ class Trainer
   attr_accessor :pc
   # @return [Bag] the Bag of the player.
   attr_accessor :bag
+  # @return [Integer] the Personal ID of the player.
+  attr_reader :pid
+  # @return [Integer] the Secret ID of the player.
+  attr_reader :secret_id
 
   # Creates a new Trainer object.
   def initialize
     @party = []
     @pc = PC.new
     @bag = Bag.new
+    @pid = rand(2 ** 16)
+    @secret_id = rand(2 ** 16)
   end
 
   # Adds the Pokemon to the party or PC if possible.

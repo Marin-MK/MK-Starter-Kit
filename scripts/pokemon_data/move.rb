@@ -81,6 +81,10 @@ class Move
   def self.random
     return Cache.keys.sample
   end
+
+  def self.count
+    return Cache.size
+  end
 end
 
 # Target modes:

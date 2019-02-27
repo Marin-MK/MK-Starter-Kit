@@ -5,6 +5,10 @@ class Ability
   attr_reader :intname
   # @return [Integer] the ID of the ability.
   attr_reader :id
+  # @return [String] the name of the ability.
+  attr_reader :name
+  # @return [String] the description of the ability.
+  attr_reader :description
 
   # Creates a new Ability object.
   def initialize(&block)
@@ -54,6 +58,10 @@ class Ability
   # @return [Ability] a randomly chosen ability's internal name.
   def self.random
     return Cache.keys.sample
+  end
+
+  def self.count
+    return Cache.size
   end
 end
 

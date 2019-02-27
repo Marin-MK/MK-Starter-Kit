@@ -11,10 +11,31 @@ $game.load_map(2)
 $visuals.map_renderer.create_tiles if $visuals.map_renderer.empty?
 $trainer = Trainer.new
 
+#shinies = []
+#8000.times do
+#  p = Pokemon.new(:BULBASAUR, 100)
+#  shinies << p.shiny
+#end
+#shiny = shinies.select { |e| e }.size
+#notshiny = shinies.select { |e| !e }.size
+#msgbox "Shinies: #{shiny}\nNot shiny: #{notshiny}"
+
+#genders = []
+#8000.times do
+#  p = Pokemon.new(:BULBASAUR, 100)
+#  genders << p.gender
+#end
+#males = genders.select { |e| e == 0 }.size
+#females = genders.select { |e| e == 1 }.size
+#genderless = genders.select { |e| e == 2 }.size
+#msgbox "Males: #{males}\nFemales: #{females}\nGenderless: #{genderless}"
+
 p = Pokemon.new(:BULBASAUR, 100)
+msgbox p.gender
+msgbox p.nature.name
+msgbox p.ability.name
+msgbox p.shiny
 $trainer.add_pokemon(p)
-msgbox p.type1
-msgbox p.type2
 
 loop do
   Input.update
@@ -24,8 +45,6 @@ loop do
     $visuals.map_renderer.toggle_grid
   end
   if Input.trigger?(Input::CTRL)
-    #t = $visuals.map_renderer.player_tile
-    #msgbox $game.player.map_id.to_s + "\n" + [$game.player.global_x, $game.player.global_y].inspect + "\n" + [$game.player.x, $game.player.y].inspect + "\n" + [t.mapx, t.mapy].inspect
     abort
   end
   Graphics.update

@@ -152,6 +152,10 @@ class Species
   def self.random
     return Cache.keys.sample
   end
+
+  def self.count
+    return Cache.size
+  end
 end
 
 # This would be loaded from a data file
@@ -160,6 +164,7 @@ Species.new do
   @id = 1
   @name = "Bulbasaur"
   @type1 = :GRASS
+  @type2 = :POISON
   @stats.hp = 45
   @stats.atk = 49
   @stats.def = 49

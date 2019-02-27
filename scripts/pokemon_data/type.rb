@@ -80,6 +80,10 @@ class Type
   def self.random
     return Cache.keys.sample
   end
+
+  def self.count
+    return Cache.size
+  end
 end
 
 Type.new do
