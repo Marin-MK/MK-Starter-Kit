@@ -65,7 +65,7 @@ def perform_test(abort_after = true)
   abort if abort_after
 end
 
-[Object, Symbol, Integer].each do |c|
+[String, Symbol, Integer, Fixnum, Bignum].each do |c|
   c.class_eval do
     alias oldinspect inspect
     def inspect(length = 0)

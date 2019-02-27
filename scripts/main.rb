@@ -11,8 +11,10 @@ $game.load_map(2)
 $visuals.map_renderer.create_tiles if $visuals.map_renderer.empty?
 $trainer = Trainer.new
 
-p = Pokemon.new(:BULBASAUR, 1)
+p = Pokemon.new(:BULBASAUR, 100)
 $trainer.add_pokemon(p)
+msgbox p.type1
+msgbox p.type2
 
 loop do
   Input.update
@@ -22,24 +24,9 @@ loop do
     $visuals.map_renderer.toggle_grid
   end
   if Input.trigger?(Input::CTRL)
-    #msgbox [$game.player.global_x, $game.player.global_y].inspect
-    t = $visuals.map_renderer.player_tile
-    msgbox $game.player.map_id.to_s + "\n" + [$game.player.global_x, $game.player.global_y].inspect + "\n" + [$game.player.x, $game.player.y].inspect + "\n" + [t.mapx, t.mapy].inspect
-    #abort
+    #t = $visuals.map_renderer.player_tile
+    #msgbox $game.player.map_id.to_s + "\n" + [$game.player.global_x, $game.player.global_y].inspect + "\n" + [$game.player.x, $game.player.y].inspect + "\n" + [t.mapx, t.mapy].inspect
+    abort
   end
-  #unless $visuals.map_renderer.empty?
-  #  str = ""
-  #  a = $visuals.map_renderer.array[Visuals::MapRenderer::XSIZE * 4...Visuals::MapRenderer::XSIZE * 5]
-  #  for i in 0...a.size
-  #    if a[i].sprites[0].x != a[0].sprites[0].x + 32 * i
-  #      i = 0
-  #      for i in 0...a.size
-  #        puts i.to_digits(2) + ": " + a[i].sprites[0].x.to_s + "     " + a[i].real_x.to_s
-  #      end
-  #      puts "\n\n"
-  #      break
-  #    end
-  #  end
-  #end
   Graphics.update
 end

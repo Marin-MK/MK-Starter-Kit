@@ -40,6 +40,7 @@ pokemon_data/exp.rb: EXP
 pokemon_data/nature.rb: Nature
 pokemon_data/ability.rb: Ability
 pokemon_data/item.rb: Item
+pokemon_data/type.rb: Type
 pokemon_data/move.rb: Move
 pokemon_data/species.rb: Species
 pokemon/usable_move.rb: Usable Move

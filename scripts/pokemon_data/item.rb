@@ -20,8 +20,6 @@ class Item
   def initialize(&block)
     validate block => Proc
     @id = 0
-    @name = ""
-    @price = 0
     @description = ""
     @fling_power = 0
     instance_eval(&block)

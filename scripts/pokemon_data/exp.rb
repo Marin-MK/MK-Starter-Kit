@@ -112,7 +112,7 @@ module EXP
   # @return [Integer] the minimum EXP requirement for this level.
   def get_exp(rate, level)
     validate rate => [Symbol, String], level => Integer
-    return const_get(rate)[level]
+    return const_get(rate)[level] || const_get(rate).last
   end
 
   # @param rate [Symbol, String] the leveling rate.

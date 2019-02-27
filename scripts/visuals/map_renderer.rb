@@ -182,6 +182,7 @@ class Visuals
       end
     end
 
+    # Makes the grid visible if it was invisible, and invisible if it was visible.
     def toggle_grid
       if @show_grid
         self.show_grid = false

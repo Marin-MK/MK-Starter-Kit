@@ -10,7 +10,6 @@ class Ability
   def initialize(&block)
     validate block => Proc
     @id = 0
-    @name = ""
     @description = ""
     instance_eval(&block)
     validate_ability
