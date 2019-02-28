@@ -47,6 +47,7 @@ pokemon/usable_move.rb: Usable Move
 pokemon/pokemon.rb: Pokemon
 pokemon/pc.rb: PC
 pokemon/bag.rb: Bag
+pokemon/pokedex.rb: Pokedex
 pokemon/trainer.rb: Trainer
 sprites/splitsprite.rb: Split Sprite
 main.rb: Main

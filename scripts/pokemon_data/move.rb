@@ -54,7 +54,8 @@ class Move
   # @param move [Symbol, Integer] the move to look up.
   # @return [Move]
   def self.get(move)
-    validate move => [Symbol, Integer]
+    validate move => [Symbol, Integer, Move]
+    return move if move.is_a?(Move)
     unless Move.exists?(move)
       raise "No move could be found for #{move.inspect(50)}"
     end
@@ -64,7 +65,8 @@ class Move
   # @param move [Symbol, Integer] the move to look up.
   # @return [Move, NilClass]
   def self.try_get(move)
-    validate move => [Symbol, Integer]
+    validate move => [Symbol, Integer, Move]
+    return move if move.is_a?(Move)
     return Cache[move] if move.is_a?(Symbol)
     return Cache.values.find { |m| m.id == move }
   end
@@ -108,6 +110,18 @@ Move.new do
 end
 
 Move.new do
+  @intname = :VINEWHIP
+  @id = 22
+  @name = "Vine Whip"
+  @type = :GRASS
+  @power = 35
+  @totalpp = 10
+  @accuracy = 100
+  @category = :physical
+  @description = "The foe is struck with slender, whiplike vines."
+end
+
+Move.new do
   @intname = :TACKLE
   @id = 33
   @name = "Tackle"
@@ -145,15 +159,41 @@ Move.new do
 end
 
 Move.new do
-  @intname = :VINEWHIP
-  @id = 22
-  @name = "Vine Whip"
+  @intname = :GROWTH
+  @id = 74
+  @name = "Growth"
+  @type = :NORMAL
+  @power = 0
+  @totalpp = 40
+  @accuracy = 0
+  @category = :status
+  @target_mode = :self
+  @description = "The user's body is forced to grow, raising the Sp. Atk stat."
+end
+
+Move.new do
+  @intname = :RAZORLEAF
+  @id = 75
+  @name = "Razor Leaf"
   @type = :GRASS
-  @power = 35
+  @power = 55
+  @totalpp = 25
+  @accuracy = 95
+  @category = :physical
+  @target_mode = :all_opponents
+  @description = "The foe is hit with a cutting leaf. It has a high critical-hit ratio."
+end
+
+Move.new do
+  @intname = :SOLARBEAM
+  @id = 76
+  @name = "SolarBeam"
+  @type = :GRASS
+  @power = 120
   @totalpp = 10
   @accuracy = 100
-  @category = :physical
-  @description = "The foe is struck with slender, whiplike vines."
+  @category = :special
+  @description = "A 2-turn move that blasts the foe with absorbed energy in the 2nd turn."
 end
 
 Move.new do
@@ -181,19 +221,6 @@ Move.new do
 end
 
 Move.new do
-  @intname = :RAZORLEAF
-  @id = 75
-  @name = "Razor Leaf"
-  @type = :GRASS
-  @power = 55
-  @totalpp = 25
-  @accuracy = 95
-  @category = :physical
-  @target_mode = :all_opponents
-  @description = "The foe is hit with a cutting leaf. It has a high critical-hit ratio."
-end
-
-Move.new do
   @intname = :SWEETSCENT
   @id = 230
   @name = "Sweet Scent"
@@ -207,19 +234,6 @@ Move.new do
 end
 
 Move.new do
-  @intname = :GROWTH
-  @id = 74
-  @name = "Growth"
-  @type = :NORMAL
-  @power = 0
-  @totalpp = 40
-  @accuracy = 0
-  @category = :status
-  @target_mode = :self
-  @description = "The user's body is forced to grow, raising the Sp. Atk stat."
-end
-
-Move.new do
   @intname = :SYNTHESIS
   @id = 235
   @name = "Synthesis"
@@ -230,16 +244,4 @@ Move.new do
   @category = :status
   @target_mode = :self
   @description = "Restores the user's HP. The amount of HP regained varies with the weather."
-end
-
-Move.new do
-  @intname = :SOLARBEAM
-  @id = 76
-  @name = "SolarBeam"
-  @type = :GRASS
-  @power = 120
-  @totalpp = 10
-  @accuracy = 100
-  @category = :special
-  @description = "A 2-turn move that blasts the foe with absorbed energy in the 2nd turn."
 end

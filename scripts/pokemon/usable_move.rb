@@ -46,4 +46,8 @@ class UsableMove
   def description
     return self.move.description
   end
+
+  def heal_pp
+    self.pp = self.move.totalpp
+  end
 end

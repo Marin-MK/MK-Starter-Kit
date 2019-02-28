@@ -1,4 +1,16 @@
 class Pokemon
+  # @return [Integer] the total amount of HP this Pokemon has.
+  attr_reader :totalhp
+  # @return [Integer] the total amount of Attack points this Pokemon has.
+  attr_reader :attack
+  # @return [Integer] the total amount of Defense points this Pokemon has.
+  attr_reader :defense
+  # @return [Integer] the total amount of Special Attack points this Pokemon has.
+  attr_reader :spatk
+  # @return [Integer] the total amount of Special Defense points this Pokemon has.
+  attr_reader :spdef
+  # @return [Integer] the total amount of Speed points this Pokemon has.
+  attr_reader :speed
   # @return [Integer] the amount of EXP this Pokemon has.
   attr_reader :exp
   # @return [Stats] the IV statistics of this Pokemon.
@@ -9,15 +21,33 @@ class Pokemon
   attr_reader :moves
   # @return [Integer] the personal ID of this Pokemon.
   attr_reader :pid
+  # @return [String] the species name or nickname of this Pokemon.
+  attr_accessor :name
+  # @return [Integer] the happiness of this Pokemon.
+  attr_accessor :happiness
+  # @return [Symbol, NilClass] the status condition of this Pokemon.
+  attr_accessor :status
+  # @return [Symbol] the internal name of the ball used to catch this Pokemon.
+  attr_accessor :ball_used
+  # @return [Symbol] how this Pokemon was obtained.
+  attr_accessor :obtain_mode
+  # @return [String] the name of the original trainer of this Pokemon.
+  attr_accessor :ot_name
+  # @return [Integer] the gender of the original trainer of this Pokemon.
+  attr_accessor :ot_gender
+  # @return [Integer] the form of the Pokemon.
+  attr_accessor :form #temp - turn into attr_reader
 
   # Creates a new Pokemon object.
   # @param species [Symbol, Integer] the species of the Pokemon.
   # @param level [Integer] the level of the Pokemon.
-  def initialize(species, level)
-    validate species => [Symbol, Integer], level => Integer
+  def initialize(species, level, trainer = nil)
+    validate species => [Symbol, Integer], level => Integer, trainer => [NilClass, Trainer]
     # Ensure the species exists and set some initial values
     species = Species.get(species)
     @species_intname = species.intname
+    @name = species.name
+    @form = 0
     @exp = EXP.get_exp(species.leveling_rate, level)
     @pid = rand(2 ** 32)
     @ivs = Stats.new
@@ -34,9 +64,20 @@ class Pokemon
     @evs.spatk = 0
     @evs.spdef = 0
     @evs.speed = 0
-    @hp = fullhp
-    @moves = []
-    set_initial_moves
+    @hp = self.totalhp
+    @happiness = species.happiness
+    @ball_used = :POKEBALL
+    if trainer
+      @ot_name = trainer.name
+      @ot_gender = trainer.gender
+    else
+      @ot_name = nil
+      @ot_gender = nil
+    end
+    @obtain_mode = :MET
+    @obtain_time = Time.now
+    @obtain_level = self.level
+    @moves = get_moveset_for_level
   end
 
   # @return [Species] the species object associated with this Pokemon.
@@ -44,20 +85,25 @@ class Pokemon
     return Species.get(@species_intname)
   end
 
-  # Sets the initial moves for this Pokemon based on its current level.
-  def set_initial_moves
-    moveset = species.moveset.level
-    keys = moveset.keys.select { |k| k <= level }
-    keys.reverse.each do |k|
-      move = moveset[k]
-      if move.is_a?(Array)
-        move.each { |m| @moves.insert(0, UsableMove.new(m)) if @moves.size < 4 }
-      else
-        @moves.insert(0, UsableMove.new(move))
-      end
-      break if @moves.size >= 4
-    end
+  # Changes the amount of EXP this Pokemon has.
+  # @param value [Integer] the new EXP amount.
+  def exp=(value)
+    validate value => Integer
+    @exp = value
   end
+
+  # @return [Integer] the level this Pokemon is currently at.
+  def level
+    return EXP.get_level(species.leveling_rate, @exp)
+  end
+
+  # Changes the level of this Pokemon.
+  # @param value [Integer] the new level of this Pokemon.
+  def level=(value)
+    validate value => Integer
+    @exp = EXP.get_exp(species.leveling_rate, value)
+  end
+
 
 
   # @return [Item, NilClass] the item the Pokemon is holding.
@@ -72,6 +118,19 @@ class Pokemon
     validate value => [Symbol, NilClass]
     @item = value
   end
+
+  # Gives the Pokemon an item to hold.
+  # @param nature [Symbol, Integer, Item, NilClass] the item to give the Pokemon.
+  def set_item(item)
+    validate item => [Symbol, Integer, Item, NilClass]
+    if item.nil?
+      @item = nil
+    else
+      item = Item.get(item)
+      @item = item.intname
+    end
+  end
+  alias give_item set_item
 
 
 
@@ -89,9 +148,17 @@ class Pokemon
   # Forces a value for the Pokemon's shininess.
   # @param value [Boolean, NilClass] the shininess value.
   def shiny=(value)
-    validate value => [Boolean, NilClass]
-    @shinyflag = value
+    self.set_shiny(value)
   end
+
+  # Forces a value for the Pokemon's shininess.
+  # @param nature [Boolean, NilClass] the shininess value.
+  def set_shiny(shiny)
+    validate shiny => [Boolean, NilClass]
+    @shinyflag = shiny
+  end
+  alias set_shininess set_shiny
+
 
 
   # @return [Integer] the gender of the Pokemon.
@@ -125,9 +192,15 @@ class Pokemon
   # Forces a value for the Pokemon's gender.
   # @param value [Integer, NilClass] the gender value.
   def gender=(value)
-    validate value => [Integer, NilClass]
-    raise "Invalid gender #{value.inspect(50)}" unless value == 0 || value == 1 || value == 2 || value.nil?
-    @genderflag = value
+    self.set_gender(value)
+  end
+
+  # Forces a value for the Pokemon's gender.
+  # @param nature [Integer, NilClass] the gender value.
+  def set_gender(gender)
+    validate gender => [Integer, NilClass]
+    raise "Invalid gender #{value.inspect(16)}" unless value == 0 || value == 1 || value == 2 || value.nil?
+    @genderflag = gender
   end
 
 
@@ -154,27 +227,16 @@ class Pokemon
     end
   end
 
-
-
-  # Changes the amount of EXP this Pokemon has.
-  # @param value [Integer] the new EXP amount.
-  def exp=(value)
-    validate value => Integer
-    @exp = value
-  end
-
-
-
-  # @return [Integer] the level this Pokemon is currently at.
-  def level
-    return EXP.get_level(species.leveling_rate, @exp)
-  end
-
-  # Changes the level of this Pokemon.
-  # @param value [Integer] the new level of this Pokemon.
-  def level=(value)
-    validate value => Integer
-    @exp = EXP.get_exp(species.leveling_rate, value)
+  # Forces a value for the Pokemon's ability.
+  # @param nature [Symbol, Integer, Ability, NilClass] the ability value.
+  def set_ability(ability)
+    validate ability => [Symbol, Integer, Ability, NilClass]
+    if ability.nil?
+      @abilityflag = nil
+    else
+      ability = Ability.get(ability)
+      @abilityflag = ability.intname
+    end
   end
 
 
@@ -196,6 +258,18 @@ class Pokemon
     end
   end
 
+  # Forces a value for the Pokemon's nature.
+  # @param nature [Symbol, Integer, Nature, NilClass] the nature value.
+  def set_nature(nature)
+    validate nature => [Symbol, Integer, Nature, NilClass]
+    if nature.nil?
+      @natureflag = nil
+    else
+      nature = Nature.get(nature)
+      @natureflag = nature.intname
+    end
+  end
+
 
 
   # @return [Type] the first type of this Pokemon species.
@@ -211,79 +285,172 @@ class Pokemon
 
 
 
-  # @return [Integer] the total amount of HP this Pokemon has.
-  def totalhp
-    return (((2.0 * species.stats.hp + @ivs.hp + (@evs.hp / 4.0)) * level.to_f) / 100.0).floor + level + 10
+  # @return [Array<UsableMove>] the moves this Pokemon would have at the current level.
+  def get_moveset_for_level
+    moves = []
+    moveset = species.moveset.level
+    keys = moveset.keys.select { |k| k <= level }
+    keys.reverse.each do |k|
+      move = moveset[k]
+      if move.is_a?(Array)
+        move.each { |m| moves.insert(0, UsableMove.new(m)) if moves.size < 4 }
+      else
+        moves.insert(0, UsableMove.new(move))
+      end
+      break if moves.size >= 4
+    end
+    return moves
   end
-  alias fullhp totalhp
 
-  # @return [Integer] the total amount of Attack points this Pokemon has.
-  def attack
-    mod = 1.0
-    mod = 1.1 if self.nature.buff == :attack
-    mod = 0.9 if self.nature.debuff == :attack
-    return (((((2.0 * species.stats.attack + @ivs.attack + (@evs.attack / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+  # Whether or not it's somehow possible for this Pokemon to know the given move.
+  # Includes TMs, eggmoves, tutor moves, moveset and evolution moves.
+  # If this method returns false for a move but the Pokemon does know the move, it's an illegal Pokemon.
+  # @return [Boolean] whether or not it's somehow possible for this Pokemon to know the given move.
+  def can_know_move?(move)
+    validate move => [Symbol, Integer, Move]
+    move = Move.get(move)
+    name = move.intname
+    species.moveset.keys.each do |key|
+      moves = species.moveset.get(key)
+      if key == :level
+        moves.each_value do |e|
+          if e.is_a?(Array)
+            return true if e.include?(name)
+          else
+            return true if e == name
+          end
+        end
+      else
+        return true if moves.include?(name)
+      end
+    end
+    return false
   end
+
+  # @return [Boolean] whether or not this Pokemon can learn the given move by TM or tutor.
+  def can_learn_move?(move)
+    validate move => [Symbol, Integer, Move]
+    move = Move.get(move)
+    name = move.intname
+    return false if self.knows_move?(move)
+    return species.moveset.tms.include?(name) || species.moveset.tutor.include?(name)
+  end
+
+
+
+  # Recalculates the stats.
+  def calc_stats
+    buff = self.nature.buff
+    debuff = self.nature.debuff
+    @totalhp = (((2.0 * species.stats.hp + @ivs.hp + (@evs.hp / 4.0)) * level.to_f) / 100.0).floor + level + 10
+    mod = (buff == :attack ? 1.1 : debuff == :attack ? 0.9 : 1.0)
+    @attack = (((((2.0 * species.stats.attack + @ivs.attack + (@evs.attack / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    mod = (buff == :defense ? 1.1 : debuff == :defense ? 0.9 : 1.0)
+    @defense = (((((2.0 * species.stats.defense + @ivs.defense + (@evs.defense / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    mod = (buff == :spatk ? 1.1 : debuff == :spatk ? 0.9 : 1.0)
+    @spatk = (((((2.0 * species.stats.spatk + @ivs.spatk + (@evs.spatk / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    mod = (buff == :spdef ? 1.1 : debuff == :spdef ? 0.9 : 1.0)
+    @spdef = (((((2.0 * species.stats.spdef + @ivs.spdef + (@evs.spdef / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    mod = (buff == :speed ? 1.1 : debuff == :speed ? 0.9 : 1.0)
+    @speed = (((((2.0 * species.stats.speed + @ivs.speed + (@evs.speed / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+  end
+
   alias atk attack
-
-  # @return [Integer] the total amount of Defense points this Pokemon has.
-  def defense
-    mod = 1.0
-    mod = 1.1 if self.nature.buff == :defense
-    mod = 0.9 if self.nature.debuff == :defense
-    return (((((2.0 * species.stats.defense + @ivs.defense + (@evs.defense / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
-  end
   alias def defense
   alias defence defense
-
-  # @return [Integer] the total amount of Special Attack points this Pokemon has.
-  def spatk
-    mod = 1.0
-    mod = 1.1 if self.nature.buff == :spatk
-    mod = 0.9 if self.nature.debuff == :spatk
-    return (((((2.0 * species.stats.spatk + @ivs.spatk + (@evs.spatk / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
-  end
   alias specialattack spatk
-
-  # @return [Integer] the total amount of Special Defense points this Pokemon has.
-  def spdef
-    mod = 1.0
-    mod = 1.1 if self.nature.buff == :spdef
-    mod = 0.9 if self.nature.debuff == :spdef
-    return (((((2.0 * species.stats.spdef + @ivs.spdef + (@evs.spdef / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
-  end
+  alias special_attack spatk
   alias specialdefense spdef
+  alias special_defense spdef
   alias specialdefence spdef
-
-  # @return [Integer] the total amount of Speed points this Pokemon has.
-  def speed
-    mod = 1.0
-    mod = 1.1 if self.nature.buff == :speed
-    mod = 0.9 if self.nature.debuff == :speed
-    return (((((2.0 * species.stats.speed + @ivs.speed + (@evs.speed / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
-  end
+  alias special_defence spdef
   alias spd speed
-
-
 
   #============================================================================#
   # Utility methods
   #============================================================================#
+  # @return [Boolean] whether or not the Pokemon has the given type as its first or second type.
   def has_type?(type)
-    validate type => [Symbol, Integer]
+    validate type => [Symbol, Integer, Type]
     type = Type.get(type)
     return self.type1 == type || self.type2 == type
   end
 
+  # @return [Boolean] whether or not the Pokemon has the given ability.
+  def has_ability?(ability)
+    validate ability => [Symbol, Integer, Ability]
+    ability = Ability.get(ability)
+    return self.ability == ability
+  end
+
+  # @return [Boolean] whether or not the Pokemon has the given nature.
+  def has_nature?(nature)
+    validate nature => [Symbol, Integer, Nature]
+    nature = Nature.get(nature)
+    return self.nature == nature
+  end
+
+  # @return [Boolean] whether or not the Pokemon is holding the given item.
+  def has_item?(item)
+    validate item => [Symbol, Integer, Item]
+    item = Item.get(item)
+    return self.item == item
+  end
+
+  # @return [Boolean] whether or not the Pokemon knows the given move.
+  def has_move?(move)
+    validate move => [Symbol, Integer, Move]
+    move = Move.get(move)
+    return self.moves.any? { |e| e.intname == move.intname }
+  end
+  alias knows_move? has_move?
+
+  # @return [Boolean] whether or not the Pokemon is of the given gender.
+  def is_gender?(gender)
+    validate gender => Integer
+    raise "Invalid gender #{gender.inspect(16)}" unless gender == 0 || gender == 1 || gender == 2
+    return self.gender == gender
+  end
+
+  # @return [Boolean] whether or not the Pokemon is male.
   def male?
-    return self.gender == 0
+    return self.is_gender?(0)
   end
 
+  # @return [Boolean] whether or not the Pokemon is female.
   def female?
-    return self.gender == 1
+    return self.is_gender?(1)
   end
 
+  # @return [Boolean] whether or not the Pokemon is genderless.
   def genderless?
-    return self.gender == 2
+    return self.is_gender?(2)
+  end
+
+  # Restores the Pokemon's HP.
+  def heal_hp
+    self.hp = self.totalhp
+  end
+
+  # Clears the Pokemon's status.
+  def heal_status
+    self.status = nil
+  end
+
+  # Heals the Pokemon's move PP.
+  def heal_pp
+    self.moves.each { |e| e.heal_pp }
+  end
+
+  # Fully heals the Pokemon.
+  def heal
+    self.heal_hp
+    self.heal_status
+    self.heal_pp
+  end
+
+  # @return [Boolean] whether or not the Pokemon is fainted.
+  def fainted?
+    return self.hp > 0
   end
 end

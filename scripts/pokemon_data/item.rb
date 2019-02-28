@@ -44,6 +44,7 @@ class Item
   # @return [Item]
   def self.get(item)
     validate item => [Symbol, Integer]
+    return item if item.is_a?(Item)
     unless Item.exists?(item)
       raise "No item could be found for #{item.inspect(50)}"
     end
@@ -53,7 +54,8 @@ class Item
   # @param item [Symbol, Integer] the item to look up.
   # @return [Item, NilClass]
   def self.try_get(item)
-    validate item => [Symbol, Integer]
+    validate item => [Symbol, Integer, Item]
+    return item if item.is_a?(Item)
     return Cache[item] if item.is_a?(Symbol)
     return Cache.values.find { |i| i.id == item }
   end

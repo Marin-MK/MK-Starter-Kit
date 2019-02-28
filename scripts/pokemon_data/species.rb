@@ -60,8 +60,8 @@ class Species
   attr_reader :pokedex_color
   # @return [String] the Pokedex entry of the species.
   attr_reader :pokedex_entry
-  # @return [Integer] the initial friendship of pokemon of this species.
-  attr_reader :friendship
+  # @return [Integer] the initial happiness of pokemon of this species.
+  attr_reader :happiness
   # @return [Moveset] the full moveset of the species.
   attr_reader :moveset
   # @return [Array<Hash>] all possible evolutions of the species.
@@ -113,7 +113,7 @@ class Species
         @hatch_time => Range,
         @pokedex_color => Symbol,
         @pokedex_entry => String,
-        @friendship => Integer,
+        @happiness => Integer,
         @moveset => Moveset,
         @evolutions => Array
     validate_array @abilities => Symbol,
@@ -125,7 +125,8 @@ class Species
   # @param species [Symbol, Integer] the species to look up.
   # @return [Species]
   def self.get(species)
-    validate species => [Symbol, Integer]
+    validate species => [Symbol, Integer, Species]
+    return species if species.is_a?(Species)
     unless Species.exists?(species)
       raise "No species could be found for argument #{species.inspect(50)}"
     end
@@ -135,7 +136,8 @@ class Species
   # @param species [Symbol, Integer] the species to look up.
   # @return [Species, NilClass]
   def self.try_get(species)
-    validate species => [Symbol, Integer]
+    validate species => [Symbol, Integer, Species]
+    return species if species.is_a?(Species)
     return Cache[species] if species.is_a?(Symbol)
     return Cache.values.find { |s| s.id == species }
   end
@@ -184,7 +186,7 @@ Species.new do
   @hatch_time = 5140..5396
   @pokedex_color = :GREEN
   @pokedex_entry = "There is a plant seed on its back right from the day this Pokémon is born. The seed slowly grows larger."
-  @friendship = 70
+  @happiness = 70
   @moveset.level = {
     1 => :TACKLE,
     4 => :GROWL,
@@ -197,9 +199,9 @@ Species.new do
     39 => :SYNTHESIS,
     46 => :SOLARBEAM
   }
-  @moveset.tms = [:TOXIC, :BULLETSEED, :HIDDENPOWER, :SUNNYDAY, :PROTECT, :GIGADRAIN, :FRUSTRSTION, :SOLARBEAM, :RETURN, :DOUBLETEAM, :SLUDGEBOMB, :FACADE, :SECRETPOWER, :REST, :ATTRACT, :CUT, :STRENGTH, :FLASH, :ROCKSMASH],
+  @moveset.tms = [:TOXIC, :BULLETSEED, :HIDDENPOWER, :SUNNYDAY, :PROTECT, :GIGADRAIN, :FRUSTRATION, :SOLARBEAM, :RETURN, :DOUBLETEAM, :SLUDGEBOMB, :FACADE, :SECRETPOWER, :REST, :ATTRACT, :CUT, :STRENGTH, :FLASH, :ROCKSMASH]
   @moveset.egg = [:CHARM, :CURSE, :GRASSWHISTLE, :LIGHTSCREEN, :MAGICALLEAF, :PETALDANCE, :SAFEFUARD, :SKULLBASH],
-  @moveset.tutor = [:BODYSLAM, :DOUBLEEDGE, :MIMIC, :SUBSTITUTE, :SWORDSDANCE]
+  @moveset.tutor = [:BODYSLAM, :DOUBLEEDGE, :MIMIC, :SUBSTITUTE, :SWORDSDANCE, :SOLARBEAM]
   @evolutions = [
     {
       mode: :LEVEL,

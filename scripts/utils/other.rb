@@ -65,7 +65,7 @@ def perform_test(abort_after = true)
   abort if abort_after
 end
 
-[String, Symbol, Integer, Fixnum, Bignum].each do |c|
+[Object, String, Symbol, Integer, Fixnum, Bignum].each do |c|
   c.class_eval do
     alias oldinspect inspect
     def inspect(length = 0)
@@ -74,6 +74,13 @@ end
       return v if v.size <= length
       return v[0...length] + "..."
     end
+  end
+end
+
+class Object
+  alias old_is_a? is_a?
+  def is_a?(*args)
+    return args.any? { |e| old_is_a?(e) }
   end
 end
 

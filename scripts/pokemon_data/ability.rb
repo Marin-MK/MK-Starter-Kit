@@ -33,7 +33,8 @@ class Ability
   # @param ability [Symbol, Integer] the ability to look up.
   # @return [Ability]
   def self.get(ability)
-    validate ability => [Symbol, Integer]
+    validate ability => [Symbol, Integer, Ability]
+    return ability if ability.is_a?(Ability)
     unless Ability.exists?(ability)
       raise "No ability could be found for argument #{ability.inspect(50)}"
     end
@@ -43,7 +44,8 @@ class Ability
   # @param ability [Symbol, Integer] the ability to look up.
   # @return [Ability, NilClass]
   def self.try_get(ability)
-    validate ability => [Symbol, Integer]
+    validate ability => [Symbol, Integer, Ability]
+    return ability if ability.is_a?(Ability)
     return Cache[ability] if ability.is_a?(Symbol)
     return Cache.values.find { |a| a.id == ability }
   end

@@ -12,13 +12,9 @@ $visuals.map_renderer.create_tiles if $visuals.map_renderer.empty?
 $trainer = Trainer.new
 
 p = Pokemon.new(:BULBASAUR, 100)
+msgbox p.ot_name
 $trainer.add_pokemon(p)
-
-#msgbox $trainer.get_quantity(:REPEL)
-$trainer.add_item(:REPEL, 4)
-#msgbox $trainer.get_quantity(:REPEL)
-$trainer.remove_item(:REPEL, 4)
-#msgbox $trainer.get_quantity(:REPEL)
+msgbox p.ot_name
 
 
 loop do

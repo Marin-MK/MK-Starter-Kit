@@ -23,7 +23,7 @@ class SplitSprite
     @file = file
     @center = center
     bmp = Bitmap.new(@width, @height)
-    src = Bitmap.new("gfx/window_skins/#{@file}")
+    src = Bitmap.new("gfx/windowskins/#{@file}")
     if @width == src.width && @height == src.height
       @sprite.bitmap = src
       return

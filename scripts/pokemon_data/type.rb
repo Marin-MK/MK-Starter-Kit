@@ -53,7 +53,8 @@ class Type
   # @param type [Symbol, Integer] the type to look up.
   # @return [Type]
   def self.get(type)
-    validate type => [Symbol, Integer]
+    validate type => [Symbol, Integer, Type]
+    return type if type.is_a?(Type)
     unless Type.exists?(type)
       raise "No type could be found for #{type.inspect(50)}"
     end
@@ -63,7 +64,8 @@ class Type
   # @param type [Symbol, Integer] the type to look up.
   # @return [Type, NilClass]
   def self.try_get(type)
-    validate type => [Symbol, Integer]
+    validate type => [Symbol, Integer, Type]
+    return type if type.is_a?(Type)
     return Cache[type] if type.is_a?(Symbol)
     return Cache.values.find { |t| t.id == type }
   end

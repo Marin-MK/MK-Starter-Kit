@@ -36,7 +36,8 @@ class Nature
   # @param nature [Symbol, Integer] the nature to look up.
   # @return [Nature]
   def self.get(nature)
-    validate nature => [Symbol, Integer]
+    validate nature => [Symbol, Integer, Nature]
+    return nature if nature.is_a?(Nature)
     unless Nature.exists?(nature)
       raise "No nature could be found for #{nature.inspect(50)}"
     end
@@ -46,7 +47,8 @@ class Nature
   # @param nature [Symbol, Integer] the nature to look up.
   # @return [Nature, NilClass]
   def self.try_get(nature)
-    validate nature => [Symbol, Integer]
+    validate nature => [Symbol, Integer, Nature]
+    return nature if nature.is_a?(Nature)
     return Cache[nature] if nature.is_a?(Symbol)
     return Cache.values.find { |n| n.id == nature }
   end
