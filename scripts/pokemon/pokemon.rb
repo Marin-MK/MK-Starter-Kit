@@ -60,6 +60,21 @@ class Pokemon
   end
 
 
+  # @return [Item, NilClass] the item the Pokemon is holding.
+  def item
+    return nil unless @item
+    return Item.get(@item)
+  end
+
+  # Gives the Pokemon an item to hold.
+  # @param value [Symbol, NilClass] the item to give the Pokemon.
+  def item=(value)
+    validate value => [Symbol, NilClass]
+    @item = value
+  end
+
+
+
   # @return [Boolean] whether or not the Pokemon is shiny.
   def shiny
     return @shinyflag if @shinyflag

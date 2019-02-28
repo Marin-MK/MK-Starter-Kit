@@ -34,4 +34,32 @@ class Trainer
       return false
     end
   end
+
+  # Adds the item or items to the bag based on their associated pocket.
+  # @param item [Symbol, Integer] the item to add to the bag.
+  # @param count [Integer] the amount of items to add to the bag.
+  # @return [Boolean] whether or not the item could be added to the bag.
+  def add_item(item, count = 1)
+    return @bag.add_item(item, count)
+  end
+
+  # @param item [Symbol, Integer] the item to look for.
+  # @return [Boolean] whether or not the item exists in the bag.
+  def has_item?(item)
+    return @bag.has_item?(item)
+  end
+
+  # @param item [Symbol, Integer] the item to get the quantity of.
+  # @return [Integer] how many of one item there is in the bag.
+  def get_quantity(item)
+    return @bag.get_quantity(item)
+  end
+
+  # Removes an item from the bag.
+  # @param item [Symbol, Integer] the item to remove.
+  # @param count [Integer] the number of items to remove.
+  # @return [Boolean] whether or not any items were removed.
+  def remove_item(item, count = 1)
+    return @bag.remove_item(item, count)
+  end
 end

@@ -7,7 +7,7 @@ class Trainer
     MAX_POCKET_SIZE = {
       items: 42
     }
-    # @return [Integer] maximum number of items you can have of one particular item.
+    # @return [Integer] maximum number of items you can have of one individual item.
     MAX_ITEM_SIZE = 999
 
     # @return [Array<Array<Hash>>] the bag pockets.
@@ -27,10 +27,6 @@ class Trainer
       validate item => [Symbol, Integer]
       item = Item.get(item)
       pocket = item.pocket
-      unless @pockets[pocket]
-        warn "Pocket #{pocket.inspect(16)} couldn't be found for item #{item.intname.inspect(16)}"
-        pocket = POCKETS[0]
-      end
       existing_item = @pockets[pocket].find { |e| e[:item] == item.intname }
       if existing_item
         if existing_item[:count] < MAX_ITEM_SIZE
@@ -47,12 +43,56 @@ class Trainer
       return true
     end
 
+    # @param item [Symbol, Integer] the item to look for.
+    # @return [Boolean] whether or not the item exists in the bag.
+    def has_item?(item)
+      validate item => [Symbol, Integer]
+      item = Item.get(item)
+      pocket = item.pocket
+      name = item.intname
+      return @pockets[pocket].any? { |e| e[:item] == name && e[:count] > 0 }
+    end
+
+    # @param item [Symbol, Integer] the item to get the quantity of.
+    # @return [Integer] how many of one item there is in the bag.
+    def get_quantity(item)
+      validate item => [Symbol, Integer]
+      return 0 unless self.has_item?(item)
+      item = Item.get(item)
+      pocket = item.pocket
+      name = item.intname
+      return @pockets[pocket].find { |e| e[:item] == name }[:count]
+    end
+
+    # Removes an item from the bag.
+    # @param item [Symbol, Integer] the item to remove.
+    # @param count [Integer] the number of items to remove.
+    # @return [Boolean] whether or not any items were removed.
+    def remove_item(item, count = 1)
+      validate item => [Symbol, Integer], count => Integer
+      return false unless self.has_item?(item)
+      item = Item.get(item)
+      pocket = item.pocket
+      name = item.intname
+      for i in 0...@pockets[pocket].size
+        slot = @pockets[pocket][i]
+        if slot[:item] == name
+          if slot[:count] > count
+            slot[:count] -= 1
+          else
+            @pockets[pocket].delete_at(i)
+          end
+          return true
+        end
+      end
+      return false
+    end
+
     # @param pocket [Symbol] the pocket to determine if it's full.
     # @return [Boolean] whether or not the pocket is full.
     def pocket_full?(pocket)
       unless @pockets[pocket]
-        warn "Pocket #{pocket.inspect(16)} couldn't be found"
-        pocket = POCKETS[0]
+        raise "Pocket #{pocket.inspect(16)} couldn't be found"
       end
       return false unless MAX_POCKET_SIZE[pocket]
       return false if @pockets[pocket].size < MAX_POCKET_SIZE[pocket]
