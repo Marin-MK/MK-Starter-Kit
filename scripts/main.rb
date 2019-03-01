@@ -12,9 +12,8 @@ $visuals.map_renderer.create_tiles if $visuals.map_renderer.empty?
 $trainer = Trainer.new
 
 p = Pokemon.new(:BULBASAUR, 100)
-msgbox p.ot_name
+msgbox "Name: #{p.name}\nForm: #{p.form}\nEXP: #{p.exp}\nType1: #{p.type1.intname}\nType2: #{p.type2.intname}"
 $trainer.add_pokemon(p)
-msgbox p.ot_name
 
 
 loop do

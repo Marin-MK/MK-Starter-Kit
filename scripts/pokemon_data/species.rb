@@ -17,6 +17,7 @@ class Stats
   alias spd= speed=
 end
 
+
 class Species
   Cache = {}
 
@@ -26,50 +27,133 @@ class Species
   attr_reader :intname
   # @return [Integer] the ID of the species.
   attr_reader :id
+
   # @return [String] the name of the species.
-  attr_reader :name
+  def name(form = 0)
+    return @forms[form][:name] || @name if @forms[form] && form != 0
+    return @name
+  end
+
   # @return [Symbol] type 1 of the species.
-  attr_reader :type1
+  def type1(form = 0)
+    return @forms[form][:type1] || @type1 if @forms[form] && form != 0
+    return @type1
+  end
+
   # @return [Symbol, NilClass] type 2 of the species
-  attr_reader :type2
+  def type2(form = 0)
+    return @forms[form][:type2] || @type2 if @forms[form] && form != 0
+    return @type2
+  end
+
   # @return [Stats] the base statistics of the species.
-  attr_reader :stats
+  def stats(form = 0)
+    return @forms[form][:stats] || @stats if @forms[form] && form != 0
+    return @stats
+  end
+
   # @return [Array<Symbol>] the possible abilities of the species.
-  attr_reader :abilities
+  def abilities(form = 0)
+    return @forms[form][:abilities] || @abilities if @forms[form] && form != 0
+    return @abilities
+  end
+
   # @return [Symbol, NilClass] the hidden ability of the species.
-  attr_reader :hidden_ability
+  def hidden_ability(form = 0)
+    return @forms[form][:hidden_ability] || @hidden_ability if @forms[form] && form != 0
+    return @hidden_ability
+  end
+
   # @return [Stats] the EV Yield of the species.
-  attr_reader :ev_yield
+  def ev_yield(form = 0)
+    return @forms[form][:ev_yield] || @ev_yield if @forms[form] && form != 0
+    return @ev_yield
+  end
+
   # @return [Array<Symbol>] the egg groups of the species.
-  attr_reader :egg_groups
+  def egg_groups(form = 0)
+    return @forms[form][:egg_groups] || @egg_groups if @forms[form] && form != 0
+    return @egg_groups
+  end
+
   # @return [Float] the height of the species in kg.
-  attr_reader :height
+  def height(form = 0)
+    return @forms[form][:height] || @height if @forms[form] && form != 0
+    return @height
+  end
+
   # @return [Float] the weight of the species in m.
-  attr_reader :weight
+  def weight(form = 0)
+    return @forms[form][:weight] || @weight if @forms[form] && form != 0
+    return @weight
+  end
+
   # @return [Integer] the Base EXP of the species.
-  attr_reader :base_exp
+  def base_exp(form = 0)
+    return @forms[form][:base_exp] || @base_exp if @forms[form] && form != 0
+    return @base_exp
+  end
+
   # @return [Symbol] the leveling rate of the species.
-  attr_reader :leveling_rate
+  def leveling_rate(form = 0)
+    return @forms[form][:leveling_rate] || @leveling_rate if @forms[form] && form != 0
+    return @leveling_rate
+  end
+
   # @return [Symbol] the gender ratio of the species.
-  attr_reader :gender_ratio
+  def gender_ratio(form = 0)
+    return @forms[form][:gender_ratio] || @gender_ratio if @forms[form] && form != 0
+    return @gender_ratio
+  end
+
   # @return [Integer] the catch rate of the species.
-  attr_reader :catch_rate
+  def catch_rate(form = 0)
+    return @forms[form][:catch_rate] || @catch_rate if @forms[form] && form != 0
+    return @catch_rate
+  end
+
   # @return [Integer] the minimum number of steps it takes to hatch an egg of the species.
-  attr_reader :hatch_time
+  def hatch_time(form = 0)
+    return @forms[form][:hatch_time] || @hatch_time if @forms[form] && form != 0
+    return @hatch_time
+  end
+
   # @return [Symbol] the Pokedex color of the species.
-  attr_reader :pokedex_color
+  def pokedex_color(form = 0)
+    return @forms[form][:pokedex_color] || @pokedex_color if @forms[form] && form != 0
+    return @pokedex_color
+  end
+
   # @return [String] the Pokedex entry of the species.
-  attr_reader :pokedex_entry
+  def pokedex_entry(form = 0)
+    return @forms[form][:pokedex_entry] || @pokedex_entry if @forms[form] && form != 0
+    return @pokedex_entry
+  end
+
   # @return [Integer] the initial happiness of pokemon of this species.
-  attr_reader :happiness
+  def happiness(form = 0)
+    return @forms[form][:happiness] || @happiness if @forms[form] && form != 0
+    return @happiness
+  end
+
   # @return [Moveset] the full moveset of the species.
-  attr_reader :moveset
+  def moveset(form = 0)
+    return @forms[form][:moveset] || @moveset if @forms[form] && form != 0
+    return @moveset
+  end
+
   # @return [Array<Hash>] all possible evolutions of the species.
-  attr_reader :evolutions
+  def evolutions(form = 0)
+    return @forms[form][:evolutions] || @evolutions if @forms[form] && form != 0
+    return @evolutions
+  end
+
+  # @return [Proc] the proc used to determine the form of the Pokemon upon creation.
+  attr_reader :get_form_on_creation
 
   # Creates a new Species object.
   def initialize(&block)
-    validate block => Proc
+    #validate block => Proc
     @id = 0
     @stats = Stats.new
     @stats.keys.each { |key| @stats.set(key, 0) }
@@ -82,14 +166,14 @@ class Species
     @moveset.evolution = []
     @moveset.egg = []
     instance_eval(&block)
-    validate_species
+    #validate_species
     Cache[@intname] = self
     self.class.const_set(@intname, self)
   end
 
   # @return [Integer] the Base Stat Total of the species' base stats.
   def bst
-    return @stats.hp + @stats.attack + @stats.defense + @stats.spatk + @stats.spdef + @stats.speed
+    return self.stats.hp + self.stats.attack + self.stats.defense + self.stats.spatk + self.stats.spdef + self.stats.speed
   end
 
   # Ensures this species contains valid data.
@@ -209,4 +293,15 @@ Species.new do
       argument: 16
     }
   ]
+  @get_form_on_creation = proc do |pokemon|
+    next rand(2)
+  end
+  @forms = {
+    1 => {
+      name: "Boolbasaurus",
+      type1: :FIGHTING,
+      type2: :FLYING,
+      leveling_rate: :FAST
+    }
+  }
 end
