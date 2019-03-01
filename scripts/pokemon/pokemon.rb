@@ -44,12 +44,13 @@ class Pokemon
     # Ensure the species exists and set some initial values
     species = Species.get(species)
     @species_intname = species.intname
+    @form = 0
     if species.get_form_on_creation
       f = species.get_form_on_creation.call(self)
       @form = f || 0
     end
-    @name = species.name(@form)
-    @exp = EXP.get_exp(species.leveling_rate(@form), level)
+    @name = species.name(self.form)
+    @exp = EXP.get_exp(species.leveling_rate(self.form), level)
     @pid = rand(2 ** 32)
     @ivs = Stats.new
     @ivs.hp = rand(32)
@@ -66,7 +67,7 @@ class Pokemon
     @evs.spdef = 0
     @evs.speed = 0
     @hp = self.totalhp
-    @happiness = species.happiness(@form)
+    @happiness = species.happiness(self.form)
     @ball_used = :POKEBALL
     if trainer
       @ot_name = trainer.name
@@ -89,8 +90,25 @@ class Pokemon
   # @return [Integer] the form of the Pokemon.
   def form
     return @formflag if @formflag
-    return @form # Replace with getForm
+    if species.get_form
+      f = species.get_form.call(self)
+      self.set_form(f) if f
+    end
+    return @form
   end
+
+  # Naturally changes the Pokemon's form.
+  # @param form [Integer] the new form of the Pokemon.
+  def set_form(form)
+    validate form => Integer
+    unless @form == form
+      @form = form
+      # Update the Pokemon to reflect the form change
+      self.calc_stats
+    end
+  end
+
+
 
   # Changes the amount of EXP this Pokemon has.
   # @param value [Integer] the new EXP amount.
@@ -101,14 +119,14 @@ class Pokemon
 
   # @return [Integer] the level this Pokemon is currently at.
   def level
-    return EXP.get_level(species.leveling_rate(@form), @exp)
+    return EXP.get_level(species.leveling_rate(self.form), @exp)
   end
 
   # Changes the level of this Pokemon.
   # @param value [Integer] the new level of this Pokemon.
   def level=(value)
     validate value => Integer
-    @exp = EXP.get_exp(species.leveling_rate(@form), value)
+    @exp = EXP.get_exp(species.leveling_rate(self.form), value)
   end
 
 
@@ -181,10 +199,10 @@ class Pokemon
       :FEMALEONEEIGHTH => 31,
       :ALWAYSMALE => 0
     }
-    unless threshold.has_key?(species.gender_ratio(@form))
+    unless threshold.has_key?(species.gender_ratio(self.form))
       raise "Invalid Gender Ratio for species #{species.intname.inspect(50)}."
     end
-    threshold = threshold[species.gender_ratio(@form)]
+    threshold = threshold[species.gender_ratio(self.form)]
     return 2 if threshold == 255
     return 1 if threshold == 254
     return 0 if threshold == 0
@@ -216,10 +234,10 @@ class Pokemon
   def ability
     return Ability.get(@abilityflag) if @abilityflag
     idx = @pid % 2 # Ability index
-    if idx == 1 && species.abilities(@form).size == 1
-      return Ability.get(species.abilities(@form)[0])
+    if idx == 1 && species.abilities(self.form).size == 1
+      return Ability.get(species.abilities(self.form)[0])
     else
-      return Ability.get(species.abilities(@form)[idx])
+      return Ability.get(species.abilities(self.form)[idx])
     end
   end
 
@@ -281,13 +299,13 @@ class Pokemon
 
   # @return [Type] the first type of this Pokemon species.
   def type1
-    return Type.get(species.type1(@form))
+    return Type.get(species.type1(self.form))
   end
 
   # @return [Type, NilClass] the second type of this Pokemon species.
   def type2
-    return nil if species.type2(@form).nil? || species.type1(@form) == species.type2(@form)
-    return Type.get(species.type2(@form))
+    return nil if species.type2(self.form).nil? || species.type1(self.form) == species.type2(self.form)
+    return Type.get(species.type2(self.form))
   end
 
 
@@ -295,7 +313,7 @@ class Pokemon
   # @return [Array<UsableMove>] the moves this Pokemon would have at the current level.
   def get_moveset_for_level
     moves = []
-    moveset = species.moveset(@form).level
+    moveset = species.moveset(self.form).level
     keys = moveset.keys.select { |k| k <= level }
     keys.reverse.each do |k|
       move = moveset[k]
@@ -317,8 +335,8 @@ class Pokemon
     validate move => [Symbol, Integer, Move]
     move = Move.get(move)
     name = move.intname
-    species.moveset(@form).keys.each do |key|
-      moves = species.moveset(@form).get(key)
+    species.moveset(self.form).keys.each do |key|
+      moves = species.moveset(self.form).get(key)
       if key == :level
         moves.each_value do |e|
           if e.is_a?(Array)
@@ -340,7 +358,7 @@ class Pokemon
     move = Move.get(move)
     name = move.intname
     return false if self.knows_move?(move)
-    return species.moveset(@form).tms.include?(name) || species.moveset(@form).tutor.include?(name)
+    return species.moveset(self.form).tms.include?(name) || species.moveset(self.form).tutor.include?(name)
   end
 
 
@@ -349,17 +367,17 @@ class Pokemon
   def calc_stats
     buff = self.nature.buff
     debuff = self.nature.debuff
-    @totalhp = (((2.0 * species.stats(@form).hp + @ivs.hp + (@evs.hp / 4.0)) * level.to_f) / 100.0).floor + level + 10
+    @totalhp = (((2.0 * species.stats(self.form).hp + @ivs.hp + (@evs.hp / 4.0)) * level.to_f) / 100.0).floor + level + 10
     mod = (buff == :attack ? 1.1 : debuff == :attack ? 0.9 : 1.0)
-    @attack = (((((2.0 * species.stats(@form).attack + @ivs.attack + (@evs.attack / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    @attack = (((((2.0 * species.stats(self.form).attack + @ivs.attack + (@evs.attack / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
     mod = (buff == :defense ? 1.1 : debuff == :defense ? 0.9 : 1.0)
-    @defense = (((((2.0 * species.stats(@form).defense + @ivs.defense + (@evs.defense / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    @defense = (((((2.0 * species.stats(self.form).defense + @ivs.defense + (@evs.defense / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
     mod = (buff == :spatk ? 1.1 : debuff == :spatk ? 0.9 : 1.0)
-    @spatk = (((((2.0 * species.stats(@form).spatk + @ivs.spatk + (@evs.spatk / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    @spatk = (((((2.0 * species.stats(self.form).spatk + @ivs.spatk + (@evs.spatk / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
     mod = (buff == :spdef ? 1.1 : debuff == :spdef ? 0.9 : 1.0)
-    @spdef = (((((2.0 * species.stats(@form).spdef + @ivs.spdef + (@evs.spdef / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    @spdef = (((((2.0 * species.stats(self.form).spdef + @ivs.spdef + (@evs.spdef / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
     mod = (buff == :speed ? 1.1 : debuff == :speed ? 0.9 : 1.0)
-    @speed = (((((2.0 * species.stats(@form).speed + @ivs.speed + (@evs.speed / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    @speed = (((((2.0 * species.stats(self.form).speed + @ivs.speed + (@evs.speed / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
   end
 
   alias atk attack

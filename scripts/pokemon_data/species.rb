@@ -150,6 +150,8 @@ class Species
 
   # @return [Proc] the proc used to determine the form of the Pokemon upon creation.
   attr_reader :get_form_on_creation
+  # @return [Proc] the proc used to determine the form of the Pokemon after creation.
+  attr_reader :get_form
 
   # Creates a new Species object.
   def initialize(&block)
@@ -294,14 +296,17 @@ Species.new do
     }
   ]
   @get_form_on_creation = proc do |pokemon|
-    next rand(2)
+    next 0
+  end
+  @get_form = proc do |pokemon|
+    next 1 if pokemon.has_item?(:REPEL)
   end
   @forms = {
     1 => {
       name: "Boolbasaurus",
       type1: :FIGHTING,
       type2: :FLYING,
-      leveling_rate: :FAST
+      leveling_rate: :SLOW
     }
   }
 end
