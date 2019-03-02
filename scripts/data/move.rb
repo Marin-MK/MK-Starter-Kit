@@ -74,7 +74,8 @@ class Move
   # @param move [Symbol, Integer] the move to look up.
   # @return [Boolean] whether or not the move exists.
   def self.exists?(move)
-    validate move => [Symbol, Integer]
+    validate move => [Symbol, Integer, Move]
+    return true if move.is_a?(Move)
     return Cache.has_key?(move) if move.is_a?(Symbol)
     return Cache.values.any? { |m| m.id == move }
   end
@@ -84,6 +85,7 @@ class Move
     return Cache.keys.sample
   end
 
+  # @return [Integer] the total number of moves.
   def self.count
     return Cache.size
   end

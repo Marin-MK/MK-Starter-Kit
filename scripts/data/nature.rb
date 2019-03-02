@@ -56,7 +56,8 @@ class Nature
   # @param nature [Symbol, Integer] the nature to look up.
   # @return [Boolean] whether or not the nature exists.
   def self.exists?(nature)
-    validate nature => [Symbol, Integer]
+    validate nature => [Symbol, Integer, Nature]
+    return true if nature.is_a?(Nature)
     return Cache.has_key?(nature) if nature.is_a?(Symbol)
     return Cache.values.any? { |n| n.id == nature }
   end
@@ -66,6 +67,7 @@ class Nature
     return Cache.keys.sample
   end
 
+  # @return [Integer] the total number of natures.
   def self.count
     return Cache.size
   end

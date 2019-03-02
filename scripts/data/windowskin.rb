@@ -1,0 +1,84 @@
+class Windowskin
+  Cache = []
+
+  # @return [Integer] the ID of the windowskin.
+  attr_accessor :id
+  # @return [Integer] the left-most X position where text can be drawn.
+  attr_accessor :line_x_start
+  # @return [Integer] the right-most X position where text can be drawn.
+  attr_accessor :line_x_end
+  # @return [Integer] the top-most Y position where text can be drawn.
+  attr_accessor :line_y_start
+  # @return [Integer] the number of pixels in between lines.
+  attr_accessor :line_y_space
+  # @return [String] the filename associated with this windowskin.
+  attr_accessor :filename
+  # @Return [Rect] the rectangle that is seen as the center of the windowskin.
+  attr_accessor :center
+
+  # Creates a new Windowskin object.
+  def initialize(&block)
+    validate block => Proc
+    @id = 0
+    instance_eval(&block)
+    validate_windowskin
+    Cache[@id] = self
+  end
+
+  # Ensures this windowskin contains valid data.
+  def validate_windowskin
+    validate @id => Integer,
+        @line_x_start => Integer,
+        @line_x_end => Integer,
+        @line_y_start => Integer,
+        @line_y_space => Integer,
+        @filename => String,
+        @center => Rect
+    raise "Cannot have an ID of 0 or lower for new Windowskin object" if @id < 1
+  end
+
+  # @param windowskin [Integer] the windowskin to look up.
+  # @return [Windowskin]
+  def self.get(windowskin)
+    validate windowskin => [Integer, Windowskin]
+    return windowskin if windowskin.is_a?(Windowskin)
+    unless Windowskin.exists?(windowskin)
+      raise "No windowskin could be found for #{windowskin.inspect(50)}"
+    end
+    return Windowskin.try_get(windowskin)
+  end
+
+  # @param windowskin [Integer] the windowskin to look up.
+  # @return [Windowskin, NilClass]
+  def self.try_get(windowskin)
+    validate windowskin => [Integer, Windowskin]
+    return windowskin if windowskin.is_a?(Windowskin)
+    return Cache[windowskin]
+  end
+
+  # @param windowskin [Symbol, Integer] the windowskin to look up.
+  # @return [Boolean] whether or not the windowskin exists.
+  def self.exists?(windowskin)
+    validate windowskin => [Integer, Windowskin]
+    return true if windowskin.is_a?(Windowskin)
+    return !Cache[windowskin].nil?
+  end
+
+  # @return [Integer] the maximum width for drawing text on this windowskin.
+  def get_text_width(window_width)
+    source_bitmap = Bitmap.new("gfx/windowskins/" + @filename)
+    ret = window_width - @line_x_start - source_bitmap.width + @line_x_end - 8
+    source_bitmap.dispose
+    return ret
+  end
+end
+
+Windowskin.new do
+  @id = 1
+  @line_x_start = 22
+  @line_x_end = 48
+  @line_y_start = 10
+  @line_y_space = 30
+  @filename = "main"
+  @center = Rect.new(22, 28, 40, 28)
+end

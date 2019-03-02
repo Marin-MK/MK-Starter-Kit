@@ -231,7 +231,8 @@ class Species
   # @param species [Symbol, Integer] the species to look up.
   # @return [Boolean] whether or not the species exists.
   def self.exists?(species)
-    validate species => [Symbol, Integer]
+    validate species => [Symbol, Integer, Species]
+    return true if species.is_a?(Species)
     return Cache.has_key?(species) if species.is_a?(Symbol)
     return Cache.values.any? { |s| s.id == species }
   end
@@ -241,6 +242,7 @@ class Species
     return Cache.keys.sample
   end
 
+  # @return [Integer] the total number of species.
   def self.count
     return Cache.size
   end

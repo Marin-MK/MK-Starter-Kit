@@ -63,7 +63,8 @@ class Item
   # @param item [Symbol, Integer] the item to look up.
   # @return [Boolean] whether or not the item exists.
   def self.exists?(item)
-    validate item => [Symbol, Integer]
+    validate item => [Symbol, Integer, Item]
+    return true if item.is_a?(Item)
     return Cache.has_key?(item) if item.is_a?(Symbol)
     return Cache.values.any? { |i| i.id == item }
   end
@@ -73,6 +74,7 @@ class Item
     return Cache.keys.sample
   end
 
+  # @return [Integer] the total number of items.
   def self.count
     return Cache.size
   end

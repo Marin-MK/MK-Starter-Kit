@@ -1,13 +1,20 @@
 class Type
   Cache = {}
 
+  # @return [Symbol] the internal name of the type.
   attr_reader :intname
+  # @return [Integer] the ID of the type.
   attr_reader :id
+  # @return [String] the name of the type.
   attr_reader :name
+  # @return [Array<Symbol>] the types the type is strong against.
   attr_reader :strong_against
+  # @return [Array<Symbol>] the types the type is resistant to.
   attr_reader :resistant_to
+  # @return [Array<Symbol>] the types the type is immune to.
   attr_reader :immune_to
 
+  # Creates a new Type object.
   def initialize(&block)
     validate block => Proc
     @id = 0
@@ -20,6 +27,7 @@ class Type
     self.class.const_set(@intname, self)
   end
 
+  # Ensures this type contains valid data.
   def validate_type
     validate @intname => Symbol,
         @id => Integer
@@ -29,6 +37,7 @@ class Type
     raise "Cannot have an ID of 0 or lower for new Type object" if @id < 1
   end
 
+  # Ensures all types contain valid data.
   def self.validate_all_types
     intnames = Cache.keys
     Cache.values.each do |type|
@@ -73,7 +82,8 @@ class Type
   # @param type [Symbol, Integer] the type to look up.
   # @return [Boolean] whether or not the type exists.
   def self.exists?(type)
-    validate type => [Symbol, Integer]
+    validate type => [Symbol, Integer, Type]
+    return true if type.is_a?(Type)
     return Cache.has_key?(type) if type.is_a?(Symbol)
     return Cache.values.any? { |t| t.id == type }
   end
@@ -83,6 +93,7 @@ class Type
     return Cache.keys.sample
   end
 
+  # @return [Integer] the total number of types.
   def self.count
     return Cache.size
   end

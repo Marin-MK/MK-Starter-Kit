@@ -53,6 +53,8 @@ class Ability
   # @param ability [Symbol, Integer] the ability to look up.
   # @return [Boolean] whether or not the ability exists.
   def self.exists?(ability)
+    validate ability => [Symbol, Integer, Ability]
+    return true if ability.is_a?(Ability)
     return Cache.has_key?(ability) if ability.is_a?(Symbol)
     return Cache.values.any? { |a| a.id == ability }
   end
@@ -62,6 +64,7 @@ class Ability
     return Cache.keys.sample
   end
 
+  # @return [Integer] the total number of abilities.
   def self.count
     return Cache.size
   end
