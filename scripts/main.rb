@@ -12,9 +12,6 @@ $visuals.map_renderer.create_tiles if $visuals.map_renderer.empty?
 $trainer = Trainer.new
 
 p = Pokemon.new(:BULBASAUR, 100)
-msgbox "Name: #{p.name}\nForm: #{p.form}\nEXP: #{p.exp}\nLevel: #{p.level}\nType1: #{p.type1.intname}\nType2: #{p.type2.intname}"
-p.item = :REPEL
-msgbox "Name: #{p.name}\nForm: #{p.form}\nEXP: #{p.exp}\nLevel: #{p.level}\nType1: #{p.type1.intname}\nType2: #{p.type2.intname}"
 $trainer.add_pokemon(p)
 
 

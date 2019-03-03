@@ -75,7 +75,7 @@ class Game
       if oldrun != @running # Walking to running or running to walking
         @graphic_name = @running ? "boy_run" : "boy"
       end
-      if !moving? && !@wasmoving && !$game.any_events_running?
+      if input_possible?
         case input = Input.dir4
         when 2
           move_down
@@ -89,6 +89,11 @@ class Game
         @lastdir4 = input
       end
       @wasmoving = moving?
+    end
+
+    # @return [Boolean] whether or not player input is possible. Used for pause menu, registered items and movement.
+    def input_possible?
+      return !moving? && !@wasmoving && !$game.any_events_running?
     end
 
     # Moves the player down one tile.

@@ -24,7 +24,7 @@ def create_event(map, id, x, y, dir)
   }
 
   page.commands = [
-    [0, :script, {code: "turn_to_player"}],
+    [0, :message, {text: "Hello {PLAYER}! It's been a while since I last saw you.\nHow's everything going?"}],
     #[0, :script, {code: "msgbox caller.join(\"\n\")"}]
 
     #[0, :if, {condition: [:triggered_by, {mode: :line_of_sight}]}],
@@ -69,7 +69,6 @@ def create_event(map, id, x, y, dir)
   ]
 
   page.conditions = [
-    [:switch, {switchid: 1, value: false}]
   ]
 
   page.triggers = [
@@ -82,14 +81,16 @@ def create_event(map, id, x, y, dir)
     #[:autorun],
   ]
 
-  #page.automoveroute[:frequency] = 0
-  #page.automoveroute[:commands] = [:turn_to_player]
+  page.automoveroute[:frequency] = 0
+  page.automoveroute[:commands] = [:left, :left, :down, :down, :right, :right, :up, :up]
 
   event.pages = [page]
   map.events[id] = event
 end
 
-#create_event(map, 1, 7, 1, 2)
+create_event(map, 1, 1, 1, 2)
+map.events[1].pages[0].automoveroute[:commands] = []
+create_event(map, 2, 3, 2, 4)
 
 # Overwrites tileset passability data for non-nil entries.
 map.passabilities = [

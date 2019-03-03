@@ -79,5 +79,6 @@ class Game
   def update
     @maps.values.each(&:update)
     @player.update
+    
   end
 end

@@ -2,79 +2,68 @@ Font.default_outline = false
 Font.default_name = "Pokemon Fire Red"
 Font.default_size = 36
 
-class MessageWindow
-  attr_reader :width
-  attr_reader :height
-  attr_reader :windowskin
+class MessageWindow < BaseWindow
   attr_reader :text
-  attr_reader :viewport
 
-  def initialize(width = 96, height = 96, windowskin = 1, text = "", viewport = nil)
-    validate width => Integer,
+  def initialize(
+        text: "",
+        x: 0,
+        y: 0,
+        width: 460,
+        height: 84,
+        windowskin: 1,
+        viewport: nil,
+        color: Color.new(48, 80, 200),
+        shadow_color: Color.new(208, 208, 200),
+        ending_arrow: false)
+    validate text => String,
+        x => Integer,
+        y => Integer,
+        width => Integer,
         height => Integer,
         windowskin => [Integer, NilClass, Windowskin],
-        text => String,
-        viewport => [NilClass, Viewport]
-    @width = width
-    @height = height
-    @windowskin = Windowskin.get(windowskin || 1)
-    @viewport = viewport
-    @window = SplitSprite.new(@viewport)
-    @window.width = @width
-    @window.height = @height
-    @window.set("gfx/windowskins/" + @windowskin.filename, @windowskin.center)
-    @text_bitmap = Sprite.new(@viewport)
+        viewport => [NilClass, Viewport],
+        color => Color,
+        shadow_color => Color,
+        ending_arrow => Boolean
+    @ending_arrow = ending_arrow
+    @text_bitmap = Sprite.new(viewport)
     @text_bitmap.z = 99999
-    @text_bitmap.bitmap = Bitmap.new(@width, @height)
-    @text_width = @windowskin.get_text_width(@width)
-    @running = false
+    super(width, height, windowskin, color, shadow_color, viewport)
+    self.x = x
+    self.y = y
     self.text = text
   end
 
   def width=(value)
-    validate value => Integer
-    @window.width = value
-    @width = value
+    super(value)
+    @text_width = @windowskin.get_text_width(@width)
     @text_bitmap.bitmap = Bitmap.new(@text_width, 100)
   end
 
   def height=(value)
-    validate value => Integer
-    @window.height = value
-    @height = value
+    super(value)
     @text_bitmap.bitmap = Bitmap.new(@text_width, 100)
   end
 
-  def windowskin=(value)
-    validate value => [Integer, Windowskin]
-    @windowskin = Windowskin.get(value)
-    @window.set("gfx/windowskins/" + @windowskin.filename, @windowskin.center)
-  end
-
-  def viewport=(value)
-    @window.viewport = value
-  end
-
-  def x
-    return @window.x
-  end
-
   def x=(value)
-    @window.x = value
+    super(value)
     @text_bitmap.x = value + @windowskin.line_x_start
   end
 
-  def y
-    return @window.y
+  def y=(value)
+    super(value)
+    @text_bitmap.y = value + @windowskin.line_y_start - 6
   end
 
-  def y=(value)
-    @window.y = value
-    @text_bitmap.y = value + @windowskin.line_y_start
+  def visible=(value)
+    super(value)
+    @text_bitmap.visible = value
+    @arrow.visible = value if @arrow
   end
 
   def text=(value)
-    @text = value
+    @text = value.gsub(/{PLAYER}/, $trainer.name)
     @text_index = 0
     @line_index = 0
     @draw_counter = 0
@@ -85,7 +74,7 @@ class MessageWindow
   end
 
   def update
-    return unless @running
+    return unless super
     if @arrow
       @arrow_counter += 1
       if @arrow_counter == 32
@@ -137,10 +126,10 @@ class MessageWindow
                 text = @formatted_text[i]
               end
               @text_bitmap.draw_text(
-                  y: (i - @current_line) * @windowskin.line_y_space,
+                  y: (i - @current_line) * @windowskin.line_y_space + 6,
                   text: text,
-                  color: Color.new(224, 8, 8),
-                  shadow_color: Color.new(208, 208, 200)
+                  color: @color,
+                  shadow_color: @shadow_color
               )
             end
           end
@@ -151,8 +140,9 @@ class MessageWindow
           @move_up_counter = 6
         end
       end
-    elsif Input.trigger?(Input::A)
-      @running = false
+    else
+      show_arrow if @ending_arrow && (!@arrow || !@arrow.visible)
+      @running = false if Input.trigger?(Input::A)
     end
   end
 
@@ -160,7 +150,7 @@ class MessageWindow
     unless @arrow
       @arrow = Sprite.new(@viewport)
       @arrow.bitmap = Bitmap.new("gfx/misc/message window arrow")
-      @arrow.y = self.y + @windowskin.line_y_start + @windowskin.line_y_space + @arrow.bitmap.height - 4
+      @arrow.y = self.y + @windowskin.line_y_start + @windowskin.line_y_space + @arrow.bitmap.height - 10
       @arrow_counter = 0
     end
     @arrow.visible = true
@@ -172,13 +162,10 @@ class MessageWindow
   end
 
   def dispose
+    super
     @text_bitmap.dispose
-    @window.dispose
+    @arrow.dispose if @arrow
     @running = false
-  end
-
-  def running?
-    return @running
   end
 
   def self.get_formatted_text(bitmap, max_width, otxt)
@@ -206,4 +193,23 @@ class MessageWindow
     end
     return ntxt
   end
+end
+
+def show_message(text, color = Color::BLUE, ending_arrow = false)
+  window = MessageWindow.new(
+      text: text,
+      x: 10,
+      y: 224,
+      width: 460,
+      height: 84,
+      windowskin: 1,
+      color: color,
+      ending_arrow: ending_arrow)
+  while window.running?
+    window.update
+    Graphics.update
+    Input.update
+    $visuals.update(:no_events)
+  end
+  window.dispose
 end

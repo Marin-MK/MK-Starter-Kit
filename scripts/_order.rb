@@ -52,5 +52,7 @@ pokemon/bag.rb: Bag
 pokemon/pokedex.rb: Pokedex
 pokemon/trainer.rb: Trainer
 sprites/splitsprite.rb: Split Sprite
+sprites/base_window.rb: Base Window
 sprites/message_window.rb: Message Window
+sprites/choice_window.rb: Choice Window
 main.rb: Main

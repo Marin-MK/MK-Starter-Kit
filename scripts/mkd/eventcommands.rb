@@ -92,6 +92,13 @@ module MKD
     end
 
 
+    class MessageCommand < BasicCommand
+      def call
+        show_message(@text)
+      end
+    end
+
+
     # A Symbol -> Class table used to convert symbols to commands.
     SymbolToCommand = {
       basic: BasicCommand,
@@ -104,7 +111,8 @@ module MKD
       setvariable: SetVariableCommand,
       wait: WaitCommand,
       call_event: CallEventCommand,
-      transfer: TransferCommand
+      transfer: TransferCommand,
+      message: MessageCommand
     }
   end
 end

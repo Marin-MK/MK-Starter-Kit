@@ -7,6 +7,7 @@ class Sprite
         shadow_color => [NilClass, Color],
         outline_color => [NilClass, Color],
         alignment => [Symbol, Integer, String]
+    y -= 8
     alignment = 0 if [:LEFT, :left, "left", "LEFT"].include?(alignment)
     alignment = 1 if [:CENTER, :center, "center", "CENTER"].include?(alignment)
     alignment = 2 if [:RIGHT, :right, "right", "RIGHT"].include?(alignment)

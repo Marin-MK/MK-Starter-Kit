@@ -6,4 +6,5 @@ map.tilesets = [1]
 map.tiles = [
   [[0, 137]] * map.width * map.height
 ]
+
 map.save

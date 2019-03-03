@@ -17,6 +17,10 @@ class SplitSprite
     end
   end
 
+  def refresh
+    self.set(@file, @center)
+  end
+
   def set(file, center)
     validate file => String, center => [Rect, Array]
     center = Rect.new(*center) if center.is_a?(Array)
@@ -62,7 +66,7 @@ class SplitSprite
       bmp.blt(0, tlh + i * center.height, src, Rect.new(0, center.y, center.x, center.height))
     end
     frac_left = (space_left / center.height.to_f) % 1
-    bmp.blt(0, tlh + (i + 1) * center.height, src, Rect.new(0, center.y, center.x, center.height * frac_left))
+    bmp.blt(0, tlh + (i + 1) * center.height, src, Rect.new(0, center.y, center.x, (center.height * frac_left).round))
 
     # Space between top right and bottom right
     space_right = @height - trh - brh
@@ -70,7 +74,7 @@ class SplitSprite
       bmp.blt(@width - trw, trh + i * center.height, src, Rect.new(center.x + center.width, center.y, center.x, center.height))
     end
     frac_right = (space_right / center.height.to_f) % 1
-    bmp.blt(@width - trw, trh + (i + 1) * center.height, src, Rect.new(center.x + center.width, center.y, center.x, center.height * frac_right))
+    bmp.blt(@width - trw, trh + (i + 1) * center.height, src, Rect.new(center.x + center.width, center.y, center.x, (center.height * frac_right).round))
 
     # Space between top left and top right
     space_top = @width - tlw - trw
@@ -78,7 +82,7 @@ class SplitSprite
       bmp.blt(tlw + i * center.width, 0, src, Rect.new(center.x, 0, center.width, src.height - center.y - center.height))
     end
     frac_top = (space_top / center.width.to_f) % 1
-    bmp.blt(tlw + (i + 1) * center.width, 0, src, Rect.new(center.x, 0, center.width * frac_top, src.height - center.y - center.height))
+    bmp.blt(tlw + (i + 1) * center.width, 0, src, Rect.new(center.x, 0, (center.width * frac_top).round, src.height - center.y - center.height))
 
     # Space between bottom left and bottom right
     space_bottom = @width - blw - brw
@@ -86,9 +90,9 @@ class SplitSprite
       bmp.blt(blw + i * center.width, @height - blh, src, Rect.new(center.x, center.y + center.height, center.width, src.height - center.y - center.height))
     end
     frac_bottom = (space_bottom / center.width.to_f) % 1
-    bmp.blt(blw + (i + 1) * center.width, @height - blh, src, Rect.new(center.x, center.y + center.height, center.width * frac_bottom, src.height - center.y - center.height))
+    bmp.blt(blw + (i + 1) * center.width, @height - blh, src, Rect.new(center.x, center.y + center.height, (center.width * frac_bottom).round, src.height - center.y - center.height))
 
-    # Space in the middle.
+    # Space in the middle. Has to be drawn first since this may overlap with the sides or corners.
     space_middle_height = @height - tlh - blh
     space_middle_width = @width - tlw - trw
     y = nil
@@ -98,25 +102,19 @@ class SplitSprite
         bmp.blt(tlw + x * center.width, tlh + y * center.height, src, center)
       end
       frac_x = (space_middle_width / center.width.to_f) % 1
-      bmp.blt(tlw + (x + 1) * center.width, tlh + y * center.height, src, Rect.new(center.x, center.y, center.width * frac_x, center.height))
+      bmp.blt(tlw + (x + 1) * center.width, tlh + y * center.height, src, Rect.new(center.x, center.y, (center.width * frac_x).round, center.height))
     end
     frac_y = (space_middle_height / center.height.to_f) % 1
     if frac_y > 0
       x = nil
       for x in 0...(space_middle_width / center.width.to_f).floor
-        bmp.blt(tlw + x * center.width, tlh + (y + 1) * center.height, src, Rect.new(center.x, center.y, center.width, center.height * frac_y))
+        bmp.blt(tlw + x * center.width, tlh + (y + 1) * center.height, src, Rect.new(center.x, center.y, center.width, (center.height * frac_y).round))
       end
       frac_x = (space_middle_width / center.width.to_f) % 1
-      bmp.blt(tlw + (x + 1) * center.width, tlh + y * center.height, src, Rect.new(center.x, center.y, center.width * frac_x, center.height * frac_y))
+      bmp.blt(tlw + (x + 1) * center.width, tlh + y * center.height, src, Rect.new(center.x, center.y, (center.width * frac_x).round, (center.height * frac_y).round))
     end
+    bmp.blt(tlw + (x + 1) * center.width, tlh + (y + 1) * center.height, src, Rect.new(center.x, center.y, (center.width * frac_x).round, (center.height * frac_y).round))
 
     @sprite.bitmap = bmp
   end
 end
-
-#s = SplitSprite.new
-#s.x = 10
-#s.y = 230
-#s.width = 460
-#s.height = 84
-#s.set("main", Rect.new(22, 26, 2, 2))

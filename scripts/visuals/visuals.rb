@@ -21,8 +21,8 @@ class Visuals
   end
 
   # Updates the maps and player.
-  def update
-    @maps.values.each(&:update)
+  def update(*args)
+    @maps.values.each { |e| e.update(*args) } unless args.include?(:no_maps)
     @player.update
   end
 end

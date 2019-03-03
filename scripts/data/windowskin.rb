@@ -66,8 +66,21 @@ class Windowskin
 
   # @return [Integer] the maximum width for drawing text on this windowskin.
   def get_text_width(window_width)
+    return window_width - @line_x_start - self.source_width + @line_x_end - 8
+  end
+
+  # @return [Integer] the source width of the windowskin graphic.
+  def source_width
     source_bitmap = Bitmap.new("gfx/windowskins/" + @filename)
-    ret = window_width - @line_x_start - source_bitmap.width + @line_x_end - 8
+    ret = source_bitmap.width
+    source_bitmap.dispose
+    return ret
+  end
+
+  # @return [Integer] the source height of the windowskin graphic.
+  def source_height
+    source_bitmap = Bitmap.new("gfx/windowskins/" + @filename)
+    ret = source_bitmap.height
     source_bitmap.dispose
     return ret
   end
@@ -77,8 +90,18 @@ Windowskin.new do
   @id = 1
   @line_x_start = 22
   @line_x_end = 48
-  @line_y_start = 10
+  @line_y_start = 18
   @line_y_space = 30
   @filename = "main"
   @center = Rect.new(22, 28, 40, 28)
+end
+
+Windowskin.new do
+  @id = 2
+  @line_x_start = 30
+  @line_x_end = 72
+  @line_y_start = 24
+  @line_y_space = 32
+  @filename = "choice"
+  @center = Rect.new(12, 12, 68, 68)
 end

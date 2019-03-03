@@ -96,3 +96,21 @@ class Struct
     end
   end
 end
+
+module Boolean
+end
+
+class TrueClass
+  include Boolean
+end
+
+class FalseClass
+  include Boolean
+end
+
+class Color
+  RED = Color.new(224, 8, 8)
+  BLUE = Color.new(48, 80, 200)
+  GREY = Color.new(96, 96, 96)
+  SHADOW = Color.new(208, 208, 200)
+end

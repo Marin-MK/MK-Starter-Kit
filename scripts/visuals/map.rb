@@ -18,17 +18,11 @@ class Visuals
 
     def real_x=(value)
       @real_x = value
-      if $game.player.map_id == 1
-        #msgbox "RealX: #{@real_x}\nRelativeX: #{@events.values.map { |e| e.relative_x }[0]}"
-      end
       @events.values.each { |e| e.sprite.x = @real_x + e.relative_x }
     end
 
     def real_y=(value)
       @real_y = value
-      if $game.player.map_id == 1
-        #msgbox "RealY: #{@real_y}\nRelativeY: #{@events.values.map { |e| e.relative_y }[0]}"
-      end
       @events.values.each { |e| e.sprite.y = @real_y + e.relative_y }
     end
 
@@ -42,8 +36,8 @@ class Visuals
     end
 
     # Updates all this map's events.
-    def update
-      @events.values.each { |e| e.update }
+    def update(*args)
+      @events.values.each { |e| e.update } unless args.include?(:no_events)
     end
   end
 end
