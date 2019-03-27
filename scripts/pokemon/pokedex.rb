@@ -18,6 +18,11 @@ class Trainer
       @visible = true
     end
 
+    def visible?
+      return false if !@enabled
+      return @visible
+    end
+
     # Registers the Pokemon or species as seen.
     # @param species [Symbol, Integer, Species, Pokemon] the species or Pokemon seen.
     # @param form [NilClass, Integer] the form of the species -- only works if a species is passed as first argument.

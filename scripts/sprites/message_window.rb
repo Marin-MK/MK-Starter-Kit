@@ -4,34 +4,41 @@ Font.default_size = 36
 
 class MessageWindow < BaseWindow
   attr_reader :text
+  attr_reader :letter_by_letter
 
   def initialize(
         text: "",
         x: 0,
         y: 0,
+        z: 0,
         width: 460,
         height: 84,
         windowskin: 1,
         viewport: nil,
         color: Color.new(48, 80, 200),
         shadow_color: Color.new(208, 208, 200),
-        ending_arrow: false)
+        ending_arrow: false,
+        letter_by_letter: true)
     validate text => String,
         x => Integer,
         y => Integer,
+        z => Integer,
         width => Integer,
         height => Integer,
         windowskin => [Integer, NilClass, Windowskin],
         viewport => [NilClass, Viewport],
         color => Color,
         shadow_color => Color,
-        ending_arrow => Boolean
+        ending_arrow => Boolean,
+        letter_by_letter => Boolean
     @ending_arrow = ending_arrow
     @text_bitmap = Sprite.new(viewport)
     @text_bitmap.z = 99999
+    @letter_by_letter = letter_by_letter
     super(width, height, windowskin, color, shadow_color, viewport)
     self.x = x
     self.y = y
+    self.z = z
     self.text = text
   end
 
@@ -56,13 +63,25 @@ class MessageWindow < BaseWindow
     @text_bitmap.y = value + @windowskin.line_y_start - 6
   end
 
+  def z=(value)
+    super(value)
+    @text_bitmap.z = value
+  end
+
   def visible=(value)
     super(value)
     @text_bitmap.visible = value
     @arrow.visible = value if @arrow
   end
 
+  def letter_by_letter=(value)
+    test_disposed
+    validate value => Boolean
+    @letter_by_letter = value
+  end
+
   def text=(value)
+    test_disposed
     @text = value.gsub(/{PLAYER}/, $trainer.name)
     @text_index = 0
     @line_index = 0
@@ -105,34 +124,48 @@ class MessageWindow < BaseWindow
     end
     if @formatted_text[@line_index]
       if @line_index - @current_line < 2
-        if @move_up_counter == 0 && (Input.press?(Input::A) || Input.press?(Input::B))
-          @draw_counter_speed = 3
-        else
-          @draw_counter_speed = 1
-        end
-        @draw_counter += 1
-        if @draw_counter % (5 - @draw_counter_speed) == 0
-          @text_index += 1
-          if @text_index >= @formatted_text[@line_index].size
-            @text_index = 0
-            @line_index += 1
+        if @letter_by_letter
+          if @move_up_counter == 0 && (Input.press?(Input::A) || Input.press?(Input::B))
+            @draw_counter_speed = 3
+          else
+            @draw_counter_speed = 1
           end
-          if @line_index - @current_line < 2 && @formatted_text[@line_index]
-            @text_bitmap.bitmap.clear
-            for i in @current_line..@line_index
-              if i == @line_index
-                text = @formatted_text[i][0..@text_index]
-              else
-                text = @formatted_text[i]
+          @draw_counter += 1
+          if @draw_counter % (5 - @draw_counter_speed) == 0
+            @text_index += 1
+            if @text_index >= @formatted_text[@line_index].size
+              @text_index = 0
+              @line_index += 1
+            end
+            if @line_index - @current_line < 2 && @formatted_text[@line_index]
+              @text_bitmap.bitmap.clear
+              for i in @current_line..@line_index
+                if i == @line_index
+                  text = @formatted_text[i][0..@text_index]
+                else
+                  text = @formatted_text[i]
+                end
+                @text_bitmap.draw_text(
+                    y: (i - @current_line) * @windowskin.line_y_space + 6,
+                    text: text,
+                    color: @color,
+                    shadow_color: @shadow_color
+                )
               end
-              @text_bitmap.draw_text(
-                  y: (i - @current_line) * @windowskin.line_y_space + 6,
-                  text: text,
-                  color: @color,
-                  shadow_color: @shadow_color
-              )
             end
           end
+        else # Not letter by letter
+          @line_index = @current_line + 1
+          @text_bitmap.bitmap.clear
+          for i in @current_line..@line_index
+            @text_bitmap.draw_text(
+              y: (i - @current_line) * @windowskin.line_y_space + 6,
+              text: @formatted_text[i],
+              color: @color,
+              shadow_color: @shadow_color
+            )
+          end
+          @line_index = @current_line + 2
         end
       elsif @move_up_counter == 0
         show_arrow if !@arrow || !@arrow.visible
@@ -147,6 +180,7 @@ class MessageWindow < BaseWindow
   end
 
   def show_arrow
+    test_disposed
     unless @arrow
       @arrow = Sprite.new(@viewport)
       @arrow.bitmap = Bitmap.new("gfx/misc/message window arrow")
@@ -158,6 +192,7 @@ class MessageWindow < BaseWindow
   end
 
   def hide_arrow
+    test_disposed
     @arrow.visible = false
   end
 
@@ -200,6 +235,7 @@ def show_message(text, color = Color::BLUE, ending_arrow = false)
       text: text,
       x: 10,
       y: 224,
+      z: 999999,
       width: 460,
       height: 84,
       windowskin: 1,

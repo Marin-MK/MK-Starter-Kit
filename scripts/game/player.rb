@@ -58,11 +58,19 @@ class Game
 
     # Fetches button input to move, trigger events, run, etc.
     def update
-      if Input.confirm? && !moving?
-        newx, newy = facing_coordinates(@x, @y, @direction)
-        $game.map.tile_interaction(newx, newy)
+      unless moving?
+        # Tile/event interaction
+        if Input.confirm?
+          newx, newy = facing_coordinates(@x, @y, @direction)
+          $game.map.tile_interaction(newx, newy)
+        end
+        # Pause Menu
+        if Input.trigger?(Input::START)
+          $game.start_ui(PauseMenuUI)
+        end
       end
       @fake_move = false
+      #@fake_move = true if $visuals.player.fake_anim
       oldrun = @running
       if Input.press?(Input::B)
         @runcount = 7 if !moving? && !@wasmoving && @runcount == 0
@@ -104,7 +112,6 @@ class Game
       elsif @downcount.nil? || @downcount == 0 || @fake_move
         self.direction_noanim = :down if @direction != 2
         if $game.map.passable?(@x, @y + 1, :down, self)
-          p "before: " + [global_x, global_y].inspect
           @y += 1
           try_transfer
           $game.map.check_event_triggers(true)
@@ -191,19 +198,13 @@ class Game
       ygreat = @y >= $game.map.height
       if xsmall || ysmall || xgreat || ygreat
         if $game.map.connection
-          p "try transfer"
-          p [@map_id, @x, @y].inspect
-          p [global_x, global_y].inspect
           map_id, mapx, mapy = $game.get_map_from_connection($game.map, @x, @y)
           @map_id = map_id
           oldx = @x
           oldy = @y
           @x = mapx
           @y = mapy
-          p [@map_id, @x, @y].inspect
-          p [global_x, global_y].inspect
           $visuals.map_renderer.adjust_to_player(oldx, oldy)
-          p [global_x, global_y].inspect
         else
           raise "Player is off the active game map, but no map connection was specified for that map."
         end

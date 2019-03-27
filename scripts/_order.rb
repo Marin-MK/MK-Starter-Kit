@@ -51,8 +51,11 @@ pokemon/pc.rb: PC
 pokemon/bag.rb: Bag
 pokemon/pokedex.rb: Pokedex
 pokemon/trainer.rb: Trainer
+sprites/disposable.rb: Disposable
 sprites/splitsprite.rb: Split Sprite
 sprites/base_window.rb: Base Window
 sprites/message_window.rb: Message Window
 sprites/choice_window.rb: Choice Window
+uis/base.rb: Base UI
+uis/pause_menu.rb: Pause Menu UI
 main.rb: Main

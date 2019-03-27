@@ -97,4 +97,12 @@ class Trainer
   def register_owned(species, form = nil)
     @pokedex.register_owned(species, form = nil)
   end
+
+  def has_pokedex?
+    return @pokedex.enabled
+  end
+
+  def give_pokedex
+    @pokedex.enabled = true
+  end
 end

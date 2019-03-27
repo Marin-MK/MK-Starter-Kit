@@ -1,3 +1,16 @@
+# The X and Y buttons don't actually do anything.
+# The physical Z key is used for SELECT.
+# The physical V key is used for START.
+# As it's not possible to add buttons in the F1 controls config,
+# it uses the existing (unused) X and Y buttons for SELECT and START.
+# This allows you to do Input::START and Input::SELECT.
+module Input
+  START = Y
+  SELECT = X
+  send(:remove_const, :X)
+  send(:remove_const, :Y)
+end
+
 class << Input
   # @return [Integer] one of the 8 directions based on the arrow keys.
   def dir8

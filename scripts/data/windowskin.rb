@@ -34,7 +34,7 @@ class Windowskin
         @line_y_space => Integer,
         @filename => String,
         @center => Rect
-    raise "Cannot have an ID of 0 or lower for new Windowskin object" if @id < 1
+    raise "Cannot have an ID lower than 0 for new Windowskin object" if @id < 0
   end
 
   # @param windowskin [Integer] the windowskin to look up.
@@ -71,6 +71,7 @@ class Windowskin
 
   # @return [Integer] the source width of the windowskin graphic.
   def source_width
+    return 0 if @filename.size == 0
     source_bitmap = Bitmap.new("gfx/windowskins/" + @filename)
     ret = source_bitmap.width
     source_bitmap.dispose
@@ -79,11 +80,22 @@ class Windowskin
 
   # @return [Integer] the source height of the windowskin graphic.
   def source_height
+    return 0 if @filename.size == 0
     source_bitmap = Bitmap.new("gfx/windowskins/" + @filename)
     ret = source_bitmap.height
     source_bitmap.dispose
     return ret
   end
+end
+
+Windowskin.new do
+  @id = 0
+  @line_x_start = 0
+  @line_x_end = -4
+  @line_y_start = 2
+  @line_y_space = 30
+  @filename = ""
+  @center = Rect.new(0, 0, 0, 0)
 end
 
 Windowskin.new do
@@ -99,9 +111,9 @@ end
 Windowskin.new do
   @id = 2
   @line_x_start = 30
-  @line_x_end = 72
-  @line_y_start = 24
-  @line_y_space = 32
+  @line_x_end = 74
+  @line_y_start = 20
+  @line_y_space = 30
   @filename = "choice"
   @center = Rect.new(12, 12, 68, 68)
 end

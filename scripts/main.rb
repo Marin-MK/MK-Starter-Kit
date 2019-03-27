@@ -14,7 +14,6 @@ $trainer = Trainer.new
 p = Pokemon.new(:BULBASAUR, 100)
 $trainer.add_pokemon(p)
 
-
 loop do
   Input.update
   $game.update

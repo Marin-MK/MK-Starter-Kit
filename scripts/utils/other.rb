@@ -67,6 +67,7 @@ end
 
 [Object, String, Symbol, Integer, Fixnum, Bignum].each do |c|
   c.class_eval do
+    next if defined?(:oldinspect)
     alias oldinspect inspect
     def inspect(length = 0)
       v = oldinspect

@@ -1,4 +1,6 @@
 class BaseWindow
+  include Disposable
+
   attr_reader :width
   attr_reader :height
   attr_reader :windowskin
@@ -13,6 +15,7 @@ class BaseWindow
         color => Color,
         shadow_color => Color,
         viewport => [NilClass, Viewport]
+    super()
     @windowskin = Windowskin.get(windowskin || 1)
     @color = color
     @shadow_color = shadow_color
@@ -20,26 +23,29 @@ class BaseWindow
     @window = SplitSprite.new(@viewport)
     self.width = width
     self.height = height
-    @window.set("gfx/windowskins/" + @windowskin.filename, @windowskin.center)
+    @window.set("gfx/windowskins/" + @windowskin.filename, @windowskin.center) if @windowskin.filename.size > 0
     @running = true
   end
 
   def width=(value)
+    test_disposed
     validate value => Integer
     @window.width = value
     @width = value
   end
 
   def height=(value)
+    test_disposed
     validate value => Integer
     @window.height = value
     @height = value
   end
 
   def windowskin=(value)
+    test_disposed
     validate value => [Integer, Windowskin]
     @windowskin = Windowskin.get(value)
-    @window.set("gfx/windowskins/" + @windowskin.filename, @windowskin.center)
+    @window.set("gfx/windowskins/" + @windowskin.filename, @windowskin.center) if @windowskin.filename.size > 0
   end
 
   def running?
@@ -51,6 +57,7 @@ class BaseWindow
   end
 
   def viewport=(value)
+    test_disposed
     @window.viewport = value
   end
 
@@ -59,6 +66,7 @@ class BaseWindow
   end
 
   def x=(value)
+    test_disposed
     @window.x = value
   end
 
@@ -67,7 +75,17 @@ class BaseWindow
   end
 
   def y=(value)
+    test_disposed
     @window.y = value
+  end
+
+  def z
+    return @window.z
+  end
+
+  def z=(value)
+    test_disposed
+    @window.z = value
   end
 
   def visible
@@ -75,15 +93,18 @@ class BaseWindow
   end
 
   def visible=(value)
+    test_disposed
     @window.visible = value
   end
 
   def update
+    test_disposed
     return false unless @running
     return true
   end
 
   def dispose
+    super
     @window.dispose
   end
 end

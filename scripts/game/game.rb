@@ -79,6 +79,13 @@ class Game
   def update
     @maps.values.each(&:update)
     @player.update
-    
+
+  end
+
+  def start_ui(ui_class)
+    instance = ui_class.new
+    instance.main
+    instance.dispose
+    return instance.return_value
   end
 end
