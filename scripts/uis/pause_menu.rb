@@ -66,7 +66,7 @@ class PauseMenuUI < BaseUI
       when "BAG"
         show_message("Open Bag")
       when $trainer.name
-        show_message("Open Trainer Card")
+        $game.start_ui(TrainerCardUI)
       when "SAVE"
         show_message("Open Save Menu")
       when "OPTION"

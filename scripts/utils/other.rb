@@ -115,3 +115,12 @@ class Color
   GREY = Color.new(96, 96, 96)
   SHADOW = Color.new(208, 208, 200)
 end
+
+
+FrameCache = {}
+
+def framecount(n)
+  return FrameCache[n] if FrameCache[n]
+  FrameCache[n] = (n * Graphics.frame_rate).ceil
+  return FrameCache[n]
+end

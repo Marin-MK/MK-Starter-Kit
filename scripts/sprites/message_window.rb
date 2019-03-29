@@ -1,7 +1,3 @@
-Font.default_outline = false
-Font.default_name = "Pokemon Fire Red"
-Font.default_size = 36
-
 class MessageWindow < BaseWindow
   attr_reader :text
   attr_reader :letter_by_letter

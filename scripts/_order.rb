@@ -58,4 +58,5 @@ sprites/message_window.rb: Message Window
 sprites/choice_window.rb: Choice Window
 uis/base.rb: Base UI
 uis/pause_menu.rb: Pause Menu UI
+uis/trainer_card.rb: Trainer Card UI
 main.rb: Main

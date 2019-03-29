@@ -17,6 +17,8 @@ class Trainer
   attr_accessor :name
   # @return [Integer] the gender of the player.
   attr_reader :gender
+  # @return [Integer] the money of the player.
+  attr_accessor :money
 
   # Creates a new Trainer object.
   def initialize
@@ -28,7 +30,14 @@ class Trainer
     @secret_id = rand(2 ** 16)
     @name = "Red"
     @gender = 0
+    @badges = [false, false, false, false, false, false, false, false]
+    @money = INITIAL_MONEY
   end
+
+
+  #============================================================================#
+  # Party                                                                      #
+  #============================================================================#
 
   # Adds the Pokemon to the party or PC if possible.
   # @param poke [Pokemon] the Pokemon to add.
@@ -55,6 +64,11 @@ class Trainer
       return false
     end
   end
+
+
+  #============================================================================#
+  # Bag                                                                        #
+  #============================================================================#
 
   # Adds the item or items to the bag based on their associated pocket.
   # @param item [Symbol, Integer] the item to add to the bag.
@@ -84,6 +98,11 @@ class Trainer
     return @bag.remove_item(item, count)
   end
 
+
+  #============================================================================#
+  # Pokedex                                                                    #
+  #============================================================================#
+
   # Registers the Pokemon or species as seen.
   # @param species [Symbol, Integer, Species, Pokemon] the species or Pokemon seen.
   # @param form [NilClass, Integer] the form of the species -- only works if a species is passed as first argument.
@@ -104,5 +123,38 @@ class Trainer
 
   def give_pokedex
     @pokedex.enabled = true
+  end
+
+
+  #============================================================================#
+  # Money                                                                      #
+  #============================================================================#
+
+  def get_money_text
+    str = @money.to_s
+    return "$" + str if str.size <= 4 # $3000
+    # If bigger, add commas
+    str.reverse!
+    newstr = ""
+    for i in 0...str.size
+      newstr << str[i]
+      newstr << "," if (i + 1) % 3 == 0 && i < str.size - 1
+    end
+    return "$" + newstr.reverse
+  end
+
+  #============================================================================#
+  # Badges                                                                     #
+  #============================================================================#
+  def has_badge?(n)
+    return @badges[n - 1]
+  end
+
+  def give_badge(n)
+    @badges[n - 1] = true
+  end
+
+  def badge_count(n)
+    return @badges.count { |e| e }
   end
 end
