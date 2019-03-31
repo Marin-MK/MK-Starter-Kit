@@ -1,19 +1,32 @@
 class BaseUI
   include Disposable
 
-  def initialize(folder = "", x = 0, y = 0, width = Graphics.width, height = Graphics.height)
-    @path = "gfx/ui/" + folder
-    @path << "/" if folder.size > 0
-    @viewport = Viewport.new(x, y, width, height)
+  def initialize(path: nil, fade: true, fade_time: 0.3, wait_time: 0.3)
+    validate path => [NilClass, String],
+        fade => Boolean,
+        fade_time => Float
+    if path
+      @path = "gfx/ui/" + path
+      @path << "/" if path.size > 0
+    end
+    @fade = fade
+    @fade_time = fade_time
+    @wait_time = wait_time
+    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
     @viewport.z = 99999
     @sprites = {}
     @stop = false
     @disposed = false
     @ret = 0
+    show_black if @fade
   end
 
   def main
     test_disposed
+    if @fade
+      wait(@wait_time)
+      hide_black { update_sprites }
+    end
     until @stop || @disposed
       Graphics.update
       Input.update
@@ -28,7 +41,13 @@ class BaseUI
 
   def update_sprites
     test_disposed
-    @sprites.each_value(&:update)
+    @sprites.each do |key, sprite|
+      if sprite.disposed?
+        @sprites.delete_key(key)
+      else
+        sprite.update
+      end
+    end
   end
 
   def return_value
@@ -38,6 +57,7 @@ class BaseUI
   def stop
     test_disposed
     return if stopped?
+    show_black { update_sprites } if @fade
     @stop = true
   end
 
@@ -51,5 +71,48 @@ class BaseUI
     @sprites.each_value(&:dispose)
     @viewport.dispose
     super
+    if @fade
+      wait(@wait_time)
+      hide_black
+    end
+  end
+
+  def show_black
+    if Graphics.brightness == 255
+      frames = framecount(@fade_time)
+      decrease = 255.0 / frames
+      for i in 1..frames
+        Graphics.brightness = 255 - (decrease * i).round
+        yield if block_given?
+        Graphics.update
+        Input.update
+      end
+    else
+      Graphics.brightness = 0
+    end
+  end
+
+  def hide_black
+    if Graphics.brightness == 0
+      frames = framecount(@fade_time)
+      increase = 255.0 / frames
+      for i in 1..frames
+        Graphics.brightness = (increase * i).round
+        yield if block_given?
+        Graphics.update
+        Input.update
+      end
+    else
+      Graphics.brightness = 255
+    end
+  end
+
+  def wait(n)
+    framecount(n).times do
+      update_sprites unless disposed?
+      yield if block_given?
+      Graphics.update
+      Input.update
+    end
   end
 end

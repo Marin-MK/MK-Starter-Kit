@@ -10,7 +10,7 @@ class PauseMenuUI < BaseUI
   }
 
   def initialize
-    super("pause_menu")
+    super(path: "pause_menu", fade: false)
     $trainer.give_pokedex
     @sprites["desc_bar"] = Sprite.new(@viewport)
     @sprites["desc_bar"].set_bitmap(@path + "desc_bar")
@@ -29,7 +29,7 @@ class PauseMenuUI < BaseUI
         viewport: @viewport
     )
     @oldindex = 0
-    @sprites["desc"] = MessageWindow.new(
+    @desc_window = MessageWindow.new(
       text: Descriptions[@choices[0]],
       x: 4,
       y: 254,
@@ -48,8 +48,8 @@ class PauseMenuUI < BaseUI
     if @oldindex != @commands.index
       c = @choices[@commands.index]
       c = "NAME" if c == $trainer.name
-      @sprites["desc"].text = Descriptions[c]
-      @sprites["desc"].update
+      @desc_window.text = Descriptions[c]
+      @desc_window.update
     end
     @oldindex = @commands.index
     cmd = @commands.update
@@ -79,6 +79,14 @@ class PauseMenuUI < BaseUI
 
   def update_sprites
     super
+    @desc_window.update
     $visuals.update(:no_events)
+  end
+
+  def dispose
+    test_disposed
+    @desc_window.dispose
+    @commands.dispose
+    super
   end
 end

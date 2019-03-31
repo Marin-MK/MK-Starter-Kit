@@ -84,6 +84,7 @@ class Sprite
 
   alias old_sprite_update update
   def update
+    raise RGSSError, "disposed sprite" if disposed?
     old_sprite_update
     if sprite_moving?
       if @current_frame >= @move_frames
