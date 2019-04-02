@@ -13,14 +13,20 @@ class Sprite
       shadow_color = arg[:shadow_color]
       outline_color = arg[:outline_color]
       alignment = arg[:alignment] || :left
+      small = arg[:small] || false
       validate x => Integer,
           y => Integer,
           text => String,
           color => Color,
           shadow_color => [NilClass, Color],
           outline_color => [NilClass, Color],
-          alignment => [Symbol, Integer, String]
+          alignment => [Symbol, Integer, String],
+          small => Boolean
       y -= 8
+      fontname = self.bitmap.font.name
+      if small
+        self.bitmap.font.name += " Small"
+      end
       if shadow_color && outline_color
         if args.size > 1
           raise "Cannot draw text with both a shadow and an outline (draw operation #{i})."
@@ -50,6 +56,7 @@ class Sprite
       end
       self.bitmap.font.color = color
       self.bitmap.draw_text(x, y, text_size.width, text_size.height, text)
+      self.bitmap.font.name = fontname
     end
   end
 

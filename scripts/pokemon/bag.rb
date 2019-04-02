@@ -2,6 +2,11 @@ class Trainer
   class Bag
     # @return [Array<Symbol>] the bag pockets to define.
     POCKETS = [:items, :key_items, :pokeballs]
+    POCKET_NAMES = {
+      items: "ITEMS",
+      key_items: "KEY ITEMS",
+      pokeballs: "POKé BALLS"
+    }
     # @return [Hash] the maximum number of unique items per pocket.
     # If a pocket is not entered it is unlimited.
     MAX_POCKET_SIZE = {
@@ -12,11 +17,20 @@ class Trainer
 
     # @return [Array<Array<Hash>>] the bag pockets.
     attr_reader :pockets
+    # @return [Array<Hash>>] last indexes used per pocket.
+    attr_reader :indexes
+    # @return [Symbol] the last opened bag pocket.
+    attr_accessor :last_pocket
 
     # Creates a new Bag object.
     def initialize
       @pockets = {}
-      POCKETS.each { |e| @pockets[e] = [] }
+      @indexes = {}
+      @last_pocket = POCKETS[0]
+      POCKETS.each do |e|
+        @pockets[e] = []
+        @indexes[e] = {top_idx: 0, list_idx: 0}
+      end
     end
 
     # Adds the item or items to the bag based on their associated pocket.
@@ -31,12 +45,12 @@ class Trainer
       if existing_item
         if existing_item[:count] < MAX_ITEM_SIZE
           existing_item[:count] += count
-          existing_item[:count] = [existing_item[:count], 999].min
+          existing_item[:count] = [existing_item[:count], MAX_ITEM_SIZE].min
         else
           return false
         end
       elsif !pocket_full?(pocket)
-        @pockets[pocket] << {item: item.intname, count: count}
+        @pockets[pocket] << {item: item.intname, count: [count, MAX_ITEM_SIZE].min}
       else
         return false
       end

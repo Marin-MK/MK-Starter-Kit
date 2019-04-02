@@ -59,4 +59,5 @@ sprites/choice_window.rb: Choice Window
 uis/base.rb: Base UI
 uis/pause_menu.rb: Pause Menu UI
 uis/trainer_card.rb: Trainer Card UI
+uis/bag.rb: Bag UI
 main.rb: Main

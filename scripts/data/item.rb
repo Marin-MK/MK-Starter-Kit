@@ -84,7 +84,7 @@ end
 Item.new do
   @intname = :REPEL
   @id = 1
-  @name = "Repel"
+  @name = "REPEL"
   @pocket = :items
   @price = 350
   @description = "Prevents weak wild Pokémon from appearing for 100 steps."
@@ -94,7 +94,7 @@ end
 Item.new do
   @intname = :SUPERREPEL
   @id = 2
-  @name = "Super Repel"
+  @name = "SUPER REPEL"
   @pocket = :items
   @price = 500
   @description = "Prevents weak wild Pokémon from appearing for 200 steps."
@@ -104,7 +104,7 @@ end
 Item.new do
   @intname = :MAXREPEL
   @id = 3
-  @name = "Max Repel"
+  @name = "MAX REPEL"
   @pocket = :items
   @price = 700
   @description = "Prevents weak wild Pokémon from appearing for 250 steps."

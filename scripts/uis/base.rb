@@ -18,7 +18,7 @@ class BaseUI
     @stop = false
     @disposed = false
     @ret = 0
-    show_black if @fade
+    show_black(:opening) if @fade
   end
 
   def main
@@ -73,11 +73,11 @@ class BaseUI
     super
     if @fade
       wait(@wait_time)
-      hide_black
+      hide_black(:closing)
     end
   end
 
-  def show_black
+  def show_black(mode = nil)
     if Graphics.brightness == 255
       frames = framecount(@fade_time)
       decrease = 255.0 / frames
@@ -92,7 +92,7 @@ class BaseUI
     end
   end
 
-  def hide_black
+  def hide_black(mode = nil)
     if Graphics.brightness == 0
       frames = framecount(@fade_time)
       increase = 255.0 / frames
