@@ -60,4 +60,5 @@ uis/base.rb: Base UI
 uis/pause_menu.rb: Pause Menu UI
 uis/trainer_card.rb: Trainer Card UI
 uis/bag.rb: Bag UI
+temp.rb: Temporary Data
 main.rb: Main

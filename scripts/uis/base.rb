@@ -1,6 +1,11 @@
 class BaseUI
   include Disposable
 
+  attr_accessor :path
+  attr_accessor :viewport
+  attr_accessor :sprites
+  attr_accessor :ret
+
   def initialize(path: nil, fade: true, fade_time: 0.3, wait_time: 0.3)
     validate path => [NilClass, String],
         fade => Boolean,

@@ -1,6 +1,7 @@
 # Starts the main game loop required to keep the game running.
 
 # Initializes the game
+$temp = TempData.new
 $visuals = Visuals.new
 $game = Game.new
 $game.switches = Game::Switches.new

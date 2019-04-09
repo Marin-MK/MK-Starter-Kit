@@ -26,7 +26,8 @@ class PauseMenuUI < BaseUI
         cancel_choice: -1,
         visible_choices: 7,
         width: 140,
-        viewport: @viewport
+        viewport: @viewport,
+        initial_choice: $temp.last_menu_index
     )
     @oldindex = 0
     @desc_window = MessageWindow.new(
@@ -41,11 +42,14 @@ class PauseMenuUI < BaseUI
       shadow_color: Color.new(96, 96, 96),
       letter_by_letter: false
     )
+    Audio.se_play("audio/se/menu_open")
   end
 
   def update
     super
     if @oldindex != @commands.index
+      $temp.last_menu_index = @commands.index
+      Audio.se_play("audio/se/menu_select")
       c = @choices[@commands.index]
       c = "NAME" if c == $trainer.name
       @desc_window.text = Descriptions[c]
@@ -55,9 +59,11 @@ class PauseMenuUI < BaseUI
     cmd = @commands.update
     if cmd
       if cmd == -1
+        Audio.se_play("audio/se/menu_select")
         stop
         return
       end
+      Audio.se_play("audio/se/menu_select")
       case @choices[cmd]
       when "POKéDEX"
         show_message("Open Pokedex")
@@ -72,7 +78,8 @@ class PauseMenuUI < BaseUI
       when "OPTION"
         show_message("Options Menu")
       when "EXIT"
-        Kernel.abort
+        stop
+        return
       end
     end
   end

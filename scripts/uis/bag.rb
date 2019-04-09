@@ -1,9 +1,18 @@
 class BagUI < BaseUI
   class BagSprite < Sprite
-    def initialize(filename, pocket = Trainer::Bag::POCKETS[0], viewport = nil)
-      super(viewport)
-      self.set_bitmap(filename)
+    def initialize(ui)
+      @ui = ui
+      super(@ui.viewport)
+      pocket = $trainer.bag.last_pocket
+      self.set_bitmap(@ui.path + "bag")
       self.src_rect.width = self.bitmap.width / (Trainer::Bag::POCKETS.size + 1)
+      self.ox = self.bitmap.width / 8
+      self.oy = self.bitmap.height / 2
+      self.z = 2
+      @shadow = Sprite.new(@ui.viewport)
+      @shadow.set_bitmap(@ui.path + "bag_shadow")
+      @shadow.y = 90
+      @shadow.z = 1
       pidx = Trainer::Bag::POCKETS.index(pocket)
       pidx = 0 if pidx < 1
       self.src_rect.x = self.src_rect.width * (pidx + 1)
@@ -11,6 +20,40 @@ class BagUI < BaseUI
 
     def pocket=(value)
       self.src_rect.x = self.src_rect.width * (value + 1)
+    end
+
+    def x=(value)
+      super(value + self.ox)
+      @shadow.x = value
+    end
+
+    def y=(value)
+      super(value + self.oy)
+      @shadow.y = value + 90
+    end
+
+    def shake
+      @i = 0
+      self.angle = -2
+    end
+
+    def update
+      super
+      if @i
+        @i += 1
+        # One angle change takes 0.064 seconds and it can be interrupted.
+        case @i
+        when framecount(0.064 * 1)
+          self.angle = 0
+        when framecount(0.064 * 2)
+          self.angle = 2
+        when framecount(0.064 * 3)
+          self.angle = -6
+        when framecount(0.064 * 4)
+          self.angle = 0
+          @i = nil
+        end
+      end
     end
   end
 
@@ -44,7 +87,7 @@ class BagUI < BaseUI
     @sprites["background"].set_bitmap(@path + "background")
     @sprites["bgtext"] = Sprite.new(@viewport)
     @sprites["bgtext"].set_bitmap(Graphics.width, Graphics.height)
-    @sprites["bag"] = BagSprite.new(@path + "bag", $trainer.bag.last_pocket, @viewport)
+    @sprites["bag"] = BagSprite.new(self)
     @sprites["bag"].x = 22
     @sprites["bag"].y = 72
     @sprites["list"] = Sprite.new(@viewport)
@@ -99,7 +142,7 @@ class BagUI < BaseUI
     return Trainer::Bag::POCKET_NAMES[@pocket] || "?????"
   end
 
-  def draw_list
+  def draw_list(selection_changed = false)
     @sprites["text"].bitmap.clear
     for i in @top_idx..(@top_idx + 5)
       if @items[i] || @items[i - 1]
@@ -125,6 +168,10 @@ class BagUI < BaseUI
     @sprites["arrow_up"].visible = @top_idx > 0
     @sprites["arrow_down"].visible = @items.size - @top_idx > 5
     draw_item
+    if selection_changed
+      Audio.se_play("audio/se/bag_item")
+      @sprites["bag"].shake
+    end
   end
 
   def draw_item
@@ -148,11 +195,11 @@ class BagUI < BaseUI
     @sprites["icon"].set_bitmap(filename)
   end
 
-  def draw_pocket(animation = true)
+  def draw_pocket(selection_changed = true)
     @items = $trainer.bag.pockets[@pocket]
     @top_idx = $trainer.bag.indexes[@pocket][:top_idx]
     @list_idx = $trainer.bag.indexes[@pocket][:list_idx]
-    if !animation
+    if !selection_changed
       @sprites["bag"].pocket = pocket_idx
     else
       @sprites["bgtext"].visible = false
@@ -172,6 +219,9 @@ class BagUI < BaseUI
       for i in 1..frames
         Graphics.update
         Input.update
+        if i == 2
+          Audio.se_play("audio/se/bag_pocket")
+        end
         if i == (frames / 2.0).round
           @sprites["bag"].pocket = pocket_idx
         end
@@ -200,37 +250,37 @@ class BagUI < BaseUI
 
   def update
     super
-    stop if Input.trigger?(Input::B)
-    if Input.trigger?(Input::A)
+    stop if Input.cancel?
+    if Input.confirm?
       if item_idx == @items.size # Cancel
         stop
       else
         # Show item options
       end
     end
-    if Input.trigger?(Input::DOWN)
+    if Input.repeat_down?
       if @list_idx == 3 && @items.size - item_idx > 2
         @top_idx += 1
-        draw_list
+        draw_list(true)
       elsif @items.size - item_idx > 0
         @list_idx += 1
-        draw_list
+        draw_list(true)
       end
     end
-    if Input.trigger?(Input::UP)
+    if Input.repeat_up?
       if @list_idx == 2 && item_idx > 2
         @top_idx -= 1
-        draw_list
+        draw_list(true)
       elsif item_idx > 0
         @list_idx -= 1
-        draw_list
+        draw_list(true)
       end
     end
-    if Input.trigger?(Input::LEFT) && pocket_idx > 0
+    if Input.left? && pocket_idx > 0
       @pocket = Trainer::Bag::POCKETS[pocket_idx - 1]
       draw_pocket
     end
-    if Input.trigger?(Input::RIGHT) && pocket_idx < Trainer::Bag::POCKETS.size - 1
+    if Input.right? && pocket_idx < Trainer::Bag::POCKETS.size - 1
       @pocket = Trainer::Bag::POCKETS[pocket_idx + 1]
       draw_pocket
     end
@@ -238,6 +288,7 @@ class BagUI < BaseUI
 
   def update_sprites
     super
+    @sprites["bag"].update
     @i ||= 0
     if @i % 4 == 0
       case (@i / 4)
@@ -255,6 +306,13 @@ class BagUI < BaseUI
     end
     @i += 1
     @i = 0 if @i > 23 * 4
+  end
+
+  def stop
+    if !stopped?
+      Audio.se_play("audio/se/menu_select")
+    end
+    super
   end
 
   def show_black(mode = nil)

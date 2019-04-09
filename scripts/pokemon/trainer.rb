@@ -17,6 +17,8 @@ class Trainer
   attr_accessor :name
   # @return [Integer] the gender of the player.
   attr_reader :gender
+  # @return [Array] the badges of the player.
+  attr_accessor :badges
   # @return [Integer] the money of the player.
   attr_accessor :money
 
