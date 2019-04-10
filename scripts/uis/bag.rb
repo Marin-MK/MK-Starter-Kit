@@ -1,10 +1,12 @@
 class BagUI < BaseUI
   class BagSprite < Sprite
-    def initialize(ui)
+    def initialize(gender, ui)
+      @gender = gender
       @ui = ui
       super(@ui.viewport)
       pocket = $trainer.bag.last_pocket
-      self.set_bitmap(@ui.path + "bag")
+      @suffix = ["_male", "_female"][$trainer.gender]
+      self.set_bitmap(@ui.path + "bag" + @suffix)
       self.src_rect.width = self.bitmap.width / (Trainer::Bag::POCKETS.size + 1)
       self.ox = self.bitmap.width / 8
       self.oy = self.bitmap.height / 2
@@ -83,11 +85,12 @@ class BagUI < BaseUI
         ]
       }
     end
+    @suffix = ["_male", "_female"][$trainer.gender]
     @sprites["background"] = Sprite.new(@viewport)
-    @sprites["background"].set_bitmap(@path + "background")
+    @sprites["background"].set_bitmap(@path + "background" + @suffix)
     @sprites["bgtext"] = Sprite.new(@viewport)
     @sprites["bgtext"].set_bitmap(Graphics.width, Graphics.height)
-    @sprites["bag"] = BagSprite.new(self)
+    @sprites["bag"] = BagSprite.new($trainer.gender, self)
     @sprites["bag"].x = 22
     @sprites["bag"].y = 72
     @sprites["list"] = Sprite.new(@viewport)
@@ -258,7 +261,7 @@ class BagUI < BaseUI
         # Show item options
       end
     end
-    if Input.repeat_down?
+    if Input.repeat_down?(0.5, 0.18)
       if @list_idx == 3 && @items.size - item_idx > 2
         @top_idx += 1
         draw_list(true)
@@ -267,7 +270,7 @@ class BagUI < BaseUI
         draw_list(true)
       end
     end
-    if Input.repeat_up?
+    if Input.repeat_up?(0.5, 0.18)
       if @list_idx == 2 && item_idx > 2
         @top_idx -= 1
         draw_list(true)

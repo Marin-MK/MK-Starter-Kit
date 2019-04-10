@@ -117,3 +117,13 @@ Windowskin.new do
   @filename = "choice"
   @center = Rect.new(12, 12, 68, 68)
 end
+
+Windowskin.new do
+  @id = 3
+  @line_x_start = 12
+  @line_x_end = 44
+  @line_y_start = 22
+  @line_y_space = 30
+  @filename = "helper_window"
+  @center = Rect.new(16, 16, 24, 24)
+end

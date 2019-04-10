@@ -73,7 +73,7 @@ class ChoiceWindow < BaseWindow
     end
     unless @selector
       @selector = Sprite.new(@viewport)
-      @selector.bitmap = Bitmap.new("gfx/misc/choice arrow")
+      @selector.bitmap = Bitmap.new("gfx/misc/choice_arrow")
       @selector.x = self.x + @windowskin.line_x_start - @selector.bitmap.width - 2
       @selector.y = self.y + @windowskin.line_y_start - 2 + @windowskin.line_y_space * @index
     end

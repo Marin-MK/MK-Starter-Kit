@@ -167,6 +167,7 @@ class Species
     @moveset.tutor = []
     @moveset.evolution = []
     @moveset.egg = []
+    @forms = {}
     instance_eval(&block)
     #validate_species
     Cache[@intname] = self
@@ -252,7 +253,7 @@ end
 Species.new do
   @intname = :BULBASAUR
   @id = 1
-  @name = "Bulbasaur"
+  @name = "BULBASAUR"
   @type1 = :GRASS
   @type2 = :POISON
   @stats.hp = 45
@@ -297,18 +298,18 @@ Species.new do
       argument: 16
     }
   ]
-  @get_form_on_creation = proc do |pokemon|
-    next 0
-  end
-  @get_form = proc do |pokemon|
-    next 1 if pokemon.has_item?(:REPEL)
-  end
-  @forms = {
-    1 => {
-      name: "Boolbasaurus",
-      type1: :FIGHTING,
-      type2: :FLYING,
-      leveling_rate: :SLOW
-    }
-  }
+  #@get_form_on_creation = proc do |pokemon|
+  #  next 0
+  #end
+  #@get_form = proc do |pokemon|
+  #  next 1 if pokemon.has_item?(:REPEL)
+  #end
+  #@forms = {
+  #  1 => {
+  #    name: "Boolbasaurus",
+  #    type1: :FIGHTING,
+  #    type2: :FLYING,
+  #    leveling_rate: :SLOW
+  #  }
+  #}
 end

@@ -1,5 +1,3 @@
-class BaseUI; end
-
 class TrainerCardUI < BaseUI
   def initialize
     super(path: "trainer_card")

@@ -12,6 +12,9 @@ module Input
 end
 
 class << Input
+  INITIAL_REPEAT_COOLDOWN = 0.5
+  CONTINUOUS_REPEAT_COOLDOWN = 0.075
+
   # @return [Integer] one of the 8 directions based on the arrow keys.
   def dir8
     l = Input.press?(Input::LEFT)
@@ -53,8 +56,8 @@ class << Input
   end
 
   # @return [Boolean] whether the confirm button is being held down.
-  def repeat_confirm?
-    return Input.repeat?(Input::A)
+  def repeat_confirm?(initial = INITIAL_REPEAT_COOLDOWN, continuous = CONTINUOUS_REPEAT_COOLDOWN)
+    return Input.repeat?(Input::A, initial, continuous)
   end
 
   # @return [Boolean] whether the cancel button is triggered.
@@ -63,8 +66,8 @@ class << Input
   end
 
   # @return [Boolean] whether the cancel button is being held down.
-  def repeat_cancel?
-    return Input.repeat?(Input::B)
+  def repeat_cancel?(initial = INITIAL_REPEAT_COOLDOWN, continuous = CONTINUOUS_REPEAT_COOLDOWN)
+    return Input.repeat?(Input::B, initial, continuous)
   end
 
   # @return [Boolean] whether the down button is triggered.
@@ -73,8 +76,8 @@ class << Input
   end
 
   # @return [Boolean] whether the down button is being held down.
-  def repeat_down?
-    return Input.repeat?(Input::DOWN)
+  def repeat_down?(initial = INITIAL_REPEAT_COOLDOWN, continuous = CONTINUOUS_REPEAT_COOLDOWN)
+    return Input.repeat?(Input::DOWN, initial, continuous)
   end
 
   # @return [Boolean] whether the left button is triggered.
@@ -83,8 +86,8 @@ class << Input
   end
 
   # @return [Boolean] whether the left button is being held down.
-  def repeat_left?
-    return Input.repeat?(Input::LEFT)
+  def repeat_left?(initial = INITIAL_REPEAT_COOLDOWN, continuous = CONTINUOUS_REPEAT_COOLDOWN)
+    return Input.repeat?(Input::LEFT, initial, continuous)
   end
 
   # @return [Boolean] whether the right button is triggered.
@@ -93,8 +96,8 @@ class << Input
   end
 
   # @return [Boolean] whether the right button is being held down.
-  def repeat_right?
-    return Input.repeat?(Input::RIGHT)
+  def repeat_right?(initial = INITIAL_REPEAT_COOLDOWN, continuous = CONTINUOUS_REPEAT_COOLDOWN)
+    return Input.repeat?(Input::RIGHT, initial, continuous)
   end
 
   # @return [Boolean] whether the up button is triggered.
@@ -103,12 +106,12 @@ class << Input
   end
 
   # @return [Boolean] whether the up button is being held down.
-  def repeat_up?
-    return Input.repeat?(Input::UP)
+  def repeat_up?(initial = INITIAL_REPEAT_COOLDOWN, continuous = CONTINUOUS_REPEAT_COOLDOWN)
+    return Input.repeat?(Input::UP, initial, continuous)
   end
 
   # @return [Boolean] whether or not the button is being held down.
-  def repeat?(button, initial = 0.5, continuous = 0.18)
+  def repeat?(button, initial = INITIAL_REPEAT_COOLDOWN, continuous = CONTINUOUS_REPEAT_COOLDOWN)
     @repeating ||= {}
     if Input.trigger?(button)
       @repeating[button] = [false, 0]

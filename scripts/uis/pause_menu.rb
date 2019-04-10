@@ -68,7 +68,7 @@ class PauseMenuUI < BaseUI
       when "POKéDEX"
         show_message("Open Pokedex")
       when "POKéMON"
-        show_message("Open Party")
+        $game.start_ui(PartyUI)
       when "BAG"
         $game.start_ui(BagUI)
       when $trainer.name

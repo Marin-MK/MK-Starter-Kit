@@ -1,6 +1,8 @@
 class Pokemon
-  # @return [Integer] the total amount of HP this Pokemon has.
+  # @return [Integer] the total amount of HP this Pokemon can have.
   attr_reader :totalhp
+  # @return [Integer] the current amount of HP this Pokemon has.
+  attr_accessor :hp
   # @return [Integer] the total amount of Attack points this Pokemon has.
   attr_reader :attack
   # @return [Integer] the total amount of Defense points this Pokemon has.
@@ -66,7 +68,6 @@ class Pokemon
     @evs.spatk = 0
     @evs.spdef = 0
     @evs.speed = 0
-    @hp = self.totalhp
     @happiness = species.happiness(self.form)
     @ball_used = :POKEBALL
     if trainer
@@ -80,6 +81,8 @@ class Pokemon
     @obtain_time = Time.now
     @obtain_level = self.level
     @moves = get_moveset_for_level
+    calc_stats
+    @hp = @totalhp
   end
 
   # @return [Species] the species object associated with this Pokemon.
@@ -115,6 +118,10 @@ class Pokemon
   def exp=(value)
     validate value => Integer
     @exp = value
+    if self.level < 1
+      raise "A Pokemon can never be below level 1."
+    end
+    self.calc_stats
   end
 
   # @return [Integer] the level this Pokemon is currently at.
@@ -126,7 +133,11 @@ class Pokemon
   # @param value [Integer] the new level of this Pokemon.
   def level=(value)
     validate value => Integer
+    if value < 1
+      raise "A Pokemon can never be below level 1."
+    end
     @exp = EXP.get_exp(species.leveling_rate(self.form), value)
+    self.calc_stats
   end
 
 
@@ -222,10 +233,10 @@ class Pokemon
 
   # Forces a value for the Pokemon's gender.
   # @param nature [Integer, NilClass] the gender value.
-  def set_gender(gender)
-    validate gender => [Integer, NilClass]
+  def set_gender(value)
+    validate value => [Integer, NilClass]
     raise "Invalid gender #{value.inspect(16)}" unless value == 0 || value == 1 || value == 2 || value.nil?
-    @genderflag = gender
+    @genderflag = value
   end
 
 
@@ -367,7 +378,12 @@ class Pokemon
   def calc_stats
     buff = self.nature.buff
     debuff = self.nature.debuff
+    factor = nil
+    if @hp && @totalhp
+      factor = @hp / @totalhp.to_f
+    end
     @totalhp = (((2.0 * species.stats(self.form).hp + @ivs.hp + (@evs.hp / 4.0)) * level.to_f) / 100.0).floor + level + 10
+    @hp = (@totalhp * factor).round if factor
     mod = (buff == :attack ? 1.1 : debuff == :attack ? 0.9 : 1.0)
     @attack = (((((2.0 * species.stats(self.form).attack + @ivs.attack + (@evs.attack / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
     mod = (buff == :defense ? 1.1 : debuff == :defense ? 0.9 : 1.0)
@@ -415,9 +431,12 @@ class Pokemon
     return self.nature == nature
   end
 
-  # @return [Boolean] whether or not the Pokemon is holding the given item.
-  def has_item?(item)
-    validate item => [Symbol, Integer, Item]
+  # @return [Boolean] whether or not the Pokemon is holding the given item or an item at all.
+  def has_item?(item = nil)
+    validate item => [Symbol, Integer, Item, NilClass]
+    if item.nil?
+      return !self.item.nil?
+    end
     item = Item.get(item)
     return self.item == item
   end
@@ -476,6 +495,6 @@ class Pokemon
 
   # @return [Boolean] whether or not the Pokemon is fainted.
   def fainted?
-    return self.hp > 0
+    return self.hp <= 0
   end
 end

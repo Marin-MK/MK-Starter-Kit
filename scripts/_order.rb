@@ -52,13 +52,17 @@ pokemon/bag.rb: Bag
 pokemon/pokedex.rb: Pokedex
 pokemon/trainer.rb: Trainer
 sprites/disposable.rb: Disposable
+sprites/selectable_sprite.rb: Selectable Sprite
 sprites/splitsprite.rb: Split Sprite
 sprites/base_window.rb: Base Window
 sprites/message_window.rb: Message Window
 sprites/choice_window.rb: Choice Window
+sprites/status_condition_icon.rb: Status Condition Icon
+sprites/pokemon_icon.rb: Pokemon Icon
 uis/base.rb: Base UI
 uis/pause_menu.rb: Pause Menu UI
 uis/trainer_card.rb: Trainer Card UI
 uis/bag.rb: Bag UI
+uis/party.rb: Party UI
 temp.rb: Temporary Data
 main.rb: Main

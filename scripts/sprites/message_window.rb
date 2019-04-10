@@ -179,7 +179,7 @@ class MessageWindow < BaseWindow
     test_disposed
     unless @arrow
       @arrow = Sprite.new(@viewport)
-      @arrow.bitmap = Bitmap.new("gfx/misc/message window arrow")
+      @arrow.bitmap = Bitmap.new("gfx/misc/message_window_arrow")
       @arrow.y = self.y + @windowskin.line_y_start + @windowskin.line_y_space + @arrow.bitmap.height - 10
       @arrow_counter = 0
     end
