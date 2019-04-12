@@ -1,6 +1,6 @@
 # Creates a new map (normally loaded from a file)
 map = MKD::Map.new(1)
-map.name = "Some Town"
+map.name = "MT. MOON"
 map.width = 5
 map.height = 5
 map.tilesets = [1]

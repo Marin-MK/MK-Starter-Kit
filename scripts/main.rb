@@ -12,8 +12,8 @@ $game.load_map(2)
 $visuals.map_renderer.create_tiles if $visuals.map_renderer.empty?
 $trainer = Trainer.new
 
-$trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 1);p.gender=1;p.item=:REPEL;p.hp=2;p))
-$trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 2);p.hp=8;p))
+$trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 100);p.shiny=true;p.gender=1;p.item=:REPEL;p.hp=37;p))
+$trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 32);p.exp+=2000;p))
 $trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 3);p.gender=1;p.status=:PARALYSIS;p.hp-=1;p))
 $trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 4);p.item=:REPEL;p))
 $trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 5);p.hp=6;p.status=:POISON;p))

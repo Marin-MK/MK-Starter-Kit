@@ -102,7 +102,7 @@ end
 Move.new do
   @intname = :POUND
   @id = 1
-  @name = "Pound"
+  @name = "POUND"
   @type = :NORMAL
   @power = 40
   @totalpp = 35
@@ -114,7 +114,7 @@ end
 Move.new do
   @intname = :VINEWHIP
   @id = 22
-  @name = "Vine Whip"
+  @name = "VINE WHIP"
   @type = :GRASS
   @power = 35
   @totalpp = 10
@@ -126,7 +126,7 @@ end
 Move.new do
   @intname = :TACKLE
   @id = 33
-  @name = "Tackle"
+  @name = "TACKLE"
   @type = :NORMAL
   @power = 35
   @totalpp = 35
@@ -138,7 +138,7 @@ end
 Move.new do
   @intname = :GROWL
   @id = 45
-  @name = "Growl"
+  @name = "GROWL"
   @type = :NORMAL
   @power = 0
   @totalpp = 40
@@ -151,7 +151,7 @@ end
 Move.new do
   @intname = :LEECHSEED
   @id = 73
-  @name = "Leech Seed"
+  @name = "LEECH SEED"
   @type = :GRASS
   @power = 0
   @totalpp = 10
@@ -163,7 +163,7 @@ end
 Move.new do
   @intname = :GROWTH
   @id = 74
-  @name = "Growth"
+  @name = "GROWTH"
   @type = :NORMAL
   @power = 0
   @totalpp = 40
@@ -176,7 +176,7 @@ end
 Move.new do
   @intname = :RAZORLEAF
   @id = 75
-  @name = "Razor Leaf"
+  @name = "RAZOR LEAF"
   @type = :GRASS
   @power = 55
   @totalpp = 25
@@ -189,7 +189,7 @@ end
 Move.new do
   @intname = :SOLARBEAM
   @id = 76
-  @name = "SolarBeam"
+  @name = "SOLARBEAM"
   @type = :GRASS
   @power = 120
   @totalpp = 10
@@ -201,7 +201,7 @@ end
 Move.new do
   @intname = :POISONPOWDER
   @id = 77
-  @name = "Poison Powder"
+  @name = "POISONPOWDER"
   @type = :POISON
   @power = 0
   @totalpp = 35
@@ -213,7 +213,7 @@ end
 Move.new do
   @intname = :SLEEPPOWDER
   @id = 79
-  @name = "Sleep Powder"
+  @name = "SLEEP POWDER"
   @type = :GRASS
   @power = 0
   @totalpp = 15
@@ -225,7 +225,7 @@ end
 Move.new do
   @intname = :SWEETSCENT
   @id = 230
-  @name = "Sweet Scent"
+  @name = "SWEET SCENT"
   @type = :NORMAL
   @power = 0
   @totalpp = 20
@@ -238,7 +238,7 @@ end
 Move.new do
   @intname = :SYNTHESIS
   @id = 235
-  @name = "Synthesis"
+  @name = "SYNTHESIS"
   @type = :GRASS
   @power = 0
   @totalpp = 5

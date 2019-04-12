@@ -5,7 +5,8 @@ class PokemonIcon < Sprite
   end
 
   def set_pokemon(pokemon)
-    self.set_bitmap("gfx/pokemon/icons/#{pokemon.species.intname.to_s.downcase}")
+    @pokemon = pokemon
+    self.set_bitmap("gfx/pokemon/icons/#{@pokemon.species.intname.to_s.downcase}")
     self.src_rect.width = self.bitmap.width / 2
     self.ox = self.src_rect.width / 2
   end
@@ -18,7 +19,10 @@ class PokemonIcon < Sprite
   def update
     @i ||= 0
     @i += 1
-    if @i % framecount(0.15) == 0
+    time = 0.15
+    time = 0.25 if @pokemon.hp / @pokemon.totalhp.to_f <= 0.5
+    time = 0.35 if @pokemon.hp / @pokemon.totalhp.to_f <= 0.25
+    if @i % framecount(time) == 0
       self.src_rect.x += self.src_rect.width
       self.src_rect.x = 0 if self.src_rect.x >= self.bitmap.width
     end

@@ -30,7 +30,7 @@ class Trainer
     @pokedex = Pokedex.new
     @pid = rand(2 ** 16)
     @secret_id = rand(2 ** 16)
-    @name = "Red"
+    @name = "RED"
     @gender = 0
     @badges = [false, false, false, false, false, false, false, false]
     @money = INITIAL_MONEY
@@ -43,12 +43,18 @@ class Trainer
 
   # Adds the Pokemon to the party or PC if possible.
   # @param poke [Pokemon] the Pokemon to add.
+  # @param obtain_type [Symbol] how this Pokemon was obtained.
   # @return [Boolean] whether the Pokemon could be added.
-  def add_pokemon(poke)
+  def add_pokemon(poke, obtain_type = :MET)
     validate poke => Pokemon
-    unless poke.ot_name && poke.ot_gender
+    unless poke.ot_name && poke.ot_gender && poke.ot_pid
       poke.ot_name = @name
       poke.ot_gender = @gender
+      poke.ot_pid = @pid
+      poke.obtain_type = obtain_type
+      poke.obtain_map = $game.map.id
+      poke.obtain_time = Time.now
+      poke.obtain_level = poke.level
       newot = true
     end
     if @party.size < 6
@@ -62,6 +68,7 @@ class Trainer
         # Reset OT in case it wasn't actually added.
         poke.ot_name = nil
         poke.ot_gender = nil
+        poke.ot_pid = nil
       end
       return false
     end

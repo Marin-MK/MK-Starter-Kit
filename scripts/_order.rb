@@ -58,11 +58,14 @@ sprites/base_window.rb: Base Window
 sprites/message_window.rb: Message Window
 sprites/choice_window.rb: Choice Window
 sprites/status_condition_icon.rb: Status Condition Icon
+sprites/type_icon.rb: Type Icon
 sprites/pokemon_icon.rb: Pokemon Icon
-uis/base.rb: Base UI
-uis/pause_menu.rb: Pause Menu UI
-uis/trainer_card.rb: Trainer Card UI
-uis/bag.rb: Bag UI
-uis/party.rb: Party UI
+sprites/pokemon_battler_sprite.rb: Pokemon Battler Sprite
+ui/base.rb: Base UI
+ui/pause_menu.rb: Pause Menu UI
+ui/trainer_card.rb: Trainer Card UI
+ui/bag.rb: Bag UI
+ui/party.rb: Party UI
+ui/summary.rb: Summary UI
 temp.rb: Temporary Data
 main.rb: Main

@@ -32,11 +32,19 @@ class Pokemon
   # @return [Symbol] the internal name of the ball used to catch this Pokemon.
   attr_accessor :ball_used
   # @return [Symbol] how this Pokemon was obtained.
-  attr_accessor :obtain_mode
+  attr_accessor :obtain_type
+  # @return [Integer] on which map this Pokemon was obtained.
+  attr_accessor :obtain_map
+  # @return [Time] at which time this Pokemon was obtained.
+  attr_accessor :obtain_time
+  # @return [Integer] at which level this Pokemon was obtained.
+  attr_accessor :obtain_level
   # @return [String] the name of the original trainer of this Pokemon.
   attr_accessor :ot_name
   # @return [Integer] the gender of the original trainer of this Pokemon.
   attr_accessor :ot_gender
+  # @return [Integer] the Personal ID of the original trainer of this Pokemon.
+  attr_accessor :ot_pid
 
   # Creates a new Pokemon object.
   # @param species [Symbol, Integer] the species of the Pokemon.
@@ -73,11 +81,14 @@ class Pokemon
     if trainer
       @ot_name = trainer.name
       @ot_gender = trainer.gender
+      @ot_pid = trainer.pid
     else
       @ot_name = nil
       @ot_gender = nil
+      @ot_pid = nil
     end
-    @obtain_mode = :MET
+    @obtain_type = :MET
+    @obtain_map = 0
     @obtain_time = Time.now
     @obtain_level = self.level
     @moves = get_moveset_for_level
@@ -180,6 +191,7 @@ class Pokemon
     s = tid ^ sid ^ p1 ^ p2
     return s < SHINYCHANCE
   end
+  alias shiny? shiny
 
   # Forces a value for the Pokemon's shininess.
   # @param value [Boolean, NilClass] the shininess value.

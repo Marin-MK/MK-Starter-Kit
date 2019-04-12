@@ -82,8 +82,8 @@ class Game
 
   end
 
-  def start_ui(ui_class)
-    instance = ui_class.new
+  def start_ui(ui_class, *args)
+    instance = ui_class.new(*args)
     instance.main
     instance.dispose
     return instance.return_value

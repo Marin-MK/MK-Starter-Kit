@@ -77,13 +77,13 @@ end
 Nature.new do
   @intname = :HARDY
   @id = 1
-  @name = "Hardy"
+  @name = "HARDY"
 end
 
 Nature.new do
   @intname = :LONELY
   @id = 2
-  @name = "Lonely"
+  @name = "LONELY"
   @buff = :attack
   @debuff = :defense
 end
@@ -91,7 +91,7 @@ end
 Nature.new do
   @intname = :BRAVE
   @id = 3
-  @name = "Brave"
+  @name = "BRAVE"
   @buff = :attack
   @debuff = :speed
 end
@@ -99,7 +99,7 @@ end
 Nature.new do
   @intname = :ADAMANT
   @id = 4
-  @name = "Adamant"
+  @name = "ADAMANT"
   @buff = :attack
   @debuff = :spatk
 end
@@ -107,7 +107,7 @@ end
 Nature.new do
   @intname = :NAUGHTY
   @id = 5
-  @name = "Naughty"
+  @name = "NAUGHTY"
   @buff = :attack
   @debuff = :spdef
 end
@@ -115,7 +115,7 @@ end
 Nature.new do
   @intname = :BOLD
   @id = 6
-  @name = "Bold"
+  @name = "BOLD"
   @buff = :defense
   @debuff = :attack
 end
@@ -123,13 +123,13 @@ end
 Nature.new do
   @intname = :DOCILE
   @id = 7
-  @name = "Docile"
+  @name = "DOCILE"
 end
 
 Nature.new do
   @intname = :RELAXED
   @id = 8
-  @name = "Relaxed"
+  @name = "RELAXED"
   @buff = :defense
   @debuff = :speed
 end
@@ -137,7 +137,7 @@ end
 Nature.new do
   @intname = :IMPISH
   @id = 9
-  @name = "Impish"
+  @name = "IMPISH"
   @buff = :defense
   @debuff = :spatk
 end
@@ -145,7 +145,7 @@ end
 Nature.new do
   @intname = :LAX
   @id = 10
-  @name = "Lax"
+  @name = "LAX"
   @buff = :defense
   @debuff = :spdef
 end
@@ -153,7 +153,7 @@ end
 Nature.new do
   @intname = :TIMID
   @id = 11
-  @name = "Timid"
+  @name = "TIMID"
   @buff = :speed
   @debuff = :attack
 end
@@ -161,7 +161,7 @@ end
 Nature.new do
   @intname = :HASTY
   @id = 12
-  @name = "Hasty"
+  @name = "HASTY"
   @buff = :speed
   @debuff = :defense
 end
@@ -169,13 +169,13 @@ end
 Nature.new do
   @intname = :SERIOUS
   @id = 13
-  @name = "Serious"
+  @name = "SERIOUS"
 end
 
 Nature.new do
   @intname = :JOLLY
   @id = 14
-  @name = "Jolly"
+  @name = "JOLLY"
   @buff = :speed
   @debuff = :spatk
 end
@@ -183,7 +183,7 @@ end
 Nature.new do
   @intname = :NAIVE
   @id = 15
-  @name = "Naive"
+  @name = "NAIVE"
   @buff = :speed
   @debuff = :spdef
 end
@@ -191,7 +191,7 @@ end
 Nature.new do
   @intname = :MODEST
   @id = 16
-  @name = "Modest"
+  @name = "MODEST"
   @buff = :spatk
   @debuff = :attack
 end
@@ -199,7 +199,7 @@ end
 Nature.new do
   @intname = :MILD
   @id = 17
-  @name = "Mild"
+  @name = "MILD"
   @buff = :spatk
   @debuff = :defense
 end
@@ -207,7 +207,7 @@ end
 Nature.new do
   @intname = :QUIET
   @id = 18
-  @name = "Quiet"
+  @name = "QUIET"
   @buff = :spatk
   @debuff = :speed
 end
@@ -215,13 +215,13 @@ end
 Nature.new do
   @intname = :BASHFUL
   @id = 19
-  @name = "Bashful"
+  @name = "BASHFUL"
 end
 
 Nature.new do
   @intname = :RASH
   @id = 20
-  @name = "Rash"
+  @name = "RASH"
   @buff = :spatk
   @debuff = :spdef
 end
@@ -229,7 +229,7 @@ end
 Nature.new do
   @intname = :CALM
   @id = 21
-  @name = "Calm"
+  @name = "CALM"
   @buff = :spdef
   @debuff = :attack
 end
@@ -237,7 +237,7 @@ end
 Nature.new do
   @intname = :GENTLE
   @id = 22
-  @name = "Gentle"
+  @name = "GENTLE"
   @buff = :spdef
   @debuff = :defense
 end
@@ -245,7 +245,7 @@ end
 Nature.new do
   @intname = :SASSY
   @id = 23
-  @name = "Sassy"
+  @name = "SASSY"
   @buff = :spdef
   @debuff = :speed
 end
@@ -253,7 +253,7 @@ end
 Nature.new do
   @intname = :CAREFUL
   @id = 24
-  @name = "Careful"
+  @name = "CAREFUL"
   @buff = :spdef
   @debuff = :spatk
 end
@@ -261,5 +261,5 @@ end
 Nature.new do
   @intname = :QUIRKY
   @id = 25
-  @name = "Quirky"
+  @name = "QUIRKY"
 end

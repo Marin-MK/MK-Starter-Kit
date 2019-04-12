@@ -1,5 +1,5 @@
 map = MKD::Map.new(3)
-map.name = "Some Town"
+map.name = "MT. MOON"
 map.width = 5
 map.height = 5
 map.tilesets = [1]

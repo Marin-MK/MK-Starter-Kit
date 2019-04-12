@@ -74,13 +74,13 @@ end
 Ability.new do
   @id = 1
   @intname = :STENCH
-  @name = "Stench"
+  @name = "STENCH"
   @description = "Helps repel wild Pokémon."
 end
 
 Ability.new do
   @intname = :OVERGROW
   @id = 65
-  @name = "Overgrow"
+  @name = "OVERGROW"
   @description = "Ups Grass moves in a pinch."
 end
