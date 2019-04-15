@@ -66,7 +66,7 @@ class Game
         end
         # Pause Menu
         if Input.trigger?(Input::START)
-          $game.start_ui(PauseMenuUI)
+          PauseMenuUI.start
         end
       end
       @fake_move = false

@@ -21,6 +21,10 @@ class SplitSprite
     self.set(@file, @center)
   end
 
+  def set?
+    return @file && @center
+  end
+
   def set(file, center)
     validate file => String, center => [Rect, Array]
     center = Rect.new(*center) if center.is_a?(Array)
@@ -29,7 +33,7 @@ class SplitSprite
     bmp = Bitmap.new(@width, @height)
     src = Bitmap.new(@file)
     if @width == src.width && @height == src.height
-      @sprite.bitmap = src
+      @sprite.set_bitmap(src)
       return
     elsif @width < src.width || @height < src.height
       raise "Width and height can't be lower than the source width and height."
@@ -115,6 +119,6 @@ class SplitSprite
     end
     bmp.blt(tlw + (x + 1) * center.width, tlh + (y + 1) * center.height, src, Rect.new(center.x, center.y, (center.width * frac_x).round, (center.height * frac_y).round))
 
-    @sprite.bitmap = bmp
+    @sprite.set_bitmap(bmp)
   end
 end

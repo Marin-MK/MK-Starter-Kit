@@ -1,12 +1,20 @@
 class BaseUI
   include Disposable
 
+  def self.start(*args)
+    instance = self.new(*args)
+    instance.start
+    instance.main
+    instance.dispose
+    return instance.return_value
+  end
+
   attr_accessor :path
   attr_accessor :viewport
   attr_accessor :sprites
   attr_accessor :ret
 
-  def initialize(path: nil, fade: true, fade_time: 0.3, wait_time: 0.3)
+  def start(path: nil, fade: true, fade_time: 0.3, wait_time: 0.3)
     validate path => [NilClass, String],
         fade => Boolean,
         fade_time => Float

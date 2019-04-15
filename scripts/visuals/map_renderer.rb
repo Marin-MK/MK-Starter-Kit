@@ -201,7 +201,7 @@ class Visuals
           if @show_grid
             if !tile.sprites[999]
               tile.sprites[999] = Sprite.new($visuals.viewport, {special: true})
-              tile.sprites[999].bitmap = GRIDBITMAP
+              tile.sprites[999].set_bitmap(GRIDBITMAP)
               tile.sprites[999].x = tile.sprites[0].x
               tile.sprites[999].y = tile.sprites[0].y
               tile.sprites[999].z = 999

@@ -1,98 +1,18 @@
 class BagUI < BaseUI
-  class BagSprite < Sprite
-    def initialize(gender, ui)
-      @gender = gender
-      @ui = ui
-      super(@ui.viewport)
-      pocket = $trainer.bag.last_pocket
-      @suffix = ["_male", "_female"][$trainer.gender]
-      self.set_bitmap(@ui.path + "bag" + @suffix)
-      self.src_rect.width = self.bitmap.width / (Trainer::Bag::POCKETS.size + 1)
-      self.ox = self.bitmap.width / 8
-      self.oy = self.bitmap.height / 2
-      self.z = 2
-      @shadow = Sprite.new(@ui.viewport)
-      @shadow.set_bitmap(@ui.path + "bag_shadow")
-      @shadow.y = 90
-      @shadow.z = 1
-      pidx = Trainer::Bag::POCKETS.index(pocket)
-      pidx = 0 if pidx < 1
-      self.src_rect.x = self.src_rect.width * (pidx + 1)
-    end
-
-    def pocket=(value)
-      self.src_rect.x = self.src_rect.width * (value + 1)
-    end
-
-    def x=(value)
-      super(value + self.ox)
-      @shadow.x = value
-    end
-
-    def y=(value)
-      super(value + self.oy)
-      @shadow.y = value + 90
-    end
-
-    def shake
-      @i = 0
-      self.angle = -2
-    end
-
-    def update
-      super
-      if @i
-        @i += 1
-        # One angle change takes 0.064 seconds and it can be interrupted.
-        case @i
-        when framecount(0.064 * 1)
-          self.angle = 0
-        when framecount(0.064 * 2)
-          self.angle = 2
-        when framecount(0.064 * 3)
-          self.angle = -6
-        when framecount(0.064 * 4)
-          self.angle = 0
-          @i = nil
-        end
-      end
-    end
-  end
-
-  def initialize
+  def start
     super(path: "bag")
-    $trainer.bag.instance_eval do
-      @pockets = {
-        items: [
-          {item: 1, count: 1},
-          {item: 2, count: 2},
-          {item: 3, count: 3},
-          {item: 1, count: 4},
-          {item: 2, count: 5},
-          {item: 3, count: 6},
-          {item: 1, count: 7},
-          {item: 2, count: 8},
-          {item: 3, count: 9},
-          {item: 1, count: 10},
-          {item: 2, count: 11},
-          {item: 3, count: 12}
-        ],
-        key_items: [
-          {item: 2, count: 43}
-        ],
-        pokeballs: [
-          {item: 1, count: 84}
-        ]
-      }
-    end
     @suffix = ["_male", "_female"][$trainer.gender]
     @sprites["background"] = Sprite.new(@viewport)
     @sprites["background"].set_bitmap(@path + "background" + @suffix)
     @sprites["bgtext"] = Sprite.new(@viewport)
     @sprites["bgtext"].set_bitmap(Graphics.width, Graphics.height)
+    @sprites["bgtext"].z = 1
     @sprites["bag"] = BagSprite.new($trainer.gender, self)
     @sprites["bag"].x = 22
-    @sprites["bag"].y = 72
+    @sprites["bag"].y = 66
+    @sprites["footer"] = SelectableSprite.new(@viewport)
+    @sprites["footer"].set_bitmap(@path + "footer")
+    @sprites["footer"].y = 224
     @sprites["list"] = Sprite.new(@viewport)
     @sprites["list"].set_bitmap(@path + "item_list")
     @sprites["list"].x = 176
@@ -101,26 +21,24 @@ class BagUI < BaseUI
     @sprites["text"].set_bitmap(288, 190)
     @sprites["text"].x = 176
     @sprites["text"].y = 16
+    @sprites["text"].z = 1
     @sprites["icon"] = Sprite.new(@viewport)
     @sprites["icon"].x = 12
     @sprites["icon"].y = 244
-    @sprites["arrow_left"] = Sprite.new(@viewport)
-    @sprites["arrow_left"].set_bitmap(@path + "arrow_left")
+    @sprites["icon"].z = 3
+    @sprites["arrow_left"] = ArrowSprite.new(:left, @viewport)
     @sprites["arrow_left"].y = 130
-    @sprites["arrow_right"] = Sprite.new(@viewport)
-    @sprites["arrow_right"].set_bitmap(@path + "arrow_right")
+    @sprites["arrow_right"] = ArrowSprite.new(:right, @viewport)
     @sprites["arrow_right"].x = 142
     @sprites["arrow_right"].y = 130
-    @sprites["arrow_up"] = Sprite.new(@viewport)
-    @sprites["arrow_up"].set_bitmap(@path + "arrow_up")
+    @sprites["arrow_up"] = ArrowSprite.new(:up, @viewport)
     @sprites["arrow_up"].x = 306
     @sprites["arrow_up"].z = 1
-    @sprites["arrow_down"] = Sprite.new(@viewport)
-    @sprites["arrow_down"].set_bitmap(@path + "arrow_down")
+    @sprites["arrow_down"] = ArrowSprite.new(:down, @viewport)
     @sprites["arrow_down"].x = 306
     @sprites["arrow_down"].y = 206
-    @sprites["selector"] = Sprite.new(@viewport)
-    @sprites["selector"].set_bitmap(@path + "selector")
+    @sprites["selector"] = SelectableSprite.new(@viewport)
+    @sprites["selector"].set_bitmap("gfx/misc/choice_arrow")
     @sprites["selector"].x = 180
     @pocket = $trainer.bag.last_pocket
     @items = $trainer.bag.pockets[@pocket]
@@ -148,7 +66,7 @@ class BagUI < BaseUI
   def draw_list(selection_changed = false)
     @sprites["text"].bitmap.clear
     for i in @top_idx..(@top_idx + 5)
-      if @items[i] || @items[i - 1]
+      if @items[i] || @items[i - 1] || i == 0
         if !@items[i]
           name = "CANCEL"
         else
@@ -205,6 +123,7 @@ class BagUI < BaseUI
     if !selection_changed
       @sprites["bag"].pocket = pocket_idx
     else
+      $trainer.bag.last_pocket = Trainer::Bag::POCKETS[pocket_idx]
       @sprites["bgtext"].visible = false
       @sprites["text"].visible = false
       @sprites["icon"].visible = false
@@ -258,7 +177,7 @@ class BagUI < BaseUI
       if item_idx == @items.size # Cancel
         stop
       else
-        # Show item options
+        show_item_commands
       end
     end
     if Input.repeat_down?(0.5, 0.18)
@@ -289,26 +208,90 @@ class BagUI < BaseUI
     end
   end
 
-  def update_sprites
-    super
-    @sprites["bag"].update
-    @i ||= 0
-    if @i % 4 == 0
-      case (@i / 4)
-      when 1, 2, 3,   9, 10, 11,    17, 18
-        @sprites["arrow_up"].y += 2
-        @sprites["arrow_down"].y -= 2
-        @sprites["arrow_left"].x += 2
-        @sprites["arrow_right"].x -= 2
-      when 6, 7,      12, 13, 14,   21, 22, 23
-        @sprites["arrow_up"].y -= 2
-        @sprites["arrow_down"].y += 2
-        @sprites["arrow_left"].x -= 2
-        @sprites["arrow_right"].x += 2
+  def show_item_commands
+    Audio.se_play("audio/se/menu_select")
+    @sprites["footer"].select
+    @sprites["footer"].z = 2
+    @sprites["selector"].select
+    @sprites["arrow_up"].visible = false
+    @sprites["arrow_down"].visible = false
+    @sprites["arrow_left"].visible = false
+    @sprites["arrow_right"].visible = false
+    item = Item.get(@items[item_idx][:item])
+    msgwin = MessageWindow.new(
+      x: 84,
+      y: 228,
+      z: 3,
+      width: 248,
+      height: 88,
+      text: item.name + " is\nselected.",
+      viewport: @viewport,
+      windowskin: 4,
+      color: Color.new(96, 96, 96),
+      shadow_color: Color.new(208, 208, 200),
+      letter_by_letter: false
+    )
+    choices = ["USE", "GIVE", "TOSS", "CANCEL"]
+    cmdwin = ChoiceWindow.new(
+      x: 338,
+      y: 318,
+      oy: :bottom,
+      z: 3,
+      width: 140,
+      choices: choices,
+      viewport: @viewport
+    )
+    loop do
+      cmd = cmdwin.get_choice { update_sprites }
+      case cmd
+      when "USE"
+
+      when "GIVE"
+
+      when "TOSS"
+        cmdwin.visible = false
+        msgwin.width = 280
+        msgwin.text = "Toss out how many\n" + item.name + "(s)?"
+        numwin = NumericChoiceWindow.new(
+          x: 370,
+          y: 226,
+          z: 3,
+          max: @items[item_idx][:count],
+          viewport: @viewport
+        )
+        value = numwin.get_choice
+        numwin.dispose
+        if value > -1
+          msgwin.width = 264
+          msgwin.text = "Throw away #{value} of this item?"
+          confirmwin = ChoiceWindow.new(
+            x: 354,
+            y: 226,
+            z: 3,
+            width: 124,
+            choices: ["YES", "NO"],
+            viewport: @viewport
+          )
+          toss = confirmwin.get_choice == "YES"
+          confirmwin.dispose
+          if toss
+            msgwin.width = 392
+            msgwin.text = "Threw away #{value}\n" + item.name + "(s)."
+            show_message(msgwin, :no_dispose)
+            $trainer.bag.remove_item(item, value)
+            draw_list
+          end
+        end
+        break
+      when "CANCEL"
+        break
       end
     end
-    @i += 1
-    @i = 0 if @i > 23 * 4
+    @sprites["footer"].deselect
+    @sprites["footer"].z = 0
+    @sprites["selector"].deselect
+    cmdwin.dispose
+    msgwin.dispose
   end
 
   def stop
@@ -373,6 +356,68 @@ class BagUI < BaseUI
       end
       black.dispose
       sliding.dispose
+    end
+  end
+
+
+
+  class BagSprite < Sprite
+    def initialize(gender, ui)
+      @gender = gender
+      @ui = ui
+      super(@ui.viewport)
+      pocket = $trainer.bag.last_pocket
+      @suffix = ["_male", "_female"][$trainer.gender]
+      self.set_bitmap(@ui.path + "bag" + @suffix)
+      self.src_rect.width = self.bitmap.width / (Trainer::Bag::POCKETS.size + 1)
+      self.ox = self.bitmap.width / 8
+      self.oy = self.bitmap.height / 2
+      self.z = 2
+      @shadow = Sprite.new(@ui.viewport)
+      @shadow.set_bitmap(@ui.path + "bag_shadow")
+      @shadow.y = 96
+      @shadow.z = 1
+      pidx = Trainer::Bag::POCKETS.index(pocket)
+      pidx = 0 if pidx < 1
+      self.src_rect.x = self.src_rect.width * (pidx + 1)
+    end
+
+    def pocket=(value)
+      self.src_rect.x = self.src_rect.width * (value + 1)
+    end
+
+    def x=(value)
+      super(value + self.ox)
+      @shadow.x = value
+    end
+
+    def y=(value)
+      super(value + self.oy)
+      @shadow.y = value + 96
+    end
+
+    def shake
+      @i = 0
+      self.angle = -2
+    end
+
+    def update
+      super
+      if @i
+        @i += 1
+        # One angle change takes 0.064 seconds and it can be interrupted.
+        case @i
+        when framecount(0.064 * 1)
+          self.angle = 0
+        when framecount(0.064 * 2)
+          self.angle = 2
+        when framecount(0.064 * 3)
+          self.angle = -6
+        when framecount(0.064 * 4)
+          self.angle = 0
+          @i = nil
+        end
+      end
     end
   end
 end

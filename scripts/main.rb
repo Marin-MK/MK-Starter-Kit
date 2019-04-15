@@ -19,6 +19,8 @@ $trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 4);p.item=:REPEL;p))
 $trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 5);p.hp=6;p.status=:POISON;p))
 $trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 6);p.gender=1;p.hp=0;p))
 
+$trainer.add_item(:REPEL, 5)
+
 loop do
   Input.update
   $game.update

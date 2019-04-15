@@ -11,7 +11,7 @@ class Visuals
     def initialize(game_player)
       @game_player = game_player
       @sprite = Sprite.new($visuals.viewport)
-      @sprite.bitmap = Bitmap.new("gfx/characters/" + game_player.graphic_name)
+      @sprite.set_bitmap("gfx/characters/" + game_player.graphic_name)
       @sprite.src_rect.width = @sprite.bitmap.width / 4
       @sprite.src_rect.height = @sprite.bitmap.height / 4
       @sprite.ox = @sprite.src_rect.width / 2
@@ -99,7 +99,7 @@ class Visuals
       if @game_player.graphic_name != @oldgraphic
         frame_x = @sprite.src_rect.x.to_f / @sprite.bitmap.width * 4
         frame_y = @sprite.src_rect.y.to_f / @sprite.bitmap.height * 4
-        @sprite.bitmap = Bitmap.new("gfx/characters/" + @game_player.graphic_name)
+        @sprite.set_bitmap("gfx/characters/" + @game_player.graphic_name)
         @sprite.src_rect.width = @sprite.bitmap.width / 4
         @sprite.src_rect.height = @sprite.bitmap.height / 4
         @sprite.ox = @sprite.src_rect.width / 2

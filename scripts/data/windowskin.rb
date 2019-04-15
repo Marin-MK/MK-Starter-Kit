@@ -108,22 +108,34 @@ Windowskin.new do
   @center = Rect.new(22, 28, 40, 28)
 end
 
+# choice windowskin for choices
 Windowskin.new do
   @id = 2
   @line_x_start = 30
   @line_x_end = 74
-  @line_y_start = 20
+  @line_y_start = 24
+  @line_y_space = 32
+  @filename = "choice"
+  @center = Rect.new(12, 12, 68, 68)
+end
+
+# choice windowskin for messages
+Windowskin.new do
+  @id = 3
+  @line_x_start = 14
+  @line_x_end = 74
+  @line_y_start = 22
   @line_y_space = 30
   @filename = "choice"
   @center = Rect.new(12, 12, 68, 68)
 end
 
 Windowskin.new do
-  @id = 3
+  @id = 4
   @line_x_start = 12
   @line_x_end = 44
   @line_y_start = 22
-  @line_y_space = 30
+  @line_y_space = 28
   @filename = "helper_window"
   @center = Rect.new(16, 16, 24, 24)
 end

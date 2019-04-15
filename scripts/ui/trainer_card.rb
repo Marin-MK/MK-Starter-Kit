@@ -1,5 +1,5 @@
 class TrainerCardUI < BaseUI
-  def initialize
+  def start
     super(path: "trainer_card")
     @suffix = ["_male", "_female"][$trainer.gender]
     @sprites["background"] = Sprite.new(@viewport)
@@ -20,14 +20,14 @@ class TrainerCardUI < BaseUI
       Audio.se_play("audio/se/trainercard")
       @start = false
     end
-    if Input.trigger?(Input::B)
+    if Input.cancel?
       if @page == 1
         load_front_page
       else
         stop
       end
     end
-    if Input.trigger?(Input::A)
+    if Input.confirm?
       if @page == 0 # Flip from Front to Back
         load_back_page
       else

@@ -4,9 +4,9 @@ class Trainer
   # @return [Array<Pokemon>] the party of the player.
   attr_accessor :party
   # @return [PC] the storage PC of the player.
-  attr_accessor :pc
+  attr_reader :pc
   # @return [Bag] the Bag of the player.
-  attr_accessor :bag
+  attr_reader :bag
   # @return [Pokedex] the pokedex of the player.
   attr_reader :pokedex
   # @return [Integer] the Personal ID of the player.
@@ -18,9 +18,11 @@ class Trainer
   # @return [Integer] the gender of the player.
   attr_reader :gender
   # @return [Array] the badges of the player.
-  attr_accessor :badges
+  attr_reader :badges
   # @return [Integer] the money of the player.
   attr_accessor :money
+  # @return [Options] the options of the player.
+  attr_reader :options
 
   # Creates a new Trainer object.
   def initialize
@@ -34,6 +36,7 @@ class Trainer
     @gender = 0
     @badges = [false, false, false, false, false, false, false, false]
     @money = INITIAL_MONEY
+    @options = Options.new
   end
 
 

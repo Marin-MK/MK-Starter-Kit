@@ -1,5 +1,5 @@
 class SummaryUI < BaseUI
-  def initialize(party, party_index)
+  def start(party, party_index)
     super(path: "summary")
     @party = party
     @party_index = party_index

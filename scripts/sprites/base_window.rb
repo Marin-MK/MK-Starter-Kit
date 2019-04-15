@@ -5,20 +5,14 @@ class BaseWindow
   attr_reader :height
   attr_reader :windowskin
   attr_reader :viewport
-  attr_accessor :color
-  attr_accessor :shadow_color
 
-  def initialize(width, height, windowskin, color = Color::BLUE, shadow_color = Color::SHADOW, viewport = nil)
+  def initialize(width, height, windowskin, viewport = nil)
     validate width => Integer,
         height => Integer,
         windowskin => [Integer, NilClass, Windowskin],
-        color => Color,
-        shadow_color => Color,
         viewport => [NilClass, Viewport]
     super()
     @windowskin = Windowskin.get(windowskin || 1)
-    @color = color
-    @shadow_color = shadow_color
     @viewport = viewport
     @window = SplitSprite.new(@viewport)
     self.width = width
@@ -31,6 +25,7 @@ class BaseWindow
     test_disposed
     validate value => Integer
     @window.width = value
+    @window.refresh if @window.set?
     @width = value
   end
 
@@ -38,6 +33,7 @@ class BaseWindow
     test_disposed
     validate value => Integer
     @window.height = value
+    @window.refresh if @window.set?
     @height = value
   end
 

@@ -50,13 +50,16 @@ pokemon/pokemon.rb: Pokemon
 pokemon/pc.rb: PC
 pokemon/bag.rb: Bag
 pokemon/pokedex.rb: Pokedex
+pokemon/options.rb: Options
 pokemon/trainer.rb: Trainer
 sprites/disposable.rb: Disposable
 sprites/selectable_sprite.rb: Selectable Sprite
 sprites/splitsprite.rb: Split Sprite
+sprites/arrow_sprite.rb: Arrow Sprite
 sprites/base_window.rb: Base Window
 sprites/message_window.rb: Message Window
 sprites/choice_window.rb: Choice Window
+sprites/numeric_choice_window.rb: Numeric Choice Window
 sprites/status_condition_icon.rb: Status Condition Icon
 sprites/type_icon.rb: Type Icon
 sprites/pokemon_icon.rb: Pokemon Icon

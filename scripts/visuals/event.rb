@@ -49,7 +49,7 @@ class Visuals
           graphic = page.graphic
           if graphic[:type] == :file # Filename with src_rect
             if graphic[:param] && graphic[:param].size > 0
-              @sprite.bitmap = Bitmap.new(graphic[:param])
+              @sprite.set_bitmap(graphic[:param])
               @sprite.src_rect.width = @sprite.bitmap.width / 4
               @sprite.src_rect.height = @sprite.bitmap.height / 4
               @sprite.src_rect.y = (graphic[:direction] / 2 - 1) * @sprite.src_rect.height
@@ -59,13 +59,13 @@ class Visuals
             @setdir = true
             @animate = true
           elsif graphic[:type] == :file_norect # Filename without src_rect
-            @sprite.bitmap = Bitmap.new(graphic[:param])
+            @sprite.set_bitmap(graphic[:param])
             @setdir = false
             @animate = false
           elsif graphic[:type] == :tile # Tile
             tileset_id, tile_id = graphic[:param]
             tileset = MKD::Tileset.fetch(tileset_id)
-            @sprite.bitmap = Bitmap.new("gfx/tilesets/#{tileset.graphic_name}")
+            @sprite.set_bitmap("gfx/tilesets/#{tileset.graphic_name}")
             @sprite.src_rect.width = 32
             @sprite.src_rect.height = 32
             tile_id = graphic[:param][1]

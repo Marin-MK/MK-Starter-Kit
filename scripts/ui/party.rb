@@ -10,6 +10,200 @@ def symbol(n)
 end
 
 class PartyUI < BaseUI
+  attr_accessor :party
+
+  def start(party = $trainer.party)
+    validate_array party => Pokemon
+    @party = party.compact
+    if @party.size == 0
+      raise "Empty party"
+    end
+    super(path: "party")
+    @sprites["background"] = Sprite.new(@viewport)
+    @sprites["background"].set_bitmap(@path + "background")
+    @sprites["window"] = MessageWindow.new(
+      x: 4,
+      y: 260,
+      viewport: @viewport,
+      width: 360,
+      height: 56,
+      text: "Choose a POKéMON.",
+      color: Color.new(96, 96, 96),
+      shadow_color: Color.new(208, 208, 200),
+      letter_by_letter: false,
+      windowskin: 4
+    )
+    @sprites["cancel"] = SelectableSprite.new(@viewport)
+    @sprites["cancel"].set_bitmap(@path + "cancel")
+    @sprites["cancel"].x = 368
+    @sprites["cancel"].y = 264
+    @sprites["panel_0"] = BigPanel.new(self, @party[0])
+    @sprites["panel_0"].x = 4
+    @sprites["panel_0"].y = 36
+    for i in 1...@party.size
+      if @party[i]
+        @sprites["panel_#{i}"] = Panel.new(self, @party[i])
+        @sprites["panel_#{i}"].x = 176
+        @sprites["panel_#{i}"].y = 18 + 48 * (i - 1)
+      end
+    end
+    @index = 0
+    @sprites["panel_0"].select
+  end
+
+  def update
+    super
+    stop if Input.cancel?
+    if Input.repeat_down?
+      Audio.se_play("audio/se/menu_select")
+      if @index == -1
+        @sprites["cancel"].deselect
+        @index = 0
+        @sprites["panel_0"].select
+      elsif @party[@index + 1]
+        @sprites["panel_#{@index}"].deselect
+        @index += 1
+        @sprites["panel_#{@index}"].select
+      else
+        @sprites["panel_#{@index}"].deselect
+        @index = -1
+        @sprites["cancel"].select
+      end
+    end
+    if Input.repeat_up?
+      Audio.se_play("audio/se/menu_select")
+      if @index == -1
+        @sprites["cancel"].deselect
+        @index = @party.size - 1
+        @sprites["panel_#{@index}"].select
+      elsif @index > 0
+        @sprites["panel_#{@index}"].deselect
+        @index -= 1
+        @sprites["panel_#{@index}"].select
+      else
+        @sprites["panel_#{@index}"].deselect
+        @index = -1
+        @sprites["cancel"].select
+      end
+    end
+    if Input.right? && @party.size > 1 && @index == 0
+      Audio.se_play("audio/se/menu_select")
+      @sprites["panel_#{@index}"].deselect
+      @index = @last_middle_index || 1
+      @sprites["panel_#{@index}"].select
+    end
+    if Input.left? && @index > 0
+      Audio.se_play("audio/se/menu_select")
+      @sprites["panel_#{@index}"].deselect
+      @index = 0
+      @sprites["panel_#{@index}"].select
+    end
+    @last_middle_index = @index if @index > 0
+    if Input.confirm?
+      if @index == -1 # Cancel
+        stop
+      else # Pokemon
+        # Show list of commands
+        show_command_list
+      end
+    end
+  end
+
+  def show_command_list
+    Audio.se_play("audio/se/menu_select")
+    pokemon = @party[@index]
+    choices = []
+    choices << "SUMMARY"
+    choices << "SWITCH"
+    choices << "ITEM"
+    choices << "CANCEL"
+    cmdwin = ChoiceWindow.new(
+      x: 290,
+      y: 162,
+      z: 1,
+      width: 188,
+      choices: choices,
+      viewport: @viewport
+    )
+    @sprites["window"].width = 280
+    @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
+    @sprites["window"].update
+    loop do
+      case cmdwin.get_choice { update_sprites }
+      when "SUMMARY"
+        SummaryUI.start(@party, @index)
+      when "SWITCH"
+
+      when "ITEM"
+        cmdwin.visible = false
+        itemwin = ChoiceWindow.new(
+          x: 338,
+          y: 194,
+          z: 1,
+          width: 140,
+          choices: ["GIVE", "TAKE", "CANCEL"],
+          viewport: @viewport
+        )
+        @sprites["window"].width = 328
+        @sprites["window"].text = "Do what with an item?"
+        @sprites["window"].update
+        case itemchoice = itemwin.get_choice { update_sprites }
+        when "GIVE"
+
+        when "TAKE"
+          @sprites["window"].visible = false
+          itemwin.visible = false
+          text = ""
+          if pokemon.has_item?
+            text = "Received the " + pokemon.item.name + "\nfrom " + pokemon.name + "."
+            $trainer.bag.add_item(pokemon.item)
+            pokemon.item = nil
+          else
+            text = pokemon.name + " isn't holding\nanything."
+          end
+          show_message(MessageWindow.new(
+            x: 2,
+            y: 226,
+            z: 1,
+            width: 476,
+            height: 92,
+            text: text,
+            color: Color.new(96, 96, 96),
+            shadow_color: Color.new(208, 208, 200),
+            windowskin: 3,
+            viewport: @viewport
+          )) { update_sprites }
+          Audio.se_play("audio/se/menu_select")
+          @sprites["panel_#{@index}"].refresh_item
+        end
+        @sprites["window"].visible = true
+        itemwin.dispose
+        if itemchoice == "CANCEL"
+          cmdwin.visible = true
+          cmdwin.set_index(0, false)
+          @sprites["window"].width = 280
+          @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
+          @sprites["window"].update
+        else
+          break
+        end
+      when "CANCEL" # cancel command window
+        break
+      end
+    end
+    cmdwin.dispose
+    @sprites["window"].width = 360
+    @sprites["window"].text = "Choose a POKéMON."
+    @sprites["window"].update
+  end
+
+  def stop
+    Audio.se_play("audio/se/menu_select") if !stopped?
+    super
+  end
+
+
+
   class BigPanel
     include Disposable
 
@@ -123,6 +317,14 @@ class PartyUI < BaseUI
       @i = nil
     end
 
+    def refresh_item
+      if @pokemon.has_item?
+        @sprites["item"].set_bitmap(@path + "item")
+      else
+        @sprites["item"].bitmap.clear if @sprites["item"].bitmap
+      end
+    end
+
     def update
       if @i
         @i += 1
@@ -139,6 +341,8 @@ class PartyUI < BaseUI
       @sprites["icon"].update unless @pokemon.fainted?
     end
   end
+
+
 
   class Panel
     include Disposable
@@ -254,6 +458,14 @@ class PartyUI < BaseUI
       @i = nil
     end
 
+    def refresh_item
+      if @pokemon.has_item?
+        @sprites["item"].set_bitmap(@path + "item")
+      else
+        @sprites["item"].bitmap.clear if @sprites["item"].bitmap
+      end
+    end
+
     def update
       if @i
         @i += 1
@@ -269,113 +481,5 @@ class PartyUI < BaseUI
       end
       @sprites["icon"].update unless @pokemon.fainted?
     end
-  end
-
-  attr_accessor :party
-
-  def initialize(party = $trainer.party)
-    validate_array party => Pokemon
-    @party = party.compact
-    if !possible?
-      raise "Empty party"
-    end
-    super(path: "party")
-    @sprites["background"] = Sprite.new(@viewport)
-    @sprites["background"].set_bitmap(@path + "background")
-    @sprites["window"] = MessageWindow.new(
-      x: 4,
-      y: 260,
-      viewport: @viewport,
-      width: 360,
-      height: 56,
-      text: "Choose a POKéMON.",
-      color: Color.new(96, 96, 96),
-      shadow_color: Color.new(208, 208, 200),
-      letter_by_letter: false,
-      windowskin: 3
-    )
-    @sprites["cancel"] = SelectableSprite.new(@viewport)
-    @sprites["cancel"].set_bitmap(@path + "cancel")
-    @sprites["cancel"].x = 368
-    @sprites["cancel"].y = 264
-    @sprites["panel_0"] = BigPanel.new(self, @party[0])
-    @sprites["panel_0"].x = 4
-    @sprites["panel_0"].y = 36
-    for i in 1...@party.size
-      if @party[i]
-        @sprites["panel_#{i}"] = Panel.new(self, @party[i])
-        @sprites["panel_#{i}"].x = 176
-        @sprites["panel_#{i}"].y = 18 + 48 * (i - 1)
-      end
-    end
-    @index = 0
-    @sprites["panel_0"].select
-  end
-
-  def update
-    super
-    stop if Input.cancel?
-    if Input.repeat_down?
-      Audio.se_play("audio/se/menu_select")
-      if @index == -1
-        @sprites["cancel"].deselect
-        @index = 0
-        @sprites["panel_0"].select
-      elsif @party[@index + 1]
-        @sprites["panel_#{@index}"].deselect
-        @index += 1
-        @sprites["panel_#{@index}"].select
-      else
-        @sprites["panel_#{@index}"].deselect
-        @index = -1
-        @sprites["cancel"].select
-      end
-    end
-    if Input.repeat_up?
-      Audio.se_play("audio/se/menu_select")
-      if @index == -1
-        @sprites["cancel"].deselect
-        @index = @party.size - 1
-        @sprites["panel_#{@index}"].select
-      elsif @index > 0
-        @sprites["panel_#{@index}"].deselect
-        @index -= 1
-        @sprites["panel_#{@index}"].select
-      else
-        @sprites["panel_#{@index}"].deselect
-        @index = -1
-        @sprites["cancel"].select
-      end
-    end
-    if Input.right? && @party.size > 1 && @index == 0
-      Audio.se_play("audio/se/menu_select")
-      @sprites["panel_#{@index}"].deselect
-      @index = @last_middle_index || 1
-      @sprites["panel_#{@index}"].select
-    end
-    if Input.left? && @index > 0
-      Audio.se_play("audio/se/menu_select")
-      @sprites["panel_#{@index}"].deselect
-      @index = 0
-      @sprites["panel_#{@index}"].select
-    end
-    @last_middle_index = @index if @index > 0
-    if Input.confirm?
-      if @index == -1 # Cancel
-        stop
-      else # Pokemon
-        # Show list of commands
-        $game.start_ui(SummaryUI, @party, @index)
-      end
-    end
-  end
-
-  def stop
-    Audio.se_play("audio/se/menu_select") if !stopped?
-    super
-  end
-
-  def possible?
-    return @party.size > 0
   end
 end

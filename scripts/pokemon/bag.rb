@@ -38,7 +38,7 @@ class Trainer
     # @param count [Integer] the amount of items to add to the bag.
     # @return [Boolean] whether or not the item could be added to the bag.
     def add_item(item, count = 1)
-      validate item => [Symbol, Integer]
+      validate item => [Symbol, Integer, Item]
       item = Item.get(item)
       pocket = item.pocket
       existing_item = @pockets[pocket].find { |e| e[:item] == item.intname }
@@ -60,7 +60,7 @@ class Trainer
     # @param item [Symbol, Integer] the item to look for.
     # @return [Boolean] whether or not the item exists in the bag.
     def has_item?(item)
-      validate item => [Symbol, Integer]
+      validate item => [Symbol, Integer, Item]
       item = Item.get(item)
       pocket = item.pocket
       name = item.intname
@@ -70,7 +70,7 @@ class Trainer
     # @param item [Symbol, Integer] the item to get the quantity of.
     # @return [Integer] how many of one item there is in the bag.
     def get_quantity(item)
-      validate item => [Symbol, Integer]
+      validate item => [Symbol, Integer, Item]
       return 0 unless self.has_item?(item)
       item = Item.get(item)
       pocket = item.pocket
@@ -83,7 +83,7 @@ class Trainer
     # @param count [Integer] the number of items to remove.
     # @return [Boolean] whether or not any items were removed.
     def remove_item(item, count = 1)
-      validate item => [Symbol, Integer], count => Integer
+      validate item => [Symbol, Integer, Item], count => Integer
       return false unless self.has_item?(item)
       item = Item.get(item)
       pocket = item.pocket
@@ -92,7 +92,7 @@ class Trainer
         slot = @pockets[pocket][i]
         if slot[:item] == name
           if slot[:count] > count
-            slot[:count] -= 1
+            slot[:count] -= count
           else
             @pockets[pocket].delete_at(i)
           end
