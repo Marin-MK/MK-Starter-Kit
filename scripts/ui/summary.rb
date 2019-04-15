@@ -538,7 +538,7 @@ class SummaryUI < BaseUI
         {x: 150, y: 148, text: accuracy.to_s, color: Color.new(64, 64, 64),
          shadow_color: Color.new(216, 216, 192), alignment: :right}
       )
-      lines = MessageWindow.get_formatted_text(@sprites["movetext"].bitmap, 210,
+      lines = MessageWindow.get_formatted_text(@sprites["movetext"].bitmap, 214,
           @pokemon.moves[@move_index].description).split("\n")
       lines.each_with_index do |e, i|
         @sprites["movetext"].draw_text(

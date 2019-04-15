@@ -177,7 +177,7 @@ class BagUI < BaseUI
       if item_idx == @items.size # Cancel
         stop
       else
-        show_item_commands
+        select_item
       end
     end
     if Input.repeat_down?(0.5, 0.18)
@@ -208,15 +208,26 @@ class BagUI < BaseUI
     end
   end
 
-  def show_item_commands
+  def set_footer(selected)
+    if selected
+      @sprites["footer"].select
+      @sprites["footer"].z = 2
+      @sprites["selector"].select
+      @sprites["arrow_up"].visible = false
+      @sprites["arrow_down"].visible = false
+      @sprites["arrow_left"].visible = false
+      @sprites["arrow_right"].visible = false
+    else
+      @sprites["footer"].deselect
+      @sprites["footer"].z = 0
+      @sprites["selector"].deselect
+      draw_pocket(false)
+    end
+  end
+
+  def select_item
     Audio.se_play("audio/se/menu_select")
-    @sprites["footer"].select
-    @sprites["footer"].z = 2
-    @sprites["selector"].select
-    @sprites["arrow_up"].visible = false
-    @sprites["arrow_down"].visible = false
-    @sprites["arrow_left"].visible = false
-    @sprites["arrow_right"].visible = false
+    set_footer(true)
     item = Item.get(@items[item_idx][:item])
     msgwin = MessageWindow.new(
       x: 84,
@@ -287,9 +298,7 @@ class BagUI < BaseUI
         break
       end
     end
-    @sprites["footer"].deselect
-    @sprites["footer"].z = 0
-    @sprites["selector"].deselect
+    set_footer(false)
     cmdwin.dispose
     msgwin.dispose
   end
@@ -356,6 +365,56 @@ class BagUI < BaseUI
       end
       black.dispose
       sliding.dispose
+    end
+  end
+
+
+
+  def self.start_choose_item
+    instance = self.new
+    instance.start
+    instance.hide_black
+    return instance
+  end
+
+  def choose_item
+    test_disposed
+    @choose_item = true
+    @ret = nil
+    until @stop || @disposed
+      Graphics.update
+      Input.update
+      update_sprites
+      update
+    end
+    @stop = false # Allow it to be reused
+    return @ret
+  end
+
+  def end_choose_item
+    @choose_item = false
+    self.dispose
+  end
+
+  alias choose_item_stop stop
+  def stop
+    if @choose_item
+      if !stopped?
+        Audio.se_play("audio/se/menu_select")
+      end
+      @stop = true
+    else
+      choose_item_stop
+    end
+  end
+
+  alias choose_item_select_item select_item
+  def select_item
+    if @choose_item
+      @ret = Item.get(@items[item_idx][:item])
+      stop
+    else
+      choose_item_select_item
     end
   end
 

@@ -51,6 +51,7 @@ class ChoiceWindow < BaseWindow
     @line_y_space = @windowskin.line_y_space + line_y_space
     c = [@choices.size, @visible_choices].min - 1
     height = 24 + @line_y_space * c + @line_y_start + @windowskin.source_height - @windowskin.center.y - @windowskin.center.height
+    height = [height, 92].max
     @text_width = @windowskin.get_text_width(width)
     @text_bitmap.set_bitmap(@text_width, 18 + @line_y_space * c)
     super(width, height, @windowskin, viewport)

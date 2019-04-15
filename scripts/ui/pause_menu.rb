@@ -34,6 +34,7 @@ class PauseMenuUI < BaseUI
     @sprites["text"].set_bitmap(Graphics.width, Graphics.height)
     @sprites["text"].z = 1
     @sprites["text"].visible = $trainer.options.button_mode == :HELP
+    @sprites["desc"].visible = $trainer.options.button_mode == :HELP
     draw_description($temp.last_menu_index)
     Audio.se_play("audio/se/menu_open")
   end
@@ -75,8 +76,9 @@ class PauseMenuUI < BaseUI
       when "SAVE"
 
       when "OPTION"
-        
+
         @sprites["text"].visible = $trainer.options.button_mode == :HELP
+        @sprites["desc"].visible = $trainer.options.button_mode == :HELP
       when "EXIT"
         stop
         return

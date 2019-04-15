@@ -160,9 +160,9 @@ class Pokemon
   end
 
   # Gives the Pokemon an item to hold.
-  # @param value [Symbol, NilClass] the item to give the Pokemon.
+  # @param value [Symbol, Item, NilClass] the item to give the Pokemon.
   def item=(value)
-    validate value => [Symbol, NilClass]
+    validate value => [Symbol, Item, NilClass]
     @item = value
   end
 

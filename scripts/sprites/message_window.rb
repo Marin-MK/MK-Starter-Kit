@@ -3,6 +3,8 @@ class MessageWindow < BaseWindow
   attr_reader :letter_by_letter
   attr_accessor :color
   attr_accessor :shadow_color
+  attr_reader :cmdwindow
+  attr_accessor :ending_arrow
 
   def initialize(
         text: "",
@@ -13,10 +15,11 @@ class MessageWindow < BaseWindow
         height: 84,
         windowskin: 1,
         viewport: nil,
-        color: Color.new(48, 80, 200),
+        color: Color.new(96, 96, 96),
         shadow_color: Color.new(208, 208, 200),
         ending_arrow: false,
-        letter_by_letter: true)
+        letter_by_letter: true,
+        cmdwindow: nil)
     validate text => String,
         x => Integer,
         y => Integer,
@@ -28,11 +31,14 @@ class MessageWindow < BaseWindow
         color => Color,
         shadow_color => Color,
         ending_arrow => Boolean,
-        letter_by_letter => Boolean
+        letter_by_letter => Boolean,
+        cmdwindow => [NilClass, ChoiceWindow]
     @ending_arrow = ending_arrow
     @text_bitmap = Sprite.new(viewport)
     @text_bitmap.z = 99999
     @letter_by_letter = letter_by_letter
+    @cmdwindow = cmdwindow
+    @cmdwindow.visible = false if @cmdwindow
     super(width, height, windowskin, viewport)
     self.color = color
     self.shadow_color = shadow_color
@@ -91,8 +97,16 @@ class MessageWindow < BaseWindow
     @current_line = 0
     @move_up_counter = 0
     @running = true
+    @arrow.dispose if @arrow
+    @arrow = nil
     @formatted_text = MessageWindow.get_formatted_text(@text_bitmap.bitmap, @text_width, @text).split("\n")
     self.update if !@letter_by_letter
+  end
+
+  def cmdwindow=(value)
+    validate value => [ChoiceWindow, NilClass]
+    @cmdwindow = value
+    @cmdwindow.visible = false if @cmdwindow
   end
 
   def update
@@ -128,7 +142,7 @@ class MessageWindow < BaseWindow
     if @formatted_text[@line_index]
       if @line_index - @current_line < 2
         if @letter_by_letter
-          if @move_up_counter == 0 && (Input.confirm? || Input.cancel?)
+          if @move_up_counter == 0 && (Input.press_confirm? || Input.press_cancel?)
             @draw_counter_speed = 3
           else
             @draw_counter_speed = 1
@@ -178,8 +192,14 @@ class MessageWindow < BaseWindow
       end
     else
       show_arrow if @ending_arrow && (!@arrow || !@arrow.visible)
-      if Input.confirm?
-        Audio.se_play("audio/se/menu_select")
+      if @cmdwindow
+        @cmdwindow.visible = true if !@cmdwindow.visible
+        cmd = @cmdwindow.update
+        if cmd
+          @running = false
+          return cmd
+        end
+      elsif Input.confirm?
         @running = false
       end
     end
@@ -191,6 +211,7 @@ class MessageWindow < BaseWindow
       @arrow = Sprite.new(@viewport)
       @arrow.set_bitmap("gfx/misc/message_window_arrow")
       @arrow.y = self.y + @windowskin.line_y_start + @windowskin.line_y_space + @arrow.bitmap.height - 10
+      @arrow.z = self.z + 1
       @arrow_counter = 0
     end
     @arrow.visible = true
@@ -206,6 +227,7 @@ class MessageWindow < BaseWindow
     super
     @text_bitmap.dispose
     @arrow.dispose if @arrow
+    @cmdwindow.dispose if @cmdwindow
     @running = false
   end
 
@@ -218,7 +240,7 @@ class MessageWindow < BaseWindow
       c = otxt[i]
       n = otxt[i + 1] if i < otxt.size - 1
       if c == ' ' || c == '-' || n.nil?
-        last_section = ntxt.include?("\n") ? ntxt.slice(ntxt.rindex("\n") + 1, -1) : ntxt
+        last_section = ntxt.include?("\n") ? ntxt.slice(ntxt.rindex("\n") + 1..-1) : ntxt
         test_string = (last_section || "") + last_word
         size = bitmap.text_size(test_string).width
         if size > max_width
@@ -246,20 +268,28 @@ def show_message(text, *options)
     window = MessageWindow.new(
         text: text,
         x: 10,
-        y: 224,
+        y: 230,
         z: 999999,
         width: 460,
         height: 84,
         windowskin: 1,
-        color: Color.new(96, 96, 96),
-        ending_arrow: options.include?(:ending_arrow))
+        ending_arrow: options.include?(:ending_arrow),
+        cmdwindow: cmdwindow)
   end
+  ret = nil
   while window.running?
     Input.update
-    window.update
+    ret = window.update
     Graphics.update
     yield if block_given?
     $visuals.update(:no_events)
   end
+  Audio.se_play("audio/se/menu_select")
+  ret = ret && window.cmdwindow ? window.cmdwindow.choices[ret] : ret
+  if window.cmdwindow
+    window.cmdwindow.dispose if !window.cmdwindow.disposed?
+    window.cmdwindow = nil
+  end
   window.dispose unless options.include?(:no_dispose)
+  return ret
 end

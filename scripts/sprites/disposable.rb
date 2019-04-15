@@ -10,7 +10,7 @@ module Disposable
 
   def test_disposed
     if disposed?
-      raise "This class has been disposed, making this method inaccessible."
+      raise "This class has been disposed, making this method inaccessible.\n\n" + caller.join("\n")
     end
   end
 end

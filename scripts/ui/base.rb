@@ -2,8 +2,8 @@ class BaseUI
   include Disposable
 
   def self.start(*args)
-    instance = self.new(*args)
-    instance.start
+    instance = self.new
+    instance.start(*args)
     instance.main
     instance.dispose
     return instance.return_value

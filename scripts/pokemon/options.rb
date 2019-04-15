@@ -12,7 +12,7 @@ class Trainer
       @battle_scene = true
       @battle_style = :SHIFT
       @sound_mode = :MONO
-      @button_mode == :HELP
+      @button_mode = :HELP
       @frame = 1
     end
   end

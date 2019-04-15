@@ -60,6 +60,11 @@ class << Input
     return Input.repeat?(Input::A, initial, continuous)
   end
 
+  # @return [Boolean] whether the confirm button is constantly held down.
+  def press_confirm?
+    return Input.press?(Input::A)
+  end
+
   # @return [Boolean] whether the cancel button is triggered.
   def cancel?
     return Input.trigger?(Input::B)
@@ -68,6 +73,11 @@ class << Input
   # @return [Boolean] whether the cancel button is being held down.
   def repeat_cancel?(initial = INITIAL_REPEAT_COOLDOWN, continuous = CONTINUOUS_REPEAT_COOLDOWN)
     return Input.repeat?(Input::B, initial, continuous)
+  end
+
+  # @return [Boolean] whether the cancel button is constantly held down.
+  def press_cancel?
+    return Input.press?(Input::B)
   end
 
   # @return [Boolean] whether the down button is triggered.

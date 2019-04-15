@@ -102,8 +102,7 @@ class PartyUI < BaseUI
     if Input.confirm?
       if @index == -1 # Cancel
         stop
-      else # Pokemon
-        # Show list of commands
+      else # A Pokemon
         show_command_list
       end
     end
@@ -149,32 +148,11 @@ class PartyUI < BaseUI
         @sprites["window"].update
         case itemchoice = itemwin.get_choice { update_sprites }
         when "GIVE"
-
+          give_item(cmdwin, itemwin)
+          # give_item already disposes everything so we can skip from here
+          return
         when "TAKE"
-          @sprites["window"].visible = false
-          itemwin.visible = false
-          text = ""
-          if pokemon.has_item?
-            text = "Received the " + pokemon.item.name + "\nfrom " + pokemon.name + "."
-            $trainer.bag.add_item(pokemon.item)
-            pokemon.item = nil
-          else
-            text = pokemon.name + " isn't holding\nanything."
-          end
-          show_message(MessageWindow.new(
-            x: 2,
-            y: 226,
-            z: 1,
-            width: 476,
-            height: 92,
-            text: text,
-            color: Color.new(96, 96, 96),
-            shadow_color: Color.new(208, 208, 200),
-            windowskin: 3,
-            viewport: @viewport
-          )) { update_sprites }
-          Audio.se_play("audio/se/menu_select")
-          @sprites["panel_#{@index}"].refresh_item
+          take_item(itemwin)
         end
         @sprites["window"].visible = true
         itemwin.dispose
@@ -195,6 +173,102 @@ class PartyUI < BaseUI
     @sprites["window"].width = 360
     @sprites["window"].text = "Choose a POKéMON."
     @sprites["window"].update
+  end
+
+  def give_item(cmdwin = nil, itemwin = nil)
+    pokemon = @party[@index]
+    bag_ui = BagUI.start_choose_item
+    loop do
+      item = bag_ui.choose_item
+      if item.nil?
+        break
+      elsif item.pocket == :key_items
+        bag_ui.set_footer(true)
+        show_message("The " + item.name + " can't be held.")
+        bag_ui.set_footer(false)
+      else
+        itemwin.dispose
+        bag_ui.end_choose_item
+        msgwin = MessageWindow.new(
+          x: 2,
+          y: 226,
+          z: 2,
+          width: 476,
+          height: 92,
+          windowskin: 3,
+          viewport: @viewport
+        )
+        if pokemon.has_item?
+          msgwin.text = pokemon.name + " is already holding\none " + pokemon.item.name + "."
+          msgwin.ending_arrow = true
+          show_message(msgwin, :no_dispose) { update_sprites }
+          msgwin.text = "Would you like to switch the\ntwo items?"
+          msgwin.ending_arrow = false
+          confirmwin = ChoiceWindow.new(
+            x: 322,
+            y: 130,
+            z: 2,
+            choices: ["YES", "NO"],
+            width: 124,
+            viewport: @viewport,
+            windowskin: 2,
+            line_y_space: -4
+          )
+          msgwin.cmdwindow = confirmwin
+          switch = show_message(msgwin, :no_dispose) { update_sprites } == "YES"
+          if switch
+            msgwin.text = "The " + pokemon.item.name + " was taken and\nreplaced with the " + item.name + "."
+            show_message(msgwin) { update_sprites }
+            $trainer.bag.add_item(pokemon.item)
+            $trainer.bag.remove_item(item)
+            pokemon.item = item
+          else
+            msgwin.dispose
+          end
+        else
+          msgwin.text = pokemon.name + " was given the\n" + item.name + " to hold."
+          show_message(msgwin) { update_sprites }
+          $trainer.bag.remove_item(item)
+          pokemon.item = item
+          @sprites["panel_#{@index}"].refresh_item
+        end
+        break
+      end
+    end
+    @sprites["window"].visible = true
+    itemwin.dispose if itemwin && !itemwin.disposed?
+    cmdwin.dispose if cmdwin
+    @sprites["window"].width = 360
+    @sprites["window"].text = "Choose a POKéMON."
+    @sprites["window"].update
+    bag_ui.end_choose_item if !bag_ui.disposed?
+  end
+
+  def take_item(itemwin = nil)
+    pokemon = @party[@index]
+    @sprites["window"].visible = false
+    itemwin.visible = false if itemwin
+    text = ""
+    if pokemon.has_item?
+      text = "Received the " + pokemon.item.name + "\nfrom " + pokemon.name + "."
+      $trainer.bag.add_item(pokemon.item)
+      pokemon.item = nil
+    else
+      text = pokemon.name + " isn't holding\nanything."
+    end
+    show_message(MessageWindow.new(
+      x: 2,
+      y: 226,
+      z: 1,
+      width: 476,
+      height: 92,
+      text: text,
+      color: Color.new(96, 96, 96),
+      shadow_color: Color.new(208, 208, 200),
+      windowskin: 3,
+      viewport: @viewport
+    )) { update_sprites }
+    @sprites["panel_#{@index}"].refresh_item
   end
 
   def stop
