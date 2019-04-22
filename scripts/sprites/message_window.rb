@@ -13,31 +13,36 @@ class MessageWindow < BaseWindow
         z: 0,
         width: 460,
         height: 84,
+        visible: true,
         windowskin: 1,
         viewport: nil,
         color: Color.new(96, 96, 96),
         shadow_color: Color.new(208, 208, 200),
         ending_arrow: false,
         letter_by_letter: true,
-        cmdwindow: nil)
+        cmdwindow: nil,
+        update: nil)
     validate text => String,
         x => Integer,
         y => Integer,
         z => Integer,
         width => Integer,
         height => Integer,
+        visible => Boolean,
         windowskin => [Integer, NilClass, Windowskin],
         viewport => [NilClass, Viewport],
         color => Color,
         shadow_color => Color,
         ending_arrow => Boolean,
         letter_by_letter => Boolean,
-        cmdwindow => [NilClass, ChoiceWindow]
+        cmdwindow => [NilClass, ChoiceWindow],
+        update => [NilClass, Proc]
     @ending_arrow = ending_arrow
     @text_bitmap = Sprite.new(viewport)
     @text_bitmap.z = 99999
     @letter_by_letter = letter_by_letter
     @cmdwindow = cmdwindow
+    @update = update
     @cmdwindow.visible = false if @cmdwindow
     super(width, height, windowskin, viewport)
     self.color = color
@@ -46,6 +51,7 @@ class MessageWindow < BaseWindow
     self.y = y
     self.z = z
     self.text = text
+    self.visible = visible
   end
 
   def width=(value)
@@ -111,6 +117,7 @@ class MessageWindow < BaseWindow
 
   def update
     return unless super
+    self.visible = true if !self.visible
     if @arrow
       @arrow_counter += 1
       if @arrow_counter == 32
@@ -124,6 +131,7 @@ class MessageWindow < BaseWindow
       end
       @arrow_counter = 0 if @arrow_counter == 32
     end
+    @update.call if @update.is_a?(Proc)
     @draw_counter_speed = 1
     if @move_up_counter > 0
       hide_arrow if @arrow && @arrow.visible
@@ -205,6 +213,39 @@ class MessageWindow < BaseWindow
     end
   end
 
+  def show(text = nil)
+    self.text = text if text
+    ret = nil
+    while self.running?
+      Input.update
+      ret = self.update
+      Graphics.update
+      yield if block_given?
+      $visuals.update(:no_events)
+    end
+    Audio.se_play("audio/se/menu_select") if !@cmdwindow
+    return ret && @cmdwindow ? @cmdwindow.choices[ret] : ret
+  end
+
+  def show_confirm(text = nil)
+    self.text = text if text
+    confirmwin = ChoiceWindow.new(
+      x: self.x + 320,
+      y: self.y - 96,
+      z: 2,
+      choices: ["YES", "NO"],
+      width: 124,
+      viewport: @viewport,
+      windowskin: 2,
+      line_y_space: -4
+    )
+    self.cmdwindow = confirmwin
+    ret = self.show
+    self.cmdwindow.dispose
+    self.cmdwindow = nil
+    return ret == "YES"
+  end
+
   def show_arrow
     test_disposed
     unless @arrow
@@ -227,7 +268,7 @@ class MessageWindow < BaseWindow
     super
     @text_bitmap.dispose
     @arrow.dispose if @arrow
-    @cmdwindow.dispose if @cmdwindow
+    @cmdwindow.dispose if @cmdwindow && !@cmdwindow.disposed?
     @running = false
   end
 
@@ -260,22 +301,17 @@ class MessageWindow < BaseWindow
 end
 
 
-def show_message(text, *options)
+def show_message(text)
   validate text => [String, MessageWindow]
-  if text.is_a?(MessageWindow)
-    window = text
-  else
-    window = MessageWindow.new(
-        text: text,
-        x: 10,
-        y: 230,
-        z: 999999,
-        width: 460,
-        height: 84,
-        windowskin: 1,
-        ending_arrow: options.include?(:ending_arrow),
-        cmdwindow: cmdwindow)
-  end
+  window = MessageWindow.new(
+      text: text,
+      x: 10,
+      y: 230,
+      z: 999999,
+      width: 460,
+      height: 84,
+      windowskin: 1,
+      ending_arrow: options.include?(:ending_arrow))
   ret = nil
   while window.running?
     Input.update
@@ -286,10 +322,6 @@ def show_message(text, *options)
   end
   Audio.se_play("audio/se/menu_select")
   ret = ret && window.cmdwindow ? window.cmdwindow.choices[ret] : ret
-  if window.cmdwindow
-    window.cmdwindow.dispose if !window.cmdwindow.disposed?
-    window.cmdwindow = nil
-  end
-  window.dispose unless options.include?(:no_dispose)
+  window.dispose
   return ret
 end

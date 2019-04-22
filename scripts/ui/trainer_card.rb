@@ -8,7 +8,6 @@ class TrainerCardUI < BaseUI
     @sprites["card"].set_bitmap(@path + "card")
     @page = 0
     @i = (framecount(1.0) / 3.0).ceil # Starts at 1/3rd of the colon flicker animation
-    $trainer.badges = [true] * 8
     load_front_page(true)
     update_sprites
     @start = true

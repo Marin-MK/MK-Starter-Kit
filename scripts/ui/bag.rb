@@ -1,4 +1,6 @@
 class BagUI < BaseUI
+  attr_reader :pocket
+
   def start
     super(path: "bag")
     @suffix = ["_male", "_female"][$trainer.gender]
@@ -103,8 +105,8 @@ class BagUI < BaseUI
     )
     filename = @path + "cancel"
     description = ["CLOSE BAG"]
-    if @items[item_idx]
-      item = Item.get(@items[item_idx][:item])
+    if selected_item
+      item = Item.get(selected_item[:item])
       filename = "gfx/items/" + item.intname.to_s
       description = MessageWindow.get_formatted_text(@sprites["bgtext"].bitmap, 384, item.description).split("\n")
     end
@@ -170,6 +172,10 @@ class BagUI < BaseUI
     return @top_idx + @list_idx
   end
 
+  def selected_item
+    return @items[item_idx]
+  end
+
   def update
     super
     stop if Input.cancel?
@@ -228,7 +234,7 @@ class BagUI < BaseUI
   def select_item
     Audio.se_play("audio/se/menu_select")
     set_footer(true)
-    item = Item.get(@items[item_idx][:item])
+    item = Item.get(selected_item[:item])
     msgwin = MessageWindow.new(
       x: 84,
       y: 228,
@@ -258,7 +264,11 @@ class BagUI < BaseUI
       when "USE"
 
       when "GIVE"
-
+        routine = GiveItemRoutine.new(self)
+        stop_item_selection(cmdwin, msgwin)
+        routine.start
+        routine.stop
+        break
       when "TOSS"
         cmdwin.visible = false
         msgwin.width = 280
@@ -267,7 +277,7 @@ class BagUI < BaseUI
           x: 370,
           y: 226,
           z: 3,
-          max: @items[item_idx][:count],
+          max: selected_item[:count],
           viewport: @viewport
         )
         value = numwin.get_choice
@@ -287,20 +297,24 @@ class BagUI < BaseUI
           confirmwin.dispose
           if toss
             msgwin.width = 392
-            msgwin.text = "Threw away #{value}\n" + item.name + "(s)."
-            show_message(msgwin, :no_dispose)
+            msgwin.show("Threw away #{value}\n" + item.name + "(s).")
             $trainer.bag.remove_item(item, value)
             draw_list
           end
+          msgwin.dispose
         end
         break
       when "CANCEL"
         break
       end
     end
+    stop_item_selection(cmdwin, msgwin)
+  end
+
+  def stop_item_selection(cmdwin, msgwin)
     set_footer(false)
-    cmdwin.dispose
-    msgwin.dispose
+    cmdwin.dispose if !cmdwin.disposed?
+    msgwin.dispose if !msgwin.disposed?
   end
 
   def stop
@@ -365,56 +379,6 @@ class BagUI < BaseUI
       end
       black.dispose
       sliding.dispose
-    end
-  end
-
-
-
-  def self.start_choose_item
-    instance = self.new
-    instance.start
-    instance.hide_black
-    return instance
-  end
-
-  def choose_item
-    test_disposed
-    @choose_item = true
-    @ret = nil
-    until @stop || @disposed
-      Graphics.update
-      Input.update
-      update_sprites
-      update
-    end
-    @stop = false # Allow it to be reused
-    return @ret
-  end
-
-  def end_choose_item
-    @choose_item = false
-    self.dispose
-  end
-
-  alias choose_item_stop stop
-  def stop
-    if @choose_item
-      if !stopped?
-        Audio.se_play("audio/se/menu_select")
-      end
-      @stop = true
-    else
-      choose_item_stop
-    end
-  end
-
-  alias choose_item_select_item select_item
-  def select_item
-    if @choose_item
-      @ret = Item.get(@items[item_idx][:item])
-      stop
-    else
-      choose_item_select_item
     end
   end
 

@@ -70,5 +70,6 @@ ui/trainer_card.rb: Trainer Card UI
 ui/bag.rb: Bag UI
 ui/party.rb: Party UI
 ui/summary.rb: Summary UI
+routines/give_item_routine.rb: GiveItem Routine
 temp.rb: Temporary Data
 main.rb: Main
