@@ -11,14 +11,14 @@ end
 
 class PartyUI < BaseUI
   attr_reader :party
-  attr_reader :index
+  attr_accessor :index
   attr_reader :switching
 
   def start(party = $trainer.party)
     validate_array party => Pokemon
     @party = party
     if @party.size == 0
-      raise "Empty party"
+      raise "Empty party; cannot show Party UI."
     end
     super(path: "party")
     @sprites["background"] = Sprite.new(@viewport)
@@ -149,7 +149,7 @@ class PartyUI < BaseUI
       loop do
         case cmdwin.get_choice { update_sprites }
         when "SUMMARY"
-          SummaryUI.start(@party, @index)
+          SummaryUI.start(self)
         when "SWITCH"
           start_switching
           cmdwin.dispose

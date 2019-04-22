@@ -1,8 +1,14 @@
 class SummaryUI < BaseUI
-  def start(party, party_index)
+  def start(party, party_index = nil)
     super(path: "summary")
-    @party = party
-    @party_index = party_index
+    if party.is_a?(PartyUI)
+      @party_ui = party
+      @party = @party_ui.party
+      @party_index = @party_ui.index
+    else
+      @party = party
+      @party_index = party_index
+    end
     @pokemon = @party[@party_index]
     @sprites["header"] = Sprite.new(@viewport)
     suffix = @pokemon.shiny? ? "_shiny" : ""
@@ -619,36 +625,32 @@ class SummaryUI < BaseUI
 
   def update
     super
-    if Input.right?
+    if Input.right? && (@page == 1 || @page == 2)
+      Audio.se_play("audio/se/menu_select")
       if @page == 1
-        Audio.se_play("audio/se/menu_select")
         load_page_2
       elsif @page == 2
-        Audio.se_play("audio/se/menu_select")
         load_page_3
       end
     end
-    if Input.left?
+    if Input.left? && (@page == 2 || @page == 3)
+      Audio.se_play("audio/se/menu_select")
       if @page == 2
-        Audio.se_play("audio/se/menu_select")
         load_page_1
       elsif @page == 3
-        Audio.se_play("audio/se/menu_select")
         load_page_2
       end
     end
-    if Input.confirm?
+    if Input.confirm? && @page == 1 || @page == 3 || @page == 4
+      Audio.se_play("audio/se/menu_select")
       if @page == 1
         stop
       elsif @page == 3
-        Audio.se_play("audio/se/menu_select")
         load_page_3_details
       elsif @page == 4
         if @move_index == -1 # Cancel
-          Audio.se_play("audio/se/menu_select")
           load_page_3
         else
-          Audio.se_play("audio/se/menu_select")
           swap_move
         end
       end
@@ -698,13 +700,18 @@ class SummaryUI < BaseUI
           load_page_3
         end
       else
+        Audio.se_play("audio/se/menu_select")
         stop
       end
     end
   end
 
   def stop
-    Audio.se_play("audio/se/menu_select") if !stopped?
+    if @party_ui
+      @party_ui.sprites["panel_#{@party_ui.index}"].deselect
+      @party_ui.index = @party_index
+      @party_ui.sprites["panel_#{@party_index}"].select
+    end
     super
   end
 end
