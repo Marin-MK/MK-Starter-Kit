@@ -124,3 +124,17 @@ def framecount(n)
   FrameCache[n] = (n * Graphics.frame_rate).ceil
   return FrameCache[n]
 end
+
+
+class Array
+  def swap(idx1, idx2)
+    copy = self[idx2].clone
+    self[idx2] = self[idx1]
+    self[idx1] = copy
+    return self
+  end
+
+  def swap!(idx1, idx2)
+    self.replace(self.swap(idx1, idx2))
+  end
+end

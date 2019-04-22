@@ -12,10 +12,11 @@ end
 class PartyUI < BaseUI
   attr_reader :party
   attr_reader :index
+  attr_reader :switching
 
   def start(party = $trainer.party)
     validate_array party => Pokemon
-    @party = party.compact
+    @party = party
     if @party.size == 0
       raise "Empty party"
     end
@@ -41,12 +42,15 @@ class PartyUI < BaseUI
     @sprites["panel_0"] = BigPanel.new(self, @party[0])
     @sprites["panel_0"].x = 4
     @sprites["panel_0"].y = 36
-    for i in 1...@party.size
+    for i in 1...6
       if @party[i]
         @sprites["panel_#{i}"] = Panel.new(self, @party[i])
-        @sprites["panel_#{i}"].x = 176
-        @sprites["panel_#{i}"].y = 18 + 48 * (i - 1)
+      else
+        @sprites["panel_#{i}"] = Sprite.new(@viewport)
+        @sprites["panel_#{i}"].set_bitmap(@path + "panel_empty")
       end
+      @sprites["panel_#{i}"].x = 176
+      @sprites["panel_#{i}"].y = 18 + 48 * (i - 1)
     end
     @index = 0
     @sprites["panel_0"].select
@@ -55,8 +59,12 @@ class PartyUI < BaseUI
   def update
     super
     if Input.cancel?
-      Audio.se_play("audio/se/menu_select")
-      stop
+      if @switching
+        stop_switching
+      else
+        Audio.se_play("audio/se/menu_select")
+        stop
+      end
     end
     if Input.repeat_down?
       Audio.se_play("audio/se/menu_select")
@@ -106,7 +114,11 @@ class PartyUI < BaseUI
     if Input.confirm?
       if @index == -1 # Cancel
         Audio.se_play("audio/se/menu_select")
-        stop
+        if @switching
+          stop_switching
+        else
+          stop
+        end
       else # A Pokemon
         select_pokemon
       end
@@ -114,65 +126,71 @@ class PartyUI < BaseUI
   end
 
   def select_pokemon
-    Audio.se_play("audio/se/menu_select")
-    pokemon = @party[@index]
-    choices = []
-    choices << "SUMMARY"
-    choices << "SWITCH"
-    choices << "ITEM"
-    choices << "CANCEL"
-    cmdwin = ChoiceWindow.new(
-      x: 290,
-      y: 162,
-      z: 1,
-      width: 188,
-      choices: choices,
-      viewport: @viewport
-    )
-    @sprites["window"].width = 280
-    @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
-    loop do
-      case cmdwin.get_choice { update_sprites }
-      when "SUMMARY"
-        SummaryUI.start(@party, @index)
-      when "SWITCH"
-
-      when "ITEM"
-        cmdwin.visible = false
-        itemwin = ChoiceWindow.new(
-          x: 338,
-          y: 194,
-          z: 1,
-          width: 140,
-          choices: ["GIVE", "TAKE", "CANCEL"],
-          viewport: @viewport
-        )
-        @sprites["window"].width = 328
-        @sprites["window"].text = "Do what with an item?"
-        case itemchoice = itemwin.get_choice { update_sprites }
-        when "GIVE"
-          ret = give_item(cmdwin, itemwin)
-          return if ret
-        when "TAKE"
-          take_item(itemwin)
-        end
-        @sprites["window"].visible = true
-        itemwin.dispose if !itemwin.disposed?
-        if itemchoice == "CANCEL"
-          cmdwin.visible = true
-          cmdwin.set_index(0, false)
-          @sprites["window"].width = 280
-          @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
-        elsif itemchoice == "TAKE"
+    if @switching
+      switch_pokemon
+    else
+      Audio.se_play("audio/se/menu_select")
+      pokemon = @party[@index]
+      choices = []
+      choices << "SUMMARY"
+      choices << "SWITCH"
+      choices << "ITEM"
+      choices << "CANCEL"
+      cmdwin = ChoiceWindow.new(
+        x: 290,
+        y: 162,
+        z: 1,
+        width: 188,
+        choices: choices,
+        viewport: @viewport
+      )
+      @sprites["window"].width = 280
+      @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
+      loop do
+        case cmdwin.get_choice { update_sprites }
+        when "SUMMARY"
+          SummaryUI.start(@party, @index)
+        when "SWITCH"
+          start_switching
+          cmdwin.dispose
+          return
+        when "ITEM"
+          cmdwin.visible = false
+          itemwin = ChoiceWindow.new(
+            x: 338,
+            y: 194,
+            z: 1,
+            width: 140,
+            choices: ["GIVE", "TAKE", "CANCEL"],
+            viewport: @viewport
+          )
+          @sprites["window"].width = 328
+          @sprites["window"].text = "Do what with an item?"
+          case itemchoice = itemwin.get_choice { update_sprites }
+          when "GIVE"
+            ret = give_item(cmdwin, itemwin)
+            return if ret
+          when "TAKE"
+            take_item(itemwin)
+          end
+          @sprites["window"].visible = true
+          itemwin.dispose if !itemwin.disposed?
+          if itemchoice == "CANCEL"
+            cmdwin.visible = true
+            cmdwin.set_index(0, false)
+            @sprites["window"].width = 280
+            @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
+          elsif itemchoice == "TAKE"
+            break
+          end
+        when "CANCEL" # cancel command window
           break
         end
-      when "CANCEL" # cancel command window
-        break
       end
+      cmdwin.dispose
+      @sprites["window"].width = 360
+      @sprites["window"].text = "Choose a POKéMON."
     end
-    cmdwin.dispose
-    @sprites["window"].width = 360
-    @sprites["window"].text = "Choose a POKéMON."
   end
 
   def give_item(cmdwin = nil, itemwin = nil)
@@ -225,6 +243,67 @@ class PartyUI < BaseUI
     @sprites["panel_#{@index}"].refresh_item
   end
 
+  def start_switching
+    @switching = @index
+    @sprites["panel_#{@index}"].switching = true
+    @sprites["window"].width = 360
+    @sprites["window"].text = "Move to where?"
+  end
+
+  def switch_pokemon
+    Audio.se_play("audio/se/menu_select")
+    idx1 = @switching
+    idx2 = @index
+    @sprites["panel_#{idx2}"].deselect
+    @sprites["panel_#{idx2}"].switching = true
+    sx1 = @sprites["panel_#{idx1}"].x
+    sx2 = @sprites["panel_#{idx2}"].x
+    mod1 = idx1 == 0 ? -1 : 1
+    mod2 = idx2 == 0 ? -1 : 1
+    frames = framecount(0.2)
+    increment = 320.0 / frames
+    for i in 1..frames
+      Graphics.update
+      Input.update
+      update_sprites
+      @sprites["panel_#{idx1}"].x = sx1 + increment * i * mod1
+      @sprites["panel_#{idx2}"].x = sx2 + increment * i * mod2
+    end
+    wait(0.5)
+    @party.swap!(idx1, idx2)
+    ns1 = (idx1 == 0 ? BigPanel : Panel).new(self, @party[idx1])
+    ns1.x = @sprites["panel_#{idx1}"].x
+    ns1.y = @sprites["panel_#{idx1}"].y
+    ns1.switching = true
+    @sprites["panel_#{idx1}"].dispose
+    @sprites["panel_#{idx1}"] = ns1
+    ns2 = (idx2 == 0 ? BigPanel : Panel).new(self, @party[idx2])
+    ns2.x = @sprites["panel_#{idx2}"].x
+    ns2.y = @sprites["panel_#{idx2}"].y
+    ns2.switching = true
+    @sprites["panel_#{idx2}"].dispose
+    @sprites["panel_#{idx2}"] = ns2
+    sx1 = ns1.x
+    sx2 = ns2.x
+    for i in 1..frames
+      Graphics.update
+      Input.update
+      update_sprites
+      @sprites["panel_#{idx1}"].x = sx1 - increment * i * mod1
+      @sprites["panel_#{idx2}"].x = sx2 - increment * i * mod2
+    end
+    @sprites["panel_#{idx2}"].select
+    stop_switching
+  end
+
+  def stop_switching
+    @switching = nil
+    for i in 0...@party.size
+      @sprites["panel_#{i}"].switching = false
+    end
+    @sprites["window"].text = "Choose a POKéMON."
+  end
+
 
 
   class BigPanel
@@ -234,6 +313,7 @@ class PartyUI < BaseUI
       super()
       @ui = ui
       @pokemon = pokemon
+      @index = @ui.party.index(@pokemon)
       @viewport = @ui.viewport
       @path = @ui.path
       @sprites = {}
@@ -327,17 +407,24 @@ class PartyUI < BaseUI
       @sprites["status"].y = value + 60
     end
 
+    def switching=(value)
+      suffix = value ? "_switching" : @pokemon.fainted? ? "_fainted" : ""
+      @sprites["panel"].set_bitmap(@path + "panel_main" + suffix)
+    end
+
     def select
       @sprites["panel"].select
       @sprites["icon"].set_frame(1)
       @sprites["icon"].y += 10
       @i = 0
+      self.switching = !@ui.switching.nil?
     end
 
     def deselect
       @sprites["panel"].deselect
       @sprites["icon"].y = self.y + 4
       @i = nil
+      self.switching = @ui.switching == @index
     end
 
     def refresh_item
@@ -373,6 +460,7 @@ class PartyUI < BaseUI
     def initialize(ui, pokemon)
       @ui = ui
       @pokemon = pokemon
+      @index = @ui.party.index(@pokemon)
       @path = @ui.path
       @viewport = @ui.viewport
       @sprites = {}
@@ -466,12 +554,18 @@ class PartyUI < BaseUI
       @sprites["status"].y = value + 28
     end
 
+    def switching=(value)
+      suffix = value ? "_switching" : @pokemon.fainted? ? "_fainted" : ""
+      @sprites["panel"].set_bitmap(@path + "panel" + suffix)
+    end
+
     def select
       @sprites["panel"].select
       @sprites["icon"].set_frame(1)
       @sprites["icon"].x += 8
       @sprites["icon"].y -= 6
       @i = 0
+      self.switching = !@ui.switching.nil?
     end
 
     def deselect
@@ -479,6 +573,7 @@ class PartyUI < BaseUI
       @sprites["icon"].x -= 8
       @sprites["icon"].y = self.y - 14
       @i = nil
+      self.switching = @ui.switching == @index
     end
 
     def refresh_item

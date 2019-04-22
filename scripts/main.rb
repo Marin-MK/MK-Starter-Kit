@@ -21,8 +21,7 @@ $trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 6);p.gender=1;p.hp=0;p))
 
 $trainer.add_item(:MAXREPEL, 5)
 
-loop do
-  Input.update
+def main_function
   $game.update
   $visuals.update
   if Input.trigger?(Input::SHIFT)
@@ -31,5 +30,10 @@ loop do
   if Input.trigger?(Input::CTRL)
     abort
   end
+end
+
+loop do
+  Input.update
+  main_function
   Graphics.update
 end

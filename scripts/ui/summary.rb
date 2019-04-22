@@ -551,8 +551,7 @@ class SummaryUI < BaseUI
 
   def swap_move
     if @swapping_move
-      @pokemon.moves[@swapping_move], @pokemon.moves[@move_index] =
-          @pokemon.moves[@move_index], @pokemon.moves[@swapping_move]
+      @pokemon.moves.swap!(@swapping_move, @move_index)
       stop_swap_move
       draw_move_panels
       @sprites["vartext"].draw_text(
