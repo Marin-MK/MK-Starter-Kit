@@ -5,10 +5,8 @@
 # it uses the existing (unused) X and Y buttons for SELECT and START.
 # This allows you to do Input::START and Input::SELECT.
 module Input
-  START = Y
-  SELECT = X
-  send(:remove_const, :X)
-  send(:remove_const, :Y)
+  START = V
+  SELECT = Z
 end
 
 class << Input
@@ -52,32 +50,32 @@ class << Input
 
   # @return [Boolean] whether the confirm button is triggered.
   def confirm?
-    return Input.trigger?(Input::A)
+    return Input.trigger?(Input::C)
   end
 
   # @return [Boolean] whether the confirm button is being held down.
   def repeat_confirm?(initial = INITIAL_REPEAT_COOLDOWN, continuous = CONTINUOUS_REPEAT_COOLDOWN)
-    return Input.repeat?(Input::A, initial, continuous)
+    return Input.repeat?(Input::C, initial, continuous)
   end
 
   # @return [Boolean] whether the confirm button is constantly held down.
   def press_confirm?
-    return Input.press?(Input::A)
+    return Input.press?(Input::C)
   end
 
   # @return [Boolean] whether the cancel button is triggered.
   def cancel?
-    return Input.trigger?(Input::B)
+    return Input.trigger?(Input::X)
   end
 
   # @return [Boolean] whether the cancel button is being held down.
   def repeat_cancel?(initial = INITIAL_REPEAT_COOLDOWN, continuous = CONTINUOUS_REPEAT_COOLDOWN)
-    return Input.repeat?(Input::B, initial, continuous)
+    return Input.repeat?(Input::X, initial, continuous)
   end
 
   # @return [Boolean] whether the cancel button is constantly held down.
   def press_cancel?
-    return Input.press?(Input::B)
+    return Input.press?(Input::X)
   end
 
   # @return [Boolean] whether the down button is triggered.
@@ -118,6 +116,11 @@ class << Input
   # @return [Boolean] whether the up button is being held down.
   def repeat_up?(initial = INITIAL_REPEAT_COOLDOWN, continuous = CONTINUOUS_REPEAT_COOLDOWN)
     return Input.repeat?(Input::UP, initial, continuous)
+  end
+
+  # @return [Boolean] whether the start button is triggered.
+  def start?
+    return Input.trigger?(Input::START)
   end
 
   # @return [Boolean] whether or not the button is being held down.

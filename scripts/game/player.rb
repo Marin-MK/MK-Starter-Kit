@@ -65,14 +65,14 @@ class Game
           $game.map.tile_interaction(newx, newy)
         end
         # Pause Menu
-        if Input.trigger?(Input::START)
+        if Input.start?
           PauseMenuUI.start
         end
       end
       @fake_move = false
       #@fake_move = true if $visuals.player.fake_anim
       oldrun = @running
-      if Input.press?(Input::B)
+      if Input.press_cancel?
         @runcount = 7 if !moving? && !@wasmoving && @runcount == 0
         @runcount += 1
       else
