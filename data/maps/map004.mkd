@@ -1,38 +1,40 @@
---- !ruby/object:MKD::Map
-id: 4
-name: MT. MOON
-width: 5
-height: 5
-tiles:
-- - &1
-    - 0
-    - 185
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-passabilities: []
-tags: []
-tilesets:
-- 1
-events: {}
+---
+:type: :map
+:data: !ruby/object:MKD::Map
+  id: 4
+  name: MT. MOON
+  width: 5
+  height: 5
+  tiles:
+  - - &1
+      - 0
+      - 185
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+  passabilities: []
+  tags: []
+  tilesets:
+  - 1
+  events: {}

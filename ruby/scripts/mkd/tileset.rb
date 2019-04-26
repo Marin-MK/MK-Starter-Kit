@@ -34,7 +34,7 @@ module MKD
 		def save
 			data = MKD::Tileset.fetch || []
 			data[@id] = self
-			FileUtils.save_data("data/tilesets.mkd", data)
+			FileUtils.save_data("data/tilesets.mkd", :tilesets, data)
 		end
 	end
 end

@@ -7,20 +7,24 @@ class Trainer
     attr_reader :owned
     # @return [Boolean] whether or not Pokemon are being registered as seen or owned.
     attr_accessor :enabled
-    # @return [Boolean] whether or not the Pokedex is visible in the menu.
-    attr_accessor :visible
 
     # Creates a new Pokedex object.
     def initialize
       @seen = {}
       @owned = {}
       @enabled = false
-      @visible = true
     end
 
-    def visible?
-      return false if !@enabled
-      return @visible
+    def obtained?
+      return @enabled
+    end
+
+    def seen_count
+      return @seen.values.count { |e| e.is_a?(Array) && e.size > 0 }
+    end
+
+    def owned_count
+      return @owned.values.count { |e| e.is_a?(Array) && e.size > 0 }
     end
 
     # Registers the Pokemon or species as seen.

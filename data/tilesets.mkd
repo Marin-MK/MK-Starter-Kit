@@ -1,4 +1,6 @@
 ---
+:type: :tilesets
+:data:
 - 
 - !ruby/object:MKD::Tileset
   id: 1

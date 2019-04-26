@@ -1,4 +1,6 @@
 ---
+:type: :species
+:data:
 - 
 - !ruby/object:Species
   id: 1

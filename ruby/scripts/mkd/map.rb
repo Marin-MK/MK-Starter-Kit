@@ -34,7 +34,7 @@ module MKD
 
     #temp
     def save
-      FileUtils.save_data("data/maps/map#{@id.to_digits}.mkd", self)
+      FileUtils.save_data("data/maps/map#{@id.to_digits}.mkd", :map, self)
     end
   end
 end

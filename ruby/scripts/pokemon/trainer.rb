@@ -130,7 +130,7 @@ class Trainer
   end
 
   def has_pokedex?
-    return @pokedex.enabled
+    return @pokedex.obtained?
   end
 
   def give_pokedex
@@ -166,7 +166,7 @@ class Trainer
     @badges[n - 1] = true
   end
 
-  def badge_count(n)
+  def badge_count
     return @badges.count { |e| e }
   end
 end

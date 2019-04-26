@@ -3,7 +3,7 @@ class MessageWindow < BaseWindow
   attr_reader :letter_by_letter
   attr_accessor :color
   attr_accessor :shadow_color
-  attr_reader :cmdwindow
+  attr_reader :cmdwin
   attr_accessor :ending_arrow
 
   def initialize(
@@ -20,7 +20,7 @@ class MessageWindow < BaseWindow
         shadow_color: Color.new(208, 208, 200),
         ending_arrow: false,
         letter_by_letter: true,
-        cmdwindow: nil,
+        cmdwin: nil,
         update: nil)
     validate text => String,
         x => Integer,
@@ -35,22 +35,22 @@ class MessageWindow < BaseWindow
         shadow_color => Color,
         ending_arrow => Boolean,
         letter_by_letter => Boolean,
-        cmdwindow => [NilClass, ChoiceWindow],
+        cmdwin => [NilClass, ChoiceWindow],
         update => [NilClass, Proc]
     @ending_arrow = ending_arrow
     @text_bitmap = Sprite.new(viewport)
     @text_bitmap.z = 99999
     @letter_by_letter = letter_by_letter
-    @cmdwindow = cmdwindow
+    @cmdwin = cmdwin
     @update = update
-    @cmdwindow.visible = false if @cmdwindow
+    @cmdwin.visible = false if @cmdwin
     super(width, height, windowskin, viewport)
     self.color = color
     self.shadow_color = shadow_color
     self.x = x
     self.y = y
     self.z = z
-    self.text = text
+    self.text = text || ""
     self.visible = visible
   end
 
@@ -59,8 +59,6 @@ class MessageWindow < BaseWindow
     @text_width = @windowskin.get_text_width(@width)
     @text_bitmap.set_bitmap(@text_width, 100)
   end
-  attr_reader :text_width
-  attr_reader :text_bitmap
 
   def height=(value)
     super(value)
@@ -109,10 +107,10 @@ class MessageWindow < BaseWindow
     self.update if !@letter_by_letter
   end
 
-  def cmdwindow=(value)
+  def cmdwin=(value)
     validate value => [ChoiceWindow, NilClass]
-    @cmdwindow = value
-    @cmdwindow.visible = false if @cmdwindow
+    @cmdwin = value
+    @cmdwin.visible = false if @cmdwin
   end
 
   def update
@@ -200,9 +198,9 @@ class MessageWindow < BaseWindow
       end
     else
       show_arrow if @ending_arrow && (!@arrow || !@arrow.visible)
-      if @cmdwindow
-        @cmdwindow.visible = true if !@cmdwindow.visible
-        cmd = @cmdwindow.update
+      if @cmdwin
+        @cmdwin.visible = true if !@cmdwin.visible
+        cmd = @cmdwin.update
         if cmd
           @running = false
           return cmd
@@ -210,6 +208,23 @@ class MessageWindow < BaseWindow
       elsif Input.confirm?
         @running = false
       end
+    end
+  end
+
+  def set_cmdwin(cmdwin = nil)
+    if cmdwin.is_a?(Array) || cmdwin.nil? # Array of choices or ["YES", "NO"] by default
+      self.cmdwin = ChoiceWindow.new(
+        x: self.x + 320,
+        y: self.y - 96,
+        z: 2,
+        choices: cmdwin ? cmdwin : ["YES", "NO"],
+        width: 124,
+        viewport: @viewport,
+        windowskin: 2,
+        line_y_space: -4
+      )
+    else
+      self.cmdwin = cmdwin
     end
   end
 
@@ -223,26 +238,16 @@ class MessageWindow < BaseWindow
       yield if block_given?
       $visuals.update(:no_events)
     end
-    Audio.se_play("audio/se/menu_select") if !@cmdwindow
-    return ret && @cmdwindow ? @cmdwindow.choices[ret] : ret
+    Audio.se_play("audio/se/menu_select") if !@cmdwin
+    return ret && @cmdwin ? @cmdwin.choices[ret] : ret
   end
 
   def show_confirm(text = nil)
     self.text = text if text
-    confirmwin = ChoiceWindow.new(
-      x: self.x + 320,
-      y: self.y - 96,
-      z: 2,
-      choices: ["YES", "NO"],
-      width: 124,
-      viewport: @viewport,
-      windowskin: 2,
-      line_y_space: -4
-    )
-    self.cmdwindow = confirmwin
+    self.set_cmdwin(["YES", "NO"]) if !@cmdwin
     ret = self.show
-    self.cmdwindow.dispose
-    self.cmdwindow = nil
+    self.cmdwin.dispose
+    self.cmdwin = nil
     return ret == "YES"
   end
 
@@ -268,7 +273,7 @@ class MessageWindow < BaseWindow
     super
     @text_bitmap.dispose
     @arrow.dispose if @arrow
-    @cmdwindow.dispose if @cmdwindow && !@cmdwindow.disposed?
+    @cmdwin.dispose if @cmdwin && !@cmdwin.disposed?
     @running = false
   end
 
@@ -300,27 +305,35 @@ class MessageWindow < BaseWindow
   end
 end
 
-
-def show_message(text)
-  validate text => [String, MessageWindow]
-  window = MessageWindow.new(
+def create_message_window(text = "")
+  validate text => [String, NilClass]
+  return MessageWindow.new(
       text: text,
       x: 10,
       y: 230,
       z: 999999,
       width: 460,
       height: 84,
-      windowskin: 1)
-  ret = nil
-  while window.running?
-    Input.update
-    ret = window.update
-    Graphics.update
-    yield if block_given?
-    $visuals.update(:no_events)
-  end
-  Audio.se_play("audio/se/menu_select")
-  ret = ret && window.cmdwindow ? window.cmdwindow.choices[ret] : ret
+      windowskin: 1,
+      update: proc { $visuals.update(:no_events) }
+  )
+end
+
+def show_message(text)
+  validate text => String
+  window = create_message_window(text)
+  ret = window.show
+  window.dispose
+  return ret
+end
+
+def show_confirm(text)
+  validate text => String
+  window = create_message_window(text)
+  window.set_cmdwin(["YES", "NO"])
+  window.cmdwin.x -= 8
+  window.cmdwin.y -= 4
+  ret = window.show_confirm
   window.dispose
   return ret
 end

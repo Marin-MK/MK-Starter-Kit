@@ -16,7 +16,7 @@ class PauseMenuUI < BaseUI
     @sprites["desc"].set_bitmap(@path + "desc_bar")
     @sprites["desc"].y = 240
     choices = []
-    choices << "POKéDEX" if $trainer.pokedex.visible?
+    choices << "POKéDEX" if $trainer.has_pokedex?
     choices << "POKéMON" if $trainer.party.size > 0
     choices = choices.concat(["BAG", $trainer.name, "SAVE", "OPTION", "EXIT"])
     @cmdwin = ChoiceWindow.new(
@@ -74,16 +74,32 @@ class PauseMenuUI < BaseUI
       when $trainer.name
         TrainerCardUI.start
       when "SAVE"
-
+        hide_ui
+        ret = SaveUI.start
+        if ret # Saved
+          break
+        else
+          show_ui
+        end
       when "OPTION"
 
         @sprites["text"].visible = $trainer.options.button_mode == :HELP
         @sprites["desc"].visible = $trainer.options.button_mode == :HELP
       when "EXIT"
         stop
-        return
+        break
       end
     end
+  end
+
+  def show_ui
+    @sprites.values.each { |e| e.visible = true }
+    @cmdwin.visible = true
+  end
+
+  def hide_ui
+    @sprites.values.each { |e| e.visible = false }
+    @cmdwin.visible = false
   end
 
   def update_sprites

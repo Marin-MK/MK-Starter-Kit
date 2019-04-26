@@ -1,104 +1,106 @@
---- !ruby/object:MKD::Map
-id: 1
-name: MT. MOON
-width: 5
-height: 5
-tiles:
-- - &1
-    - 0
-    - 0
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-  - *1
-passabilities: []
-tags: []
-tilesets:
-- 1
-events:
-  1: !ruby/object:MKD::Event
-    id: 0
-    name: New event
-    x: 1
-    y: 1
-    pages:
-    - !ruby/object:MKD::Event::Page
-      commands:
-      - - 0
-        - :message
-        - :text: |-
-            Hello {PLAYER}! It's been a while since I last saw you.
-            How's everything going?
-      conditions: []
-      graphic:
-        :type: :file
-        :direction: 2
-        :param: gfx/characters/boy
-      triggers:
-      - - :action
-      automoveroute:
-        :frequency: 0
-        :commands: []
-    settings: !ruby/object:MKD::Event::Settings
-      priority: 1
-      passable: false
-      can_start_surfing_here: true
-      reset_position_on_transfer: true
-      speed: 2.2
-  2: !ruby/object:MKD::Event
-    id: 0
-    name: New event
-    x: 3
-    y: 2
-    pages:
-    - !ruby/object:MKD::Event::Page
-      commands:
-      - - 0
-        - :message
-        - :text: |-
-            Hello {PLAYER}! It's been a while since I last saw you.
-            How's everything going?
-      conditions: []
-      graphic:
-        :type: :file
-        :direction: 4
-        :param: gfx/characters/boy
-      triggers:
-      - - :action
-      automoveroute:
-        :frequency: 0
-        :commands:
-        - :left
-        - :left
-        - :down
-        - :down
-        - :right
-        - :right
-        - :up
-        - :up
-    settings: !ruby/object:MKD::Event::Settings
-      priority: 1
-      passable: false
-      can_start_surfing_here: true
-      reset_position_on_transfer: true
-      speed: 2.2
+---
+:type: :map
+:data: !ruby/object:MKD::Map
+  id: 1
+  name: MT. MOON
+  width: 5
+  height: 5
+  tiles:
+  - - &1
+      - 0
+      - 0
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+    - *1
+  passabilities: []
+  tags: []
+  tilesets:
+  - 1
+  events:
+    1: !ruby/object:MKD::Event
+      id: 0
+      name: New event
+      x: 1
+      y: 1
+      pages:
+      - !ruby/object:MKD::Event::Page
+        commands:
+        - - 0
+          - :message
+          - :text: |-
+              Hello {PLAYER}! It's been a while since I last saw you.
+              How's everything going?
+        conditions: []
+        graphic:
+          :type: :file
+          :direction: 2
+          :param: gfx/characters/boy
+        triggers:
+        - - :action
+        automoveroute:
+          :frequency: 0
+          :commands: []
+      settings: !ruby/object:MKD::Event::Settings
+        priority: 1
+        passable: false
+        can_start_surfing_here: true
+        reset_position_on_transfer: true
+        speed: 2.2
+    2: !ruby/object:MKD::Event
+      id: 0
+      name: New event
+      x: 3
+      y: 2
+      pages:
+      - !ruby/object:MKD::Event::Page
+        commands:
+        - - 0
+          - :message
+          - :text: |-
+              Hello {PLAYER}! It's been a while since I last saw you.
+              How's everything going?
+        conditions: []
+        graphic:
+          :type: :file
+          :direction: 4
+          :param: gfx/characters/boy
+        triggers:
+        - - :action
+        automoveroute:
+          :frequency: 0
+          :commands:
+          - :left
+          - :left
+          - :down
+          - :down
+          - :right
+          - :right
+          - :up
+          - :up
+      settings: !ruby/object:MKD::Event::Settings
+        priority: 1
+        passable: false
+        can_start_surfing_here: true
+        reset_position_on_transfer: true
+        speed: 2.2

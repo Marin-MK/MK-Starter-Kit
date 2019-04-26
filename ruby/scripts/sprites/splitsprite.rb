@@ -25,8 +25,12 @@ class SplitSprite
     return @file && @center
   end
 
-  def set(file, center)
-    validate file => String, center => [Rect, Array]
+  def set(file, center = nil)
+    validate file => [String, Windowskin], center => [Rect, Array, NilClass]
+    if file.is_a?(Windowskin)
+      center = file.center
+      file = "gfx/windowskins/" + file.filename
+    end
     center = Rect.new(*center) if center.is_a?(Array)
     @file = file
     @center = center

@@ -45,7 +45,7 @@ module MKD
 
     #temp
     def save
-      FileUtils.save_data("data/maps/connections.mkd", self)
+      FileUtils.save_data("data/maps/connections.mkd", :map_connections, self)
     end
   end
 end

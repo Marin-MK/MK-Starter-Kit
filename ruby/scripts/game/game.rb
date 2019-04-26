@@ -79,6 +79,13 @@ class Game
   def update
     @maps.values.each(&:update)
     @player.update
+  end
 
+  def self.save_game # to implement
+    p "TODO: Game.save_game"
+  end
+
+  def self.load_game # to implement
+    p "TODO: Game.load_game"
   end
 end

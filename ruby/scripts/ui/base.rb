@@ -30,7 +30,7 @@ class BaseUI
     @sprites = {}
     @stop = false
     @disposed = false
-    @ret = 0
+    @ret = true
     show_black(:opening) if @fade
   end
 
