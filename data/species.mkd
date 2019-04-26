@@ -1,4 +1,106 @@
-"œxœUT[oâFŽªŠ%ÜB²I[Ujk­ª>ô!Ún»½^<Ø°03hfKó€˜À(`#ã\P~QGÿXMªªöƒçœ™ùÎw.ŸeÄÔl4àÊV^6æÑljPyÙ'©Í6é£qÛðsç—JÁU>vz=1ô6û>†c¥˜ì·aÒñyÐ=…æÍÞ<¦Ûy–æ¹{^ŠBU‡bÝ0Œ†ªã`0•8ã Ç™2ã3Ã0d^Ðg£6Œ¤Ðªð´€‚Åb!QÏÊ˜€¡V„UZçå¦ÏúAŸ`eäs¬*y5‚bú°@!±\¾r\­Œ{è=.¼”œèªf¼¨#hÕÔ‰á1$îû}6UÐT‚2ðkÊ—bªÚ@	tg}‰	ÙÄÄG1ð°>„¬ö˜ÔšHh…ò”‚3õêÐ‰î±Tg0b¨1ìFÂ?NtPÖ_W²P.M*’=B•,êc‘_{¨¥S•¥§ô „m˜1Æy¤šÇô8ú~0hÃ½'Jpœ´À>	]ƒq4¤êðÝÍ!·{kóx·Mómî~QÒó	åG«¨ŒÍgò[8g’.¶à{[Ä¿Ä;ÐS!ûuøÖjŽÄqJÉ}m‹žJñ'“-øÊò©ðqÈt.­DŸ–…nÃÑàBb|on.l16ÈƒIZeXªj1qjPµ=¦ëP±/¹){ì6ahwv½_&Æfws³oÝ+ÐµNå:3«,Þ8û§4[9‡ÍSºÙ;KcöŽYkç:ÉÒ[go$Ýþõ÷}:¦õ:wñ’¶sg›fwN¾^ÙÌ¹_Ät0/N¯çI¼Ù9qqÙd„•¼Yž˜ù³Yšûtç¾-[D”³tCþÏ}bOlÅž”oýf¹1ö0'¶àƒ5yœÍ×‹<^ ‹Þ"r!aï-Vi73”äÊ½€©Õ(
-|Áñ^^äX¨ÑAwÏÅäüãÏï×¿~yWädžÜüvý¾z´Öd]]~f	½
-—´HìÊÜÖ ·Y<›S¨šUÓd§fkó’âš(6:$TÅÅ¨AÍÛï(~©·B!³ÁXH¼6g-ž'f¹´k÷Š^Jœˆ&TH¥ö¸M\“P‡fwÈÝ:”Ú«ÁO¯¦Æ
-T²‡˜Ú»yè¶Þf'n$ýÝèÇu[PxòÄÒDTìÒºUø†ðfGbNß¿¹©~þ y‰
+---
+- 
+- !ruby/object:Species
+  id: 1
+  ev_yield:
+  - 0
+  - 0
+  - 0
+  - 1
+  - 0
+  - 0
+  moveset:
+    1: :TACKLE
+    3: :GROWL
+    7: :LEECHSEED
+    9: :VINEWHIP
+    13:
+    - :POISONPOWDER
+    - :SLEEPPOWDER
+    15: :TAKEDOWN
+    19: :RAZORLEAF
+    21: :SWEETSCENT
+    25: :GROWTH
+    27: :DOUBLEEDGE
+    31: :WORRYSEED
+    33: :SYNTHESIS
+    37: :SEEDBOMB
+  intname: :BULBASAUR
+  name: Bulbasaur
+  type1: :GRASS
+  type2: :POISON
+  abilities:
+  - :OVERGROW
+  hidden_ability: :CHLOROPHYLL
+  egg_groups:
+  - :MONSTER
+  - :GRASS
+  height: 0.7
+  weight: 6.8999999999999995
+  gender_ratio: :FEMALEONEEIGHT
+  catch_rate: 45
+  hatch_time: !ruby/range
+    begin: 5140
+    end: 5396
+    excl: false
+  pokedex_color: :GREEN
+  pokedex_entry: There is a plant seed on its back right from the day this PokÃ©mon
+    is born. The seed slowly grows larger.
+  evolutions:
+    :level:
+      16: :IVYSAUR
+  exp_yield: 64
+  growth_rate: :MEDIUMSLOW
+  base_friendship: 70
+  tm_compatibility:
+  - :WORKUP
+  - :TOXIC
+  - :VENOSHOCk
+  - :HIDDENPOWER
+  - :SUNNYDAY
+  - :LIGHTSCREEN
+  - :PORTECT
+  - :SAFEGUARD
+  - :FRUSTRATION
+  - :SOLARBEAM
+  - :RETURN
+  - :DOUBLETEAM
+  - :SLUDGEBOMB
+  - :FACADE
+  - :REST
+  - :ATTRACT
+  - :ROUND
+  - :ECHOEDVOICE
+  - :ENERGYBALL
+  - :SWORDSDANCE
+  - :GRASSKNOT
+  - :SWAGGER
+  - :SLEEPTALK
+  - :SUBSTITUTE
+  - :NATUREPOWER
+  - :CONFIDE
+  egg_moves:
+  - :AMNESIA
+  - :CHARM
+  - :CURSE
+  - :ENDURE
+  - :GIGADRAIN
+  - :GRASSWHISTLE
+  - :GRASSYTERRAIN
+  - :INGRAIN
+  - :LEAFSTORM
+  - :MAGICALLEAF
+  - :NATUREPOWER
+  - :PETALDANCE
+  - :POWERWHIP
+  - :SKULLBASH
+  - :SLUDGE
+  tutor_moves:
+  - :BIND
+  - :GIGADRAIN
+  - :GRASSPLEDGE
+  - :KNOCKOFF
+  - :SEEDBOMB
+  - :SNORE
+  - :SYNTHESIS
+  - :WORRYSEED

@@ -2,8 +2,8 @@ SCREENWIDTH = 480
 SCREENHEIGHT = 320
 Graphics.resize_screen(SCREENWIDTH, SCREENHEIGHT)
 
-$:.push "ruby/extensions"
-$:.push "ruby/extensions/i386-mingw32"
+$LOAD_PATH << "ruby/extensions/2.5.0"
+$LOAD_PATH << "ruby/extensions/2.5.0/i386-mingw32"
 
 scripts = File.open('ruby/scripts/_order.rb').read
 scripts.each_line do |line|

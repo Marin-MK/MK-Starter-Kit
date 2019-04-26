@@ -641,7 +641,7 @@ class SummaryUI < BaseUI
         load_page_2
       end
     end
-    if Input.confirm? && @page == 1 || @page == 3 || @page == 4
+    if Input.confirm? && (@page == 1 || @page == 3 || @page == 4)
       Audio.se_play("audio/se/menu_select")
       if @page == 1
         stop

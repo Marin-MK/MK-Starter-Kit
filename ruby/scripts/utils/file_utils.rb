@@ -6,9 +6,10 @@ module FileUtils
   # @param filename [String] the file path.
   # @return [Object] the object that was saved to the file.
   def load_data(filename)
-    return File.open(filename, 'rb') do |f|
-      next Marshal.load(Zlib::Inflate.inflate(Marshal.load(f)).reverse)
-    end
+    f = File.open(filename, 'rb')
+    data = YAML.load(f.read)
+    f.close
+    return data
   end
 
   # Compresses and saves data to a file.
@@ -16,7 +17,7 @@ module FileUtils
   # @param data [Object] the object to save to the file.
   def save_data(filename, data)
     f = File.new(filename, 'wb')
-    Marshal.dump(Zlib::Deflate.deflate(Marshal.dump(data).reverse), f)
+    f.write YAML.dump(data)
     f.close
   end
 end
