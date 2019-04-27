@@ -4,6 +4,8 @@ The aim of the MK Starter Kit is to provide a fast, free, cross-platform and ope
 
 Our main goal is currently to replicate Fire Red and Leaf Green in terms of visuals and mechanics. Once that's done, we can add newer features onto the base.
 
+We use a slightly modified version of <b><a href="https://github.com/Marin-MK/mkxp">mkxp</a></b>, originally made by <b><a href="https://github.com/Ancurio">Ancurio</a></b>.
+
 
 <h2>Compatibility</h2>
 
