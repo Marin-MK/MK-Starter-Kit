@@ -10,3 +10,6 @@ SHINYCHANCE = 8
 
 
 INITIAL_MONEY = 3000
+
+# Used for the save folder name
+GAME_NAME = "MK Starter Kit"

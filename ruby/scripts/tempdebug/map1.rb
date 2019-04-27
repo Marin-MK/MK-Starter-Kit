@@ -82,15 +82,13 @@ def create_event(map, id, x, y, dir)
   ]
 
   page.automoveroute[:frequency] = 0
-  page.automoveroute[:commands] = [:left, :left, :down, :down, :right, :right, :up, :up]
+  page.automoveroute[:commands] = [:down, :down, :right, :right, :up, :up, :left, :left]
 
   event.pages = [page]
   map.events[id] = event
 end
 
 create_event(map, 1, 1, 1, 2)
-map.events[1].pages[0].automoveroute[:commands] = []
-create_event(map, 2, 3, 2, 4)
 
 # Overwrites tileset passability data for non-nil entries.
 map.passabilities = [

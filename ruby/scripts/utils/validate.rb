@@ -81,3 +81,17 @@ def validate_array(hash)
   return if errors.none?
   raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ") + "\n\n" + format_stack(caller)
 end
+
+def validate_mkd(data)
+  errmsg = nil
+  if !data.is_a?(Hash)
+    errmsg = "File content is not a Hash."
+  elsif !data[:type]
+    errmsg = "File content does not contain a type header key."
+  elsif !data[:data]
+    errmsg = "FIle content does not contain a data header key."
+  end
+  if errmsg
+    raise "Invalid MKD file.\n\n" + errmsg
+  end
+end

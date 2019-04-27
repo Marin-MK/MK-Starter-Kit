@@ -9,12 +9,6 @@ class Game
     attr_accessor :x
     # @return [Integer] the y position of this event.
     attr_accessor :y
-    # @return [Array<Game::Event::Page>] an unchangeable list of possible active event pages.
-    attr_accessor :pages
-    # @return [Game::Event::Page, NilClass] the currently active page.
-    attr_accessor :current_page
-    # @return [Game::Event::Settings] configurable settings that change this event's behaviour.
-    attr_accessor :settings
     # @return [Array<Symbol, Array>] an array of move commands that are to be executed.
     attr_accessor :moveroute
     # @return [Float] how fast the event moves.
@@ -23,20 +17,22 @@ class Game
     attr_accessor :direction
 
     # Creates a new Event object.
-    def initialize(map_id, id, data)
+    def initialize(map_id, id)
       @map_id = map_id
       @id = id
       @x = data.x
       @y = data.y
-      @pages = data.pages
-      @settings = data.settings
       @current_page = nil
       @moveroute = []
-      @speed = @settings.speed
+      @speed = settings.speed
       @direction = 2
       @moveroute_ignore_impassable = false
       @automoveroute_idx = 0
       @automove_wait = 0
+      setup_visuals
+    end
+
+    def setup_visuals
       Visuals::Event.create(self)
     end
 
@@ -44,10 +40,25 @@ class Game
       return MKD::Map.fetch(@map_id).events[@id]
     end
 
+    # @return [Array<Game::Event::Page>] an unchangeable list of possible active event pages.
+    def pages
+      return data.pages
+    end
+
+    # @return [Game::Event::Page, NilClass] the currently active page.
+    def current_page
+      return @current_page ? pages[@current_page] : nil
+    end
+
+    # @return [Game::Event::Settings] configurable settings that change this event's behaviour.
+    def settings
+      return data.settings
+    end
+
     # Updates the event, but is only called once per frame.
     def update
       test_pages
-      if @current_page && @current_page.automoveroute[:commands].size > 0
+      if current_page && current_page.automoveroute[:commands].size > 0
         run = true
         run = false if $game.map.event_interpreters.any? { |i| i.event == self }
         run = false if moving?
@@ -57,13 +68,13 @@ class Game
             @automove_wait -= 1
           else
             start_idx = @automoveroute_idx
-            @automoveroute_idx += 1
-            @automoveroute_idx = 0 if @automoveroute_idx >= @current_page.automoveroute[:commands].size
-            command = @current_page.automoveroute[:commands][@automoveroute_idx]
+            command = current_page.automoveroute[:commands][@automoveroute_idx]
             command, args = command if command.is_a?(Array)
             command = [:down, :left, :right, :up].sample if command == :move_random
             command = [:turn_down, :turn_left, :turn_right, :turn_up].sample if command == :turn_random
             command = [command, args] if args
+            @automoveroute_idx += 1
+            @automoveroute_idx = 0 if @automoveroute_idx >= current_page.automoveroute[:commands].size
             if move_command_possible?(command)
               $visuals.maps[@map_id].events[@id].automoveroute(command)
             else
@@ -79,12 +90,12 @@ class Game
     def test_pages
       oldpage = @current_page
       @current_page = nil
-      for i in 0...@pages.size
-        if all_conditions_true_on_page(i)
-          @current_page = @pages[i]
+      for i in 0...pages.size
+        if test_page_conditions(i)
+          @current_page = i
           if oldpage != @current_page
             # Run only if the page actually changed
-            @direction = @current_page.graphic[:direction] || 2
+            @direction = current_page.graphic[:direction] || 2
             # Delete any interpreters there may be left trying to run the old page
             if oldpage
               if oldpage.has_trigger?(:parallel_process)
@@ -94,10 +105,10 @@ class Game
               end
             end
             # Execute event if new page is Parallel Process or Autorun
-            if @current_page.has_trigger?(:parallel_process) || @current_page.has_trigger?(:autorun)
+            if current_page.has_trigger?(:parallel_process) || current_page.has_trigger?(:autorun)
               trigger
             end
-            if @current_page.automoveroute[:commands].size > 0
+            if current_page.automoveroute[:commands].size > 0
               # Wait 1 frame to start the new autonomous move route so the visuals have time to adjust to the new page.
               @automove_wait = 1
             end
@@ -109,8 +120,8 @@ class Game
 
     # @param page_index [Integer] the index of the page to test the conditions of.
     # @return [Boolean] whether all the conditions on the page are true.
-    def all_conditions_true_on_page(page_index)
-      return !@pages[page_index].conditions.any? do |cond, params|
+    def test_page_conditions(page_index)
+      return !pages[page_index].conditions.any? do |cond, params|
         !MKD::Event::SymbolToCondition[cond].new(self, params).valid?
       end
     end
@@ -118,14 +129,14 @@ class Game
     # Executes the event.
     # @param mode [NilClass, Symbol] how the event was triggered.
     def trigger(mode = :manual)
-      if @current_page.has_trigger?(:parallel_process)
-        $game.map.parallel_interpreters << Interpreter.new(self, @current_page.commands, :parallel, :parallel_process)
-      elsif @current_page.has_trigger?(:autorun)
-        autorun = Interpreter.new(self, @current_page.commands, :main, :autorun)
+      if current_page.has_trigger?(:parallel_process)
+        $game.map.parallel_interpreters << Interpreter.new(self, current_page.commands, :parallel, :parallel_process)
+      elsif current_page.has_trigger?(:autorun)
+        autorun = Interpreter.new(self, current_page.commands, :main, :autorun)
         autorun.update until autorun.done?
       else
         unless $game.map.event_interpreters.any? { |i| i.event == self }
-          $game.map.event_interpreters << Interpreter.new(self, @current_page.commands, :event, mode)
+          $game.map.event_interpreters << Interpreter.new(self, current_page.commands, :event, mode)
         end
       end
     end
@@ -169,12 +180,12 @@ class Game
     # @param automoveroute [Boolean] whether or not the previous move command was from an autonomous move route.
     def moveroute_next(automoveroute = false)
       newx, newy = facing_coordinates(@x, @y, @direction)
-      if $game.player.x == newx && $game.player.y == newy && @current_page && @current_page.has_trigger?(:event_touch)
+      if $game.player.x == newx && $game.player.y == newy && current_page && current_page.has_trigger?(:event_touch)
         trigger(:event_touch)
         @moveroute.clear if !automoveroute
       elsif automoveroute # Next move command for an Autonomous Move Route
         # Apply a wait until the next auto move command
-        @automove_wait = @current_page.automoveroute[:frequency]
+        @automove_wait = current_page.automoveroute[:frequency]
       else # Next move command for a normal moveroute
         @moveroute.delete_at(0)
         if @moveroute.size > 0
@@ -191,7 +202,7 @@ class Game
             end
           end
         else
-          if @current_page.automoveroute[:commands].size > 0
+          if current_page.automoveroute[:commands].size > 0
             moveroute_next(true)
           end
         end

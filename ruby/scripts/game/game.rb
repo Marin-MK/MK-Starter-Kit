@@ -21,6 +21,24 @@ class Game
     abort
   end
 
+  def setup
+    Input.update
+    $visuals.dispose
+    $visuals = nil
+    $visuals = Visuals.new
+    @maps.each_value { |e| e.setup_visuals }
+    @player.setup_visuals
+    $visuals.map_renderer.create_tiles
+    $visuals.maps.each_value do |e|
+      e.real_x -= @player.global_x * 32
+      e.real_y -= @player.global_y * 32
+    end
+    $visuals.map_renderer.move_x(@player.global_x * 32)
+    $visuals.map_renderer.move_y(@player.global_y * 32)
+    $game.update
+    $visuals.update
+  end
+
   def load_map(id)
     # Dispose all game maps/visual maps (might need to add here later)
     # Haven't implemented Game::Map#dispose yet
@@ -81,11 +99,62 @@ class Game
     @player.update
   end
 
-  def self.save_game # to implement
-    p "TODO: Game.save_game"
+  def self.get_save_data
+    data = {
+      game: $game,
+      trainer: $trainer
+    }
+  end
+
+  def self.get_save_folder
+    base_path = Dir.home
+    if OS.windows?
+      base_path = ENV['APPDATA'] if File.writable?(ENV['APPDATA'])
+    end
+    base_path = "." if !File.writable?(base_path)
+    return base_path.gsub(/\\\\/, "/") + "/.mkgames/" + GAME_NAME
+  end
+
+  def self.save_exists?
+    return File.file?(Game.get_save_folder + "/save.mkd")
+  end
+
+  def self.save_game
+    folder = Game.get_save_folder
+    FileUtils.mkdir_p(folder) if !Dir.exists?(folder)
+    filename = folder + "/save.mkd"
+    if File.file?(filename)
+      FileUtils.copy(filename, filename + ".bak")
+    end
+    begin
+      f = File.new(filename, 'wb')
+      f.write YAML.dump({type: :savefile, data: Game.get_save_data})
+      f.close
+      File.delete(filename + ".bak") if File.file?(filename + ".bak")
+      return true
+    rescue
+      FileUtils.move(filename + ".bak", filename) if File.file?(filename + ".bak")
+      return false
+    end
   end
 
   def self.load_game # to implement
-    p "TODO: Game.load_game"
+    if !Game.save_exists?
+      raise "No save file could be found."
+    else
+      filename = Game.get_save_folder + "/save.mkd"
+      begin
+        f = File.open(filename, 'rb')
+        data = YAML.load(f.read)
+        f.close
+      rescue
+        raise "Invalid MKD file - #{filename}\n\nFile cannot be parsed by YAML."
+      end
+      validate_mkd(data)
+      data = data[:data]
+      $trainer = data[:trainer]
+      $game = data[:game]
+      $game.setup
+    end
   end
 end

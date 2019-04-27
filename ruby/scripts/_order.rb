@@ -1,4 +1,5 @@
 settings.rb: Settings
+utils/os.rb: OS Utilities
 utils/file_utils.rb: File Utilities
 utils/input.rb: Input Utilities
 utils/numeric.rb: Numeric Utilities

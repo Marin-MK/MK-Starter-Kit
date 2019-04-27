@@ -54,6 +54,11 @@ class Visuals
         end
       end
 
+      def dispose
+        @sprites.each_value { |e| e.dispose if e }
+        @sprites = {}
+      end
+
       def set(layer, bitmap, tile_id, priority = 0)
         if !@sprites[layer]
           @sprites[layer] = Sprite.new(@viewport)

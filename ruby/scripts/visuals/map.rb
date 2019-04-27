@@ -35,9 +35,14 @@ class Visuals
       @events = {}
     end
 
+    def dispose
+      @events.each_value(&:dispose)
+      @events = {}
+    end
+
     # Updates all this map's events.
     def update(*args)
-      @events.values.each { |e| e.update } unless args.include?(:no_events)
+      @events.each_value(&:update) unless args.include?(:no_events)
     end
   end
 end

@@ -3,12 +3,6 @@ class Game
   class Map
     # @return [Integer] the ID of this map.
     attr_accessor :id
-    # @return [MKD::Map] the unchangeable data of the map.
-    #attr_accessor :data
-    # @return [Integer] the width of the map in tiles.
-    attr_accessor :width
-    # @return [Integer] the height of the map in tiles.
-    attr_accessor :height
     # @return [Hash<Game::Event>] the hash of events on this map stored by ID.
     attr_accessor :events
     # @return [Array<Interpreter>] list of active event interpreters.
@@ -25,25 +19,56 @@ class Game
       @id = id
       @x = x
       @y = y
-      @width = data.width
-      @height = data.height
-      @passabilities = data.passabilities
-      @tiles = data.tiles
-      @tilesets = data.tilesets
-      @connection = MKD::MapConnections.fetch(id)
-      # Fetch passability data from the tileset
-      @tileset_passabilities = {}
-      @tilesets.each { |id| @tileset_passabilities[id] = MKD::Tileset.fetch(id).passabilities }
-      @events = {}
-      Visuals::Map.create(self, x, y)
-      data.events.keys.each { |id| @events[id] = Game::Event.new(@id, id, data.events[id]) }
+      setup_visuals
       @event_interpreters = []
       @parallel_interpreters = []
       @wait_count = 0
     end
 
+    def setup_visuals
+      Visuals::Map.create(self, @x, @y)
+      if @events && @events.size > 0
+        @events.each_value { |e| e.setup_visuals }
+      else
+        @events = {}
+        data.events.each_key { |id| @events[id] = Game::Event.new(@id, id) }
+      end
+    end
+
+    def tileset_passabilities
+      hash = {}
+      tilesets.each { |id| hash[id] = MKD::Tileset.fetch(id).passabilities }
+      return hash
+    end
+
     def data
       return MKD::Map.fetch(@id)
+    end
+
+    # @return [Integer] the width of the map in tiles.
+    def width
+      return data.width
+    end
+
+    # @return [Integer] the height of the map in tiles.
+    def height
+      return data.height
+    end
+
+    def tiles
+      return data.tiles
+    end
+
+    def tilesets
+      return data.tilesets
+    end
+
+    def passabilities
+      return data.passabilities
+    end
+
+    def connection
+      return MKD::MapConnections.fetch(id)
     end
 
     # Tests if the specified tile is passable.
@@ -54,8 +79,9 @@ class Game
     # @return [Boolean] whether the tile is passable.
     def passable?(x, y, direction = nil, checking_event = nil)
       validate x => Integer, y => Integer
-      if x < 0 || x >= @width || y < 0 || y >= @height
-        if @connection
+      map_id = checking_event.map_id
+      if x < 0 || x >= width || y < 0 || y >= height
+        if connection
           map_id, mapx, mapy = $game.get_map_from_connection(self, x, y)
           if map_id
             return $game.maps[map_id].passable?(mapx, mapy, direction, checking_event)
@@ -68,21 +94,21 @@ class Game
       # Invert direction: if player is facing left, they're coming from the right, etc.
       direction = 10 - direction if direction.is_a?(Integer)
 
-      return false if checking_event != $game.player && x == $game.player.x && y == $game.player.y
+      return false if checking_event != $game.player && x == $game.player.x && y == $game.player.y && map_id == $game.player.map_id
       event = @events.values.find { |e| e.x == x && e.y == y }
       return false if event && event.current_page && !event.settings.passable
-      unless @passabilities[x + y * @width].nil?
-        val = @passabilities[x + y * @width]
+      unless passabilities[x + y * width].nil?
+        val = passabilities[x + y * width]
         return false if val == 0
         return true if val == 15 || !direction
         dirbit = [1, 2, 4, 8][(direction / 2) - 1]
         return (val & dirbit) == dirbit
       end
-      for layer in 0...@tiles.size
-        tile_type, tile_id = @tiles[layer][x + y * @width]
+      for layer in 0...tiles.size
+        tile_type, tile_id = tiles[layer][x + y * width]
         next if tile_type.nil?
-        tileset_id = @tilesets[tile_type]
-        val = @tileset_passabilities[tileset_id][tile_id % 8 + (tile_id / 8).floor * 8]
+        tileset_id = tilesets[tile_type]
+        val = tileset_passabilities[tileset_id][tile_id % 8 + (tile_id / 8).floor * 8]
         return false if val == 0
         next unless direction
         dirbit = [1, 2, 4, 8][(direction / 2) - 1]
@@ -118,7 +144,7 @@ class Game
     # @param y [Integer] the y position of the tile to interact with.
     def tile_interaction(x, y)
       validate x => Integer, y => Integer
-      return if x < 0 || x >= @width || y < 0 || y >= @height
+      return if x < 0 || x >= width || y < 0 || y >= height
       if e = @events.values.find { |e| e.x == x && e.y == y && e.current_page && e.current_page.has_trigger?(:action) }
         e.trigger(:action)
       end

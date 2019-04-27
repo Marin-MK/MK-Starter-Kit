@@ -27,6 +27,11 @@ class Visuals
       @array = array
     end
 
+    def dispose
+      @array.each(&:dispose)
+      @array = nil
+    end
+
     def [](key)
       return @array[key]
     end

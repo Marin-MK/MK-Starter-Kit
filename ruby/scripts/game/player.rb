@@ -26,7 +26,7 @@ class Game
       @runcount = 0
     end
 
-    def setup
+    def setup_visuals
       Visuals::Player.create(self)
     end
 

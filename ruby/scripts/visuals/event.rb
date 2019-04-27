@@ -40,6 +40,11 @@ class Visuals
       update
     end
 
+    def dispose
+      @sprite.dispose
+      @sprite = nil
+    end
+
     # Updates all the necessary variables and sprite properties to stay up-to-date with the event object's state.
     def update
       oldbmp = @sprite.bitmap

@@ -14,6 +14,7 @@ class Visuals
       @sprite.set_bitmap("gfx/characters/" + game_player.graphic_name)
       @sprite.src_rect.width = @sprite.bitmap.width / 4
       @sprite.src_rect.height = @sprite.bitmap.height / 4
+      @sprite.src_rect.y = @sprite.src_rect.height * (@game_player.direction / 2 - 1)
       @sprite.ox = @sprite.src_rect.width / 2
       @sprite.oy = @sprite.src_rect.height
       @sprite.x = Graphics.width / 2
@@ -30,6 +31,11 @@ class Visuals
       @anim = []
       @fake_anim = nil
       @stop_fake_anim = false
+    end
+
+    def dispose
+      @sprite.dispose
+      @sprite = nil
     end
 
     # Sets the direction of the sprite.
@@ -49,6 +55,7 @@ class Visuals
     # Sets the direction of the sprite without showing a subtle turn animation.
     # @param value [Integer, Symbol] the direction value.
     def set_direction_noanim(value)
+      value = validate_direction(value)
       @sprite.src_rect.y = @sprite.src_rect.height * (value / 2 - 1)
     end
 

@@ -25,4 +25,13 @@ class Visuals
     @maps.values.each { |e| e.update(*args) } unless args.include?(:no_maps)
     @player.update
   end
+
+  def dispose
+    @maps.each_value { |e| e.dispose }
+    @maps = {}
+    @player.dispose
+    @player = nil
+    @map_renderer.dispose
+    @map_renderer = nil
+  end
 end

@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'yaml'
+require 'fileutils'
 
 class Encoding
   unless const_defined?(:ASCII_8BIT)

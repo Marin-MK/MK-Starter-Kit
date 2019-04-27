@@ -1,4 +1,4 @@
-# General utilities related to loading and saving files.
+# General additional utilities related to loading and saving files.
 module FileUtils
   module_function
 
@@ -10,20 +10,11 @@ module FileUtils
     begin
       data = YAML.load(f.read)
     rescue
-      raise "Invalid MKD file.\n\nFile cannot be parsed by YAML."
+      raise "Invalid MKD file - #{filename}\n\nFile cannot be parsed by YAML."
     end
     f.close
     errmsg = nil
-    if !data.is_a?(Hash)
-      errmsg << "File content is not a Hash."
-    elsif !data[:type]
-      errmsg << "File content does not contain a type header key."
-    elsif !data[:data]
-      errmsg << "FIle content does not contain a data header key."
-    end
-    if errmsg
-      raise "Invalid MKD file.\n\n" + errmsg
-    end
+    validate_mkd(data)
     return data[:data]
   end
 

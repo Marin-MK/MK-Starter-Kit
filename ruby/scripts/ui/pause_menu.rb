@@ -16,6 +16,7 @@ class PauseMenuUI < BaseUI
     @sprites["desc"].set_bitmap(@path + "desc_bar")
     @sprites["desc"].y = 240
     choices = []
+    choices << "LOAD"
     choices << "POKéDEX" if $trainer.has_pokedex?
     choices << "POKéMON" if $trainer.party.size > 0
     choices = choices.concat(["BAG", $trainer.name, "SAVE", "OPTION", "EXIT"])
@@ -42,6 +43,7 @@ class PauseMenuUI < BaseUI
   def draw_description(idx)
     @sprites["text"].bitmap.clear
     text = Descriptions[@cmdwin.choices[idx].gsub($trainer.name, "NAME")]
+    text ||= "No description."
     description = MessageWindow.get_formatted_text(@sprites["text"].bitmap, 460, text).split("\n")
     description.each_with_index do |txt, i|
       @sprites["text"].draw_text(
@@ -63,8 +65,14 @@ class PauseMenuUI < BaseUI
           $temp.last_menu_index = newidx
         end
         update_sprites
+        if Input.start?
+          stop
+          return
+        end
       end
       case choice
+      when "LOAD"
+        Game.load_game
       when "POKéDEX"
 
       when "POKéMON"
@@ -86,10 +94,10 @@ class PauseMenuUI < BaseUI
         @sprites["text"].visible = $trainer.options.button_mode == :HELP
         @sprites["desc"].visible = $trainer.options.button_mode == :HELP
       when "EXIT"
-        stop
         break
       end
     end
+    stop
   end
 
   def show_ui
