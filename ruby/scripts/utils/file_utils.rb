@@ -14,7 +14,7 @@ module FileUtils
     end
     f.close
     errmsg = nil
-    validate_mkd(data)
+    validate_mkd(data, filename)
     return data[:data]
   end
 
