@@ -9,6 +9,8 @@ class PauseMenuUI < BaseUI
     "EXIT" => "Close this MENU window."
   }
 
+  attr_reader :cmdwin
+
   def start
     super(path: "pause_menu", fade: false)
     $trainer.give_pokedex
@@ -16,18 +18,16 @@ class PauseMenuUI < BaseUI
     @sprites["desc"].set_bitmap(@path + "desc_bar")
     @sprites["desc"].y = 240
     choices = []
-    choices << "LOAD"
     choices << "POKéDEX" if $trainer.has_pokedex?
     choices << "POKéMON" if $trainer.party.size > 0
     choices = choices.concat(["BAG", $trainer.name, "SAVE", "OPTION", "EXIT"])
     @cmdwin = ChoiceWindow.new(
         choices: choices,
-        x: 338,
-        y: 2,
+        x: Graphics.width,
+        ox: :right,
         line_y_start: -4,
         line_y_space: -2,
-        visible_choices: 7,
-        width: 140,
+        width: 144,
         viewport: @viewport,
         initial_choice: $temp.last_menu_index
     )
@@ -71,8 +71,6 @@ class PauseMenuUI < BaseUI
         end
       end
       case choice
-      when "LOAD"
-        Game.load_game
       when "POKéDEX"
 
       when "POKéMON"
@@ -90,9 +88,7 @@ class PauseMenuUI < BaseUI
           show_ui
         end
       when "OPTION"
-
-        @sprites["text"].visible = $trainer.options.button_mode == :HELP
-        @sprites["desc"].visible = $trainer.options.button_mode == :HELP
+        OptionsUI.start(self)
       when "EXIT"
         break
       end

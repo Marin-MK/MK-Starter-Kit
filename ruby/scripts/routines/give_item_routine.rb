@@ -13,12 +13,14 @@ class GiveItemRoutine
       @initializer = :bag
     end
     @msgwin = MessageWindow.new(
-      x: 2,
-      y: 226,
+      y: 224,
       z: 3,
-      width: 476,
-      height: 92,
-      windowskin: 3,
+      width: 480,
+      height: 96,
+      windowskin: :choice,
+      line_x_start: -16,
+      line_y_space: -2,
+      line_y_start: -2,
       visible: false,
       viewport: @party_ui.viewport,
       update: proc { @party_ui.update_sprites }

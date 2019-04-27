@@ -43,17 +43,17 @@ class Type
     Cache.values.each do |type|
       type.strong_against.each do |k|
         if !intnames.include?(k)
-          raise "Type #{k.inspect(16)} could not be found, located in #strong_against in Type #{type.intname.inspect(16)}"
+          raise "Type #{k.inspect} could not be found, located in #strong_against in Type #{type.intname.inspect}"
         end
       end
       type.resistant_to.each do |k|
         if !intnames.include?(k)
-          raise "Type #{k.inspect(16)} could not be found, located in #resistant_to in Type #{type.intname.inspect(16)}"
+          raise "Type #{k.inspect} could not be found, located in #resistant_to in Type #{type.intname.inspect}"
         end
       end
       type.immune_to.each do |k|
         if !intnames.include?(k)
-          raise "Type #{k.inspect(16)} could not be found, located in #immune_to in Type #{type.intname.inspect(16)}"
+          raise "Type #{k.inspect} could not be found, located in #immune_to in Type #{type.intname.inspect}"
         end
       end
     end
@@ -65,7 +65,7 @@ class Type
     validate type => [Symbol, Integer, Type]
     return type if type.is_a?(Type)
     unless Type.exists?(type)
-      raise "No type could be found for #{type.inspect(50)}"
+      raise "No type could be found for #{type.inspect}"
     end
     return Type.try_get(type)
   end

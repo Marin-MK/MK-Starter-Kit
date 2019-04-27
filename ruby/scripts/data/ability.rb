@@ -36,7 +36,7 @@ class Ability
     validate ability => [Symbol, Integer, Ability]
     return ability if ability.is_a?(Ability)
     unless Ability.exists?(ability)
-      raise "No ability could be found for argument #{ability.inspect(50)}"
+      raise "No ability could be found for argument #{ability.inspect}"
     end
     return Ability.try_get(ability)
   end

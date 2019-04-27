@@ -24,7 +24,7 @@ def create_event(map, id, x, y, dir)
   }
 
   page.commands = [
-    [0, :message, {text: "Hello {PLAYER}! It's been a while since I last saw you.\nHow's everything going?"}],
+    [0, :message, {text: "Okay, you like your profile the way it is."}],
     #[0, :script, {code: "msgbox caller.join(\"\n\")"}]
 
     #[0, :if, {condition: [:triggered_by, {mode: :line_of_sight}]}],

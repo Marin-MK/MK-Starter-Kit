@@ -18,9 +18,10 @@ class ChoiceWindow < BaseWindow
         width: 220,
         color: Color.new(96, 96, 96),
         shadow_color: Color.new(208, 208, 200),
-        windowskin: 2,
+        windowskin: :choice,
         line_y_start: 0, # offset for this specific instance of the choicewindow
         line_y_space: 0, # offset for this specific instance of the choicewindow
+        line_x_start: 0, # offset for this specific instance of the choicewindow
         viewport: nil)
     validate_array choices => String
     validate x => Integer,
@@ -35,7 +36,7 @@ class ChoiceWindow < BaseWindow
         width => Integer,
         color => Color,
         shadow_color => Color,
-        windowskin => [Integer, NilClass, Windowskin],
+        windowskin => [Symbol, Integer, NilClass, Windowskin],
         line_y_start => Integer,
         line_y_space => Integer,
         viewport => [NilClass, Viewport]
@@ -49,9 +50,9 @@ class ChoiceWindow < BaseWindow
     @windowskin = Windowskin.get(windowskin)
     @line_y_start = @windowskin.line_y_start + line_y_start
     @line_y_space = @windowskin.line_y_space + line_y_space
-    c = [@choices.size, @visible_choices].min - 1
-    height = 24 + @line_y_space * c + @line_y_start + @windowskin.source_height - @windowskin.center.y - @windowskin.center.height
-    height = [height, 92].max
+    @line_x_start = @windowskin.line_x_start + line_x_start
+    c = [@choices.size, @visible_choices].min
+    height = [@line_y_space * (c + 1), 96].max
     @text_width = @windowskin.get_text_width(width)
     @text_bitmap.set_bitmap(@text_width, 18 + @line_y_space * c)
     super(width, height, @windowskin, viewport)
@@ -76,9 +77,9 @@ class ChoiceWindow < BaseWindow
 
   def x=(value)
     super(value)
-    @text_bitmap.x = value + @windowskin.line_x_start
+    @text_bitmap.x = value + @line_x_start
     if @selector
-      @selector.x = self.x + @windowskin.line_x_start - @selector.src_rect.width - 2
+      @selector.x = self.x + @line_x_start - @selector.src_rect.width - 2
     end
   end
 
@@ -111,7 +112,7 @@ class ChoiceWindow < BaseWindow
     unless @selector
       @selector = SelectableSprite.new(@viewport)
       @selector.set_bitmap("gfx/misc/choice_arrow")
-      @selector.x = self.x + @windowskin.line_x_start - @selector.src_rect.width - 2
+      @selector.x = self.x + @line_x_start - @selector.src_rect.width - 2
       @selector.y = self.y + @line_y_start - 2 + @line_y_space * @index
       @selector.z = self.z + 1
     end

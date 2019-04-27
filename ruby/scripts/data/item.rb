@@ -46,7 +46,7 @@ class Item
     validate item => [Symbol, Integer, Item]
     return item if item.is_a?(Item)
     unless Item.exists?(item)
-      raise "No item could be found for #{item.inspect(50)}"
+      raise "No item could be found for #{item.inspect}"
     end
     return Item.try_get(item)
   end

@@ -106,7 +106,7 @@ class Trainer
     # @return [Boolean] whether or not the pocket is full.
     def pocket_full?(pocket)
       unless @pockets[pocket]
-        raise "Pocket #{pocket.inspect(16)} couldn't be found"
+        raise "Pocket #{pocket.inspect} couldn't be found"
       end
       return false unless MAX_POCKET_SIZE[pocket]
       return false if @pockets[pocket].size < MAX_POCKET_SIZE[pocket]

@@ -6,7 +6,7 @@ def symbol(n)
     male: "£"
   }
   return characters[n] if characters[n]
-  raise "Invalid symbol #{n.inspect(32)}"
+  raise "Invalid symbol #{n.inspect}"
 end
 
 class PartyUI < BaseUI
@@ -24,16 +24,15 @@ class PartyUI < BaseUI
     @sprites["background"] = Sprite.new(@viewport)
     @sprites["background"].set_bitmap(@path + "background")
     @sprites["window"] = MessageWindow.new(
-      x: 4,
-      y: 260,
+      y: 256,
       viewport: @viewport,
-      width: 360,
-      height: 56,
+      width: 368,
+      height: 64,
       text: "Choose a POKéMON.",
       color: Color.new(96, 96, 96),
       shadow_color: Color.new(208, 208, 200),
       letter_by_letter: false,
-      windowskin: 4
+      windowskin: :helper
     )
     @sprites["cancel"] = SelectableSprite.new(@viewport)
     @sprites["cancel"].set_bitmap(@path + "cancel")
@@ -137,14 +136,16 @@ class PartyUI < BaseUI
       choices << "ITEM"
       choices << "CANCEL"
       cmdwin = ChoiceWindow.new(
-        x: 290,
-        y: 162,
+        x: Graphics.width,
+        ox: :right,
+        y: Graphics.height,
+        oy: :bottom,
         z: 1,
-        width: 188,
+        width: 192,
         choices: choices,
         viewport: @viewport
       )
-      @sprites["window"].width = 280
+      @sprites["window"].width = 288
       @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
       loop do
         case cmdwin.get_choice { update_sprites }
@@ -157,14 +158,16 @@ class PartyUI < BaseUI
         when "ITEM"
           cmdwin.visible = false
           itemwin = ChoiceWindow.new(
-            x: 338,
-            y: 194,
+            x: Graphics.width,
+            ox: :right,
+            y: Graphics.height,
+            oy: :bottom,
             z: 1,
-            width: 140,
+            width: 144,
             choices: ["GIVE", "TAKE", "CANCEL"],
             viewport: @viewport
           )
-          @sprites["window"].width = 328
+          @sprites["window"].width = 336
           @sprites["window"].text = "Do what with an item?"
           case itemchoice = itemwin.get_choice { update_sprites }
           when "GIVE"
@@ -178,7 +181,7 @@ class PartyUI < BaseUI
           if itemchoice == "CANCEL"
             cmdwin.visible = true
             cmdwin.set_index(0, false)
-            @sprites["window"].width = 280
+            @sprites["window"].width = 288
             @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
           elsif itemchoice == "TAKE"
             break
@@ -188,7 +191,7 @@ class PartyUI < BaseUI
         end
       end
       cmdwin.dispose
-      @sprites["window"].width = 360
+      @sprites["window"].width = 368
       @sprites["window"].text = "Choose a POKéMON."
     end
   end
@@ -200,13 +203,13 @@ class PartyUI < BaseUI
     @sprites["window"].visible = true
     itemwin.dispose if itemwin && !itemwin.disposed?
     if ret.nil?
-      @sprites["window"].width = 280
+      @sprites["window"].width = 288
       @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
       cmdwin.visible = true
       cmdwin.set_index(0, false)
     else
       cmdwin.dispose if cmdwin
-      @sprites["window"].width = 360
+      @sprites["window"].width = 368
       @sprites["window"].text = "Choose a POKéMON."
     end
     routine.stop
@@ -226,15 +229,17 @@ class PartyUI < BaseUI
       text = pokemon.name + " isn't holding\nanything."
     end
     msgwin = MessageWindow.new(
-      x: 2,
-      y: 226,
+      y: 224,
       z: 3,
-      width: 476,
-      height: 92,
+      width: 480,
+      height: 96,
       text: text,
       color: Color.new(96, 96, 96),
       shadow_color: Color.new(208, 208, 200),
-      windowskin: 3,
+      windowskin: :choice,
+      line_x_start: -16,
+      line_y_space: -2,
+      line_y_start: -2,
       viewport: @viewport,
       update: proc { update_sprites }
     )
@@ -246,7 +251,7 @@ class PartyUI < BaseUI
   def start_switching
     @switching = @index
     @sprites["panel_#{@index}"].switching = true
-    @sprites["window"].width = 360
+    @sprites["window"].width = 368
     @sprites["window"].text = "Move to where?"
   end
 

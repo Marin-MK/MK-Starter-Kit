@@ -236,25 +236,26 @@ class BagUI < BaseUI
     set_footer(true)
     item = Item.get(selected_item[:item])
     msgwin = MessageWindow.new(
-      x: 84,
-      y: 228,
+      x: 80,
+      y: 224,
       z: 3,
-      width: 248,
-      height: 88,
+      width: 256,
+      height: 96,
       text: item.name + " is\nselected.",
       viewport: @viewport,
-      windowskin: 4,
+      windowskin: :helper,
       color: Color.new(96, 96, 96),
       shadow_color: Color.new(208, 208, 200),
       letter_by_letter: false
     )
     choices = ["USE", "GIVE", "TOSS", "CANCEL"]
     cmdwin = ChoiceWindow.new(
-      x: 338,
-      y: 318,
+      x: 480,
+      ox: :right,
+      y: 320,
       oy: :bottom,
       z: 3,
-      width: 140,
+      width: 144,
       choices: choices,
       viewport: @viewport
     )
@@ -271,11 +272,11 @@ class BagUI < BaseUI
         break
       when "TOSS"
         cmdwin.visible = false
-        msgwin.width = 280
+        msgwin.width = 288
         msgwin.text = "Toss out how many\n" + item.name + "(s)?"
         numwin = NumericChoiceWindow.new(
-          x: 370,
-          y: 226,
+          x: 368,
+          y: 224,
           z: 3,
           max: selected_item[:count],
           viewport: @viewport
@@ -283,13 +284,14 @@ class BagUI < BaseUI
         value = numwin.get_choice
         numwin.dispose
         if value > -1
-          msgwin.width = 264
+          msgwin.width = 272
           msgwin.text = "Throw away #{value} of this item?"
           confirmwin = ChoiceWindow.new(
-            x: 354,
-            y: 226,
+            x: 352,
+            y: 224,
             z: 3,
-            width: 124,
+            width: 128,
+            line_y_space: -4,
             choices: ["YES", "NO"],
             viewport: @viewport
           )

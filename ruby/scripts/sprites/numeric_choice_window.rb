@@ -3,15 +3,15 @@ class NumericChoiceWindow < BaseWindow
       x: 0,
       y: 0,
       z: 0,
-      width: 108,
-      height: 92,
+      width: 112,
+      height: 96,
       digits: 3,
       min: 1,
       max: 999,
       start: 1,
       cancel_value: -1,
       viewport: nil,
-      windowskin: 2
+      windowskin: :choice
     )
     validate x => Integer,
         y => Integer,
@@ -24,7 +24,7 @@ class NumericChoiceWindow < BaseWindow
         start => Integer,
         cancel_value => [Integer, NilClass],
         viewport => [Viewport, NilClass],
-        windowskin => [Integer, Windowskin]
+        windowskin => [Symbol, Integer, Windowskin]
     @digits = digits
     @min = min
     @max = max
@@ -45,8 +45,8 @@ class NumericChoiceWindow < BaseWindow
 
   def x=(value)
     super(value)
-    @up.x = value + 40
-    @down.x = value + 40
+    @up.x = value + 42
+    @down.x = value + 42
     @text_bitmap.x = value
   end
 

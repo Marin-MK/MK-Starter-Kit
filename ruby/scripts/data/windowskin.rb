@@ -1,6 +1,8 @@
 class Windowskin
-  Cache = []
+  Cache = {}
 
+  # @return [Symbol] the internal name of the windowskin.
+  attr_accessor :intname
   # @return [Integer] the ID of the windowskin.
   attr_accessor :id
   # @return [Integer] the left-most X position where text can be drawn.
@@ -27,7 +29,8 @@ class Windowskin
 
   # Ensures this windowskin contains valid data.
   def validate_windowskin
-    validate @id => Integer,
+    validate @intname => Symbol,
+        @id => Integer,
         @line_x_start => Integer,
         @line_x_end => Integer,
         @line_y_start => Integer,
@@ -37,36 +40,44 @@ class Windowskin
     raise "Cannot have an ID lower than 0 for new Windowskin object" if @id < 0
   end
 
-  # @param windowskin [Integer] the windowskin to look up.
+  # @param windowskin [Symbol, Integer] the windowskin to look up.
   # @return [Windowskin]
   def self.get(windowskin)
-    validate windowskin => [Integer, Windowskin]
+    validate windowskin => [Symbol, Integer, Windowskin]
     return windowskin if windowskin.is_a?(Windowskin)
     unless Windowskin.exists?(windowskin)
-      raise "No windowskin could be found for #{windowskin.inspect(50)}"
+      raise "No windowskin could be found for #{windowskin.inspect}"
     end
     return Windowskin.try_get(windowskin)
   end
 
-  # @param windowskin [Integer] the windowskin to look up.
+  # @param windowskin [Symbol, Integer] the windowskin to look up.
   # @return [Windowskin, NilClass]
   def self.try_get(windowskin)
-    validate windowskin => [Integer, Windowskin]
+    validate windowskin => [Symbol, Integer, Windowskin]
     return windowskin if windowskin.is_a?(Windowskin)
-    return Cache[windowskin]
+    return Cache[windowskin] if windowskin.is_a?(Integer)
+    return Cache.values.find do |e|
+      if windowskin == :choice && e.intname == :choice
+        next e.id == $trainer.options.frame + 2
+      else
+        next e.intname == windowskin
+      end
+    end
   end
 
   # @param windowskin [Symbol, Integer] the windowskin to look up.
   # @return [Boolean] whether or not the windowskin exists.
   def self.exists?(windowskin)
-    validate windowskin => [Integer, Windowskin]
+    validate windowskin => [Symbol, Integer, Windowskin]
     return true if windowskin.is_a?(Windowskin)
-    return !Cache[windowskin].nil?
+    return true if !Cache[windowskin].nil?
+    return Cache.values.any? { |e| e.intname == windowskin }
   end
 
   # @return [Integer] the maximum width for drawing text on this windowskin.
   def get_text_width(window_width)
-    return window_width - @line_x_start - self.source_width + @line_x_end - 8
+    return window_width - @line_x_start - @line_x_end
   end
 
   # @return [Integer] the source width of the windowskin graphic.
@@ -89,53 +100,134 @@ class Windowskin
 end
 
 Windowskin.new do
-  @id = 0
-  @line_x_start = 0
-  @line_x_end = -4
-  @line_y_start = 2
+  @intname = :speech
+  @id = 1
+  @line_x_start = 32
+  @line_x_end = 68
+  @line_y_start = 24
   @line_y_space = 30
-  @filename = ""
-  @center = Rect.new(0, 0, 0, 0)
+  @filename = "speech"
+  @center = Rect.new(32, 32, 32, 32)
 end
 
 Windowskin.new do
-  @id = 1
-  @line_x_start = 22
-  @line_x_end = 48
-  @line_y_start = 18
-  @line_y_space = 30
-  @filename = "main"
-  @center = Rect.new(22, 28, 40, 28)
+  @intname = :helper
+  @id = 2
+  @line_x_start = 16
+  @line_x_end = 30
+  @line_y_start = 26
+  @line_y_space = 28
+  @filename = "helper"
+  @center = Rect.new(10, 10, 28, 28)
 end
 
 # choice windowskin for choices
 Windowskin.new do
-  @id = 2
-  @line_x_start = 30
-  @line_x_end = 74
-  @line_y_start = 24
-  @line_y_space = 32
-  @filename = "choice"
-  @center = Rect.new(12, 12, 68, 68)
-end
-
-# choice windowskin for messages
-Windowskin.new do
+  @intname = :choice
   @id = 3
-  @line_x_start = 14
-  @line_x_end = 74
-  @line_y_start = 22
-  @line_y_space = 30
-  @filename = "choice"
-  @center = Rect.new(12, 12, 68, 68)
+  @line_x_start = 32
+  @line_x_end = 16
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "frame_1"
+  @center = Rect.new(14, 14, 20, 20)
 end
 
 Windowskin.new do
+  @intname = :choice
   @id = 4
-  @line_x_start = 12
-  @line_x_end = 44
-  @line_y_start = 22
-  @line_y_space = 28
-  @filename = "helper_window"
-  @center = Rect.new(16, 16, 24, 24)
+  @line_x_start = 32
+  @line_x_end = 16
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "frame_2"
+  @center = Rect.new(14, 14, 20, 20)
+end
+
+Windowskin.new do
+  @intname = :choice
+  @id = 5
+  @line_x_start = 32
+  @line_x_end = 16
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "frame_3"
+  @center = Rect.new(14, 14, 20, 20)
+end
+
+Windowskin.new do
+  @intname = :choice
+  @id = 6
+  @line_x_start = 32
+  @line_x_end = 16
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "frame_4"
+  @center = Rect.new(14, 14, 20, 20)
+end
+
+Windowskin.new do
+  @intname = :choice
+  @id = 7
+  @line_x_start = 32
+  @line_x_end = 16
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "frame_5"
+  @center = Rect.new(14, 14, 20, 20)
+end
+
+Windowskin.new do
+  @intname = :choice
+  @id = 8
+  @line_x_start = 32
+  @line_x_end = 16
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "frame_6"
+  @center = Rect.new(14, 14, 16, 16)
+end
+
+Windowskin.new do
+  @intname = :choice
+  @id = 9
+  @line_x_start = 32
+  @line_x_end = 16
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "frame_7"
+  @center = Rect.new(14, 14, 16, 16)
+end
+
+Windowskin.new do
+  @intname = :choice
+  @id = 10
+  @line_x_start = 32
+  @line_x_end = 16
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "frame_8"
+  @center = Rect.new(12, 12, 16, 16)
+end
+
+Windowskin.new do
+  @intname = :choice
+  @id = 11
+  @line_x_start = 32
+  @line_x_end = 16
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "frame_9"
+  @center = Rect.new(12, 12, 24, 24)
+end
+
+Windowskin.new do
+  @intname = :choice
+  @id = 12
+  @line_x_start = 32
+  @line_x_end = 16
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "frame_10"
+  @center = Rect.new(14, 14, 16, 16)
 end

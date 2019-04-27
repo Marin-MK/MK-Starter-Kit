@@ -22,7 +22,7 @@ class StatusConditionIcon < Sprite
       :FAINTED => 5,
       :POKERUS => 6
     }
-    raise "Invalid status condition #{status.inspect(16)}" if !indexes[status]
+    raise "Invalid status condition #{status.inspect}" if !indexes[status]
     index = indexes[status]
     self.src_rect.y = index * self.src_rect.height
   end

@@ -223,7 +223,7 @@ class Pokemon
       :ALWAYSMALE => 0
     }
     unless threshold.has_key?(species.gender_ratio(self.form))
-      raise "Invalid Gender Ratio for species #{species.intname.inspect(50)}."
+      raise "Invalid Gender Ratio for species #{species.intname.inspect}."
     end
     threshold = threshold[species.gender_ratio(self.form)]
     return 2 if threshold == 255
@@ -247,7 +247,7 @@ class Pokemon
   # @param nature [Integer, NilClass] the gender value.
   def set_gender(value)
     validate value => [Integer, NilClass]
-    raise "Invalid gender #{value.inspect(16)}" unless value == 0 || value == 1 || value == 2 || value.nil?
+    raise "Invalid gender #{value.inspect}" unless value == 0 || value == 1 || value == 2 || value.nil?
     @genderflag = value
   end
 
@@ -271,7 +271,7 @@ class Pokemon
     if value.nil? || Ability.exists?(value)
       @abilityflag = value
     else
-      raise "Invalid ability for #{value.inspect(50)}"
+      raise "Invalid ability for #{value.inspect}"
     end
   end
 
@@ -302,7 +302,7 @@ class Pokemon
     if value.nil? || Nature.exists?(value)
       @natureflag = value
     else
-      raise "Invalid nature for #{value.inspect(50)}"
+      raise "Invalid nature for #{value.inspect}"
     end
   end
 
@@ -464,7 +464,7 @@ class Pokemon
   # @return [Boolean] whether or not the Pokemon is of the given gender.
   def is_gender?(gender)
     validate gender => Integer
-    raise "Invalid gender #{gender.inspect(16)}" unless gender == 0 || gender == 1 || gender == 2
+    raise "Invalid gender #{gender.inspect}" unless gender == 0 || gender == 1 || gender == 2
     return self.gender == gender
   end
 

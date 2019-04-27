@@ -2,7 +2,7 @@ class SaveUI < BaseUI
   def start
     super(fade: false)
     @sprites["details"] = SplitSprite.new(@viewport)
-    @sprites["details"].set(Windowskin.get(4))
+    @sprites["details"].set(Windowskin.get(:helper))
     @sprites["details"].width = 248
     @sprites["details"].height = 168
     @sprites["details"].x = 4

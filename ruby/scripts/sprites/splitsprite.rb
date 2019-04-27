@@ -79,10 +79,10 @@ class SplitSprite
     # Space between top right and bottom right
     space_right = @height - trh - brh
     for i in 0...(space_right / center.height.to_f).floor
-      bmp.blt(@width - trw, trh + i * center.height, src, Rect.new(center.x + center.width, center.y, center.x, center.height))
+      bmp.blt(@width - trw, trh + i * center.height, src, Rect.new(center.x + center.width, center.y, src.width - center.x - center.width, center.height))
     end
     frac_right = (space_right / center.height.to_f) % 1
-    bmp.blt(@width - trw, trh + (i + 1) * center.height, src, Rect.new(center.x + center.width, center.y, center.x, (center.height * frac_right).round))
+    bmp.blt(@width - trw, trh + (i + 1) * center.height, src, Rect.new(center.x + center.width, center.y, src.width - center.x - center.width, (center.height * frac_right).round))
 
     # Space between top left and top right
     space_top = @width - tlw - trw

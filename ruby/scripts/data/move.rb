@@ -44,9 +44,9 @@ class Move
         @category => Symbol,
         @target_mode => Symbol,
         @description => String
-    raise "Type #{@type.inspect(16)} doesn't exist for new Move object" unless Type.exists?(@type)
+    raise "Type #{@type.inspect} doesn't exist for new Move object" unless Type.exists?(@type)
     unless [:physical, :special, :status].include?(@category)
-      raise "Category #{@category.inspect(16)} must be one of :physical, :special or :status for new Move object"
+      raise "Category #{@category.inspect} must be one of :physical, :special or :status for new Move object"
     end
     raise "Cannot have an ID of 0 or lower for new Move object" if @id < 1
   end
@@ -57,7 +57,7 @@ class Move
     validate move => [Symbol, Integer, Move]
     return move if move.is_a?(Move)
     unless Move.exists?(move)
-      raise "No move could be found for #{move.inspect(50)}"
+      raise "No move could be found for #{move.inspect}"
     end
     return Move.try_get(move)
   end

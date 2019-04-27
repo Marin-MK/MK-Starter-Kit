@@ -39,7 +39,7 @@ class Nature
     validate nature => [Symbol, Integer, Nature]
     return nature if nature.is_a?(Nature)
     unless Nature.exists?(nature)
-      raise "No nature could be found for #{nature.inspect(50)}"
+      raise "No nature could be found for #{nature.inspect}"
     end
     return Nature.try_get(nature)
   end

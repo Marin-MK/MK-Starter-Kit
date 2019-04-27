@@ -215,7 +215,7 @@ class Species
     validate species => [Symbol, Integer, Species]
     return species if species.is_a?(Species)
     unless Species.exists?(species)
-      raise "No species could be found for argument #{species.inspect(50)}"
+      raise "No species could be found for argument #{species.inspect}"
     end
     return Species.try_get(species)
   end

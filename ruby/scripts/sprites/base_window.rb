@@ -9,10 +9,10 @@ class BaseWindow
   def initialize(width, height, windowskin, viewport = nil)
     validate width => Integer,
         height => Integer,
-        windowskin => [Integer, NilClass, Windowskin],
+        windowskin => [Symbol, Integer, NilClass, Windowskin],
         viewport => [NilClass, Viewport]
     super()
-    @windowskin = Windowskin.get(windowskin || 1)
+    @windowskin = Windowskin.get(windowskin || :speech)
     @viewport = viewport
     @window = SplitSprite.new(@viewport)
     self.width = width

@@ -48,9 +48,7 @@
         commands:
         - - 0
           - :message
-          - :text: |-
-              Hello {PLAYER}! It's been a while since I last saw you.
-              How's everything going?
+          - :text: Okay, you like your profile the way it is.
         conditions: []
         graphic:
           :type: :file

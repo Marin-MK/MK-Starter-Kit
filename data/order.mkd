@@ -72,6 +72,7 @@ ui/bag.rb: Bag UI
 ui/party.rb: Party UI
 ui/summary.rb: Summary UI
 ui/save_menu.rb: Save UI
+ui/options_menu.rb: Options UI
 routines/give_item_routine.rb: GiveItem Routine
 temp.rb: Temporary Data
 main.rb: Main

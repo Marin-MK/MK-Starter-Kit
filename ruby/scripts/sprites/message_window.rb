@@ -11,15 +11,18 @@ class MessageWindow < BaseWindow
         x: 0,
         y: 0,
         z: 0,
-        width: 460,
-        height: 84,
+        width: 480,
+        height: 96,
         visible: true,
-        windowskin: 1,
+        windowskin: :speech,
         viewport: nil,
         color: Color.new(96, 96, 96),
         shadow_color: Color.new(208, 208, 200),
         ending_arrow: false,
         letter_by_letter: true,
+        line_y_start: 0, # offset for this specific instance of the messagewindow
+        line_y_space: 0, # offset for this specific instance of the messagewindow
+        line_x_start: 0, # offset for this specific instance of the messagewindow
         cmdwin: nil,
         update: nil)
     validate text => String,
@@ -29,7 +32,7 @@ class MessageWindow < BaseWindow
         width => Integer,
         height => Integer,
         visible => Boolean,
-        windowskin => [Integer, NilClass, Windowskin],
+        windowskin => [Symbol, Integer, NilClass, Windowskin],
         viewport => [NilClass, Viewport],
         color => Color,
         shadow_color => Color,
@@ -45,6 +48,9 @@ class MessageWindow < BaseWindow
     @update = update
     @cmdwin.visible = false if @cmdwin
     super(width, height, windowskin, viewport)
+    @line_y_start = @windowskin.line_y_start + line_y_start
+    @line_y_space = @windowskin.line_y_space + line_y_space
+    @line_x_start = @windowskin.line_x_start + line_x_start
     self.color = color
     self.shadow_color = shadow_color
     self.x = x
@@ -57,22 +63,22 @@ class MessageWindow < BaseWindow
   def width=(value)
     super(value)
     @text_width = @windowskin.get_text_width(@width)
-    @text_bitmap.set_bitmap(@text_width, 100)
+    @text_bitmap.set_bitmap(@text_width + 2, 96)
   end
 
   def height=(value)
     super(value)
-    @text_bitmap.set_bitmap(@text_width, 100)
+    @text_bitmap.set_bitmap(@text_width + 2, 96)
   end
 
   def x=(value)
     super(value)
-    @text_bitmap.x = value + @windowskin.line_x_start
+    @text_bitmap.x = value + @line_x_start
   end
 
   def y=(value)
     super(value)
-    @text_bitmap.y = value + @windowskin.line_y_start - 6
+    @text_bitmap.y = value + @line_y_start - 6
   end
 
   def z=(value)
@@ -134,8 +140,8 @@ class MessageWindow < BaseWindow
     if @move_up_counter > 0
       hide_arrow if @arrow && @arrow.visible
       @move_up_counter -= 1
-      @text_bitmap.src_rect.y += @windowskin.line_y_space / 6.0
-      @text_bitmap.src_rect.height -= @windowskin.line_y_space / 6.0
+      @text_bitmap.src_rect.y += @line_y_space / 6.0
+      @text_bitmap.src_rect.height -= @line_y_space / 6.0
       @move_up_counter = -1 if @move_up_counter == 0
     elsif @move_up_counter == -1
       @current_line += 1
@@ -169,7 +175,7 @@ class MessageWindow < BaseWindow
                   text = @formatted_text[i]
                 end
                 @text_bitmap.draw_text(
-                    y: (i - @current_line) * @windowskin.line_y_space + 6,
+                    y: (i - @current_line) * @line_y_space + 6,
                     text: text,
                     color: @color,
                     shadow_color: @shadow_color
@@ -182,7 +188,7 @@ class MessageWindow < BaseWindow
           @text_bitmap.bitmap.clear
           for i in @current_line..@line_index
             @text_bitmap.draw_text(
-              y: (i - @current_line) * @windowskin.line_y_space + 6,
+              y: (i - @current_line) * @line_y_space + 6,
               text: @formatted_text[i],
               color: @color,
               shadow_color: @shadow_color
@@ -214,13 +220,15 @@ class MessageWindow < BaseWindow
   def set_cmdwin(cmdwin = nil)
     if cmdwin.is_a?(Array) || cmdwin.nil? # Array of choices or ["YES", "NO"] by default
       self.cmdwin = ChoiceWindow.new(
-        x: self.x + 320,
-        y: self.y - 96,
+        x: 448,
+        ox: :right,
+        y: 224,
+        oy: :bottom,
         z: 2,
         choices: cmdwin ? cmdwin : ["YES", "NO"],
-        width: 124,
+        width: 128,
         viewport: @viewport,
-        windowskin: 2,
+        windowskin: :choice,
         line_y_space: -4
       )
     else
@@ -256,12 +264,12 @@ class MessageWindow < BaseWindow
     unless @arrow
       @arrow = Sprite.new(@viewport)
       @arrow.set_bitmap("gfx/misc/message_window_arrow")
-      @arrow.y = self.y + @windowskin.line_y_start + @windowskin.line_y_space + @arrow.bitmap.height - 10
+      @arrow.y = self.y + @line_y_start + @line_y_space + @arrow.bitmap.height - 10
       @arrow.z = self.z + 1
       @arrow_counter = 0
     end
     @arrow.visible = true
-    @arrow.x = self.x + @text_bitmap.bitmap.text_size(@formatted_text[@line_index - 1]).width + @windowskin.line_x_start
+    @arrow.x = self.x + @text_bitmap.bitmap.text_size(@formatted_text[@line_index - 1]).width + @line_x_start
   end
 
   def hide_arrow
@@ -309,12 +317,11 @@ def create_message_window(text = "")
   validate text => [String, NilClass]
   return MessageWindow.new(
       text: text,
-      x: 10,
-      y: 230,
+      y: 224,
       z: 999999,
-      width: 460,
-      height: 84,
-      windowskin: 1,
+      width: 480,
+      height: 96,
+      windowskin: :speech,
       update: proc { $visuals.update(:no_events) }
   )
 end
@@ -331,8 +338,6 @@ def show_confirm(text)
   validate text => String
   window = create_message_window(text)
   window.set_cmdwin(["YES", "NO"])
-  window.cmdwin.x -= 8
-  window.cmdwin.y -= 4
   ret = window.show_confirm
   window.dispose
   return ret
