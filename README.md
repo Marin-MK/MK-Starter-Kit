@@ -41,6 +41,13 @@ After cloning, copy <b><a href="https://drive.google.com/uc?export=download&id=1
 
 <h4>Asset Ripping/Sourcing</h4>
 <li>Aaron
+  
+<h4>UI Design</h4>
+<li>Aaron
+
+<h4>Other</h4>
+<li>Melody
+<li>Café Pra Dois
 
 <h4>Support</h4>
 <li>Maruno
