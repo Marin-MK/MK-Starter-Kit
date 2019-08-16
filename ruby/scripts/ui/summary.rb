@@ -122,12 +122,12 @@ class SummaryUI < BaseUI
     sprites = preload_page_1
     @sprites["text"].bitmap.clear
     @sprites["text"].draw_text(
-      {x: 8, y: 8, text: "POKéMON INFO", color: Color.new(248, 248, 248),
-       shadow_color: Color.new(96, 96, 96)},
-      {x: 8, y: 42, text: symbol(:Lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248),
-       shadow_color: Color.new(96, 96, 96)},
-      {x: 80, y: 42, text: @pokemon.name, color: Color.new(248, 248, 248),
-       shadow_color: Color.new(96, 96, 96)}
+      {x: 8, y: 8, text: "POKéMON INFO", color: Color::LIGHTBASE,
+       shadow_color: Color::LIGHTSHADOW},
+      {x: 8, y: 42, text: symbol(:Lv) + @pokemon.level.to_s, color: Color::LIGHTBASE,
+       shadow_color: Color::LIGHTSHADOW},
+      {x: 80, y: 42, text: @pokemon.name, color: Color::LIGHTBASE,
+       shadow_color: Color::LIGHTSHADOW}
     )
     if @pokemon.female?
       gender_text = symbol(:female)

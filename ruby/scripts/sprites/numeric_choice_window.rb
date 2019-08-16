@@ -73,14 +73,14 @@ class NumericChoiceWindow < BaseWindow
       {x: x,
        y: self.height / 2 - 6,
        text: text,
-       color: Color.new(96, 96, 96),
-       shadow_color: Color.new(208, 208, 200),
+       color: Color::GREYBASE,
+       shadow_color: Color::GREYSHADOW,
        small: true},
       {x: x,
        y: self.height / 2 - 8,
        text: "x",
-       color: Color.new(96, 96, 96),
-       shadow_color: Color.new(208, 208, 200),
+       color: Color::GREYBASE,
+       shadow_color: Color::GREYSHADOW,
        alignment: :right}
     )
   end

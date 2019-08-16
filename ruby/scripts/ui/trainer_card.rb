@@ -101,18 +101,18 @@ class TrainerCardUI < BaseUI
     end
     @sprites["text"].set_bitmap(Graphics.width, Graphics.height)
     @sprites["text"].draw_text(
-      {x: 300, y: 42, text: "IDNo." + $trainer.pid.to_s, color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200)},
-      {x: 56, y: 80, text: "NAME: " + $trainer.name, color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200)},
-      {x: 56, y: 134, text: "MONEY", color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200)},
-      {x: 288, y: 134, text: $trainer.get_money_text, color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200),
+      {x: 300, y: 42, text: "IDNo." + $trainer.pid.to_s, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
+      {x: 56, y: 80, text: "NAME: " + $trainer.name, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
+      {x: 56, y: 134, text: "MONEY", color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
+      {x: 288, y: 134, text: $trainer.get_money_text, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW,
        alignment: :right},
-      {x: 56, y: 198, text: "TIME", color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200)}
+      {x: 56, y: 198, text: "TIME", color: Color::GREYBASE, shadow_color: Color::GREYSHADOW}
     )
     @sprites["time_text"] = Sprite.new(@viewport)
     @sprites["time_text"].set_bitmap(Graphics.width, Graphics.height)
     @sprites["colon"] = Sprite.new(@viewport)
     @sprites["colon"].set_bitmap(10, 20)
-    @sprites["colon"].draw_text(text: ":", color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200))
+    @sprites["colon"].draw_text(text: ":", color: Color::GREYBASE, shadow_color: Color::GREYSHADOW)
     @sprites["colon"].x = 254
     @sprites["colon"].y = 198
     @sprites["colon"].visible = true
@@ -177,7 +177,7 @@ class TrainerCardUI < BaseUI
     Audio.se_play("audio/se/trainercard")
     wait(0.02)
     @sprites["text"].draw_text(
-      x: 292, y: 44, text: $trainer.name, color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200)
+      x: 292, y: 44, text: $trainer.name, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW
     )
   end
 
@@ -189,8 +189,8 @@ class TrainerCardUI < BaseUI
       if @hours != hours || @minutes != minutes || force_update_time
         @sprites["time_text"].bitmap.clear
         @sprites["time_text"].draw_text(
-          {x: 264, y: 198, text: minutes, color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200)},
-          {x: 254, y: 198, text: hours, color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200), alignment: :right}
+          {x: 264, y: 198, text: minutes, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
+          {x: 254, y: 198, text: hours, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW, alignment: :right}
         )
       end
       @hours = hours

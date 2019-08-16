@@ -9,7 +9,7 @@ class Sprite
       x = arg[:x] || 0
       y = arg[:y] || 0
       text = arg[:text]
-      color = arg[:color] || Color.new(255, 255, 255)
+      color = arg[:color] || Color::WHITE
       shadow_color = arg[:shadow_color]
       outline_color = arg[:outline_color]
       alignment = arg[:alignment] || :left

@@ -1,14 +1,3 @@
-def symbol(n)
-  characters = {
-    PKMN: "²³",
-    Lv: "¤",
-    female: "¬",
-    male: "£"
-  }
-  return characters[n] if characters[n]
-  raise "Invalid symbol #{n.inspect}"
-end
-
 class PartyUI < BaseUI
   attr_reader :party
   attr_accessor :index
@@ -29,8 +18,8 @@ class PartyUI < BaseUI
       width: 368,
       height: 64,
       text: "Choose a POKéMON.",
-      color: Color.new(96, 96, 96),
-      shadow_color: Color.new(208, 208, 200),
+      color: Color::GREYBASE,
+      shadow_color: Color::GREYSHADOW,
       letter_by_letter: false,
       windowskin: :helper
     )
@@ -234,8 +223,8 @@ class PartyUI < BaseUI
       width: 480,
       height: 96,
       text: text,
-      color: Color.new(96, 96, 96),
-      shadow_color: Color.new(208, 208, 200),
+      color: Color::GREYBASE,
+      shadow_color: Color::GREYSHADOW,
       windowskin: :choice,
       line_x_start: -16,
       line_y_space: -2,

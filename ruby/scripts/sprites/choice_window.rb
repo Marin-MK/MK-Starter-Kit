@@ -16,8 +16,8 @@ class ChoiceWindow < BaseWindow
         visible_choices: nil, # as many as there are
         can_loop: true, # can or can't go from top to bottom and bottom to top
         width: 220,
-        color: Color.new(96, 96, 96),
-        shadow_color: Color.new(208, 208, 200),
+        color: Color::GREYBASE,
+        shadow_color: Color::GREYSHADOW,
         windowskin: :choice,
         line_y_start: 0, # offset for this specific instance of the choicewindow
         line_y_space: 0, # offset for this specific instance of the choicewindow

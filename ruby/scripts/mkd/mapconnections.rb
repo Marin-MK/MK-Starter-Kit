@@ -38,7 +38,7 @@ module MKD
           return Cache
         end
       else
-        self.const_set(:Cache, FileUtils.load_data("data/maps/connections.mkd"))
+        self.const_set(:Cache, FileUtils.load_data("data/maps/connections.mkd", :map_connections))
         return self.fetch(id)
       end
     end

@@ -16,8 +16,8 @@ class MessageWindow < BaseWindow
         visible: true,
         windowskin: :speech,
         viewport: nil,
-        color: Color.new(96, 96, 96),
-        shadow_color: Color.new(208, 208, 200),
+        color: Color::GREYBASE,
+        shadow_color: Color::GREYSHADOW,
         ending_arrow: false,
         letter_by_letter: true,
         line_y_start: 0, # offset for this specific instance of the messagewindow

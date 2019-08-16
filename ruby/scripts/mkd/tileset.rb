@@ -24,7 +24,7 @@ module MKD
 			if Cache
 				return id ? Cache[id] : Cache
 			elsif File.file?("data/tilesets.mkd")
-				self.const_set(:Cache, FileUtils.load_data("data/tilesets.mkd"))
+				self.const_set(:Cache, FileUtils.load_data("data/tilesets.mkd", :tilesets))
 			  return Cache unless id
 			  return Cache[id]
 			end

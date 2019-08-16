@@ -50,8 +50,8 @@ class PauseMenuUI < BaseUI
         x: 4,
         y: 256 + 30 * i,
         text: txt,
-        color: Color.new(248, 248, 248),
-        shadow_color: Color.new(96, 96, 96)
+        color: Color::LIGHTBASE,
+        shadow_color: Color::LIGHTSHADOW
       )
     end
   end

@@ -75,13 +75,13 @@ class BagUI < BaseUI
           item = Item.get(@items[i][:item])
           name = item.name
           @sprites["text"].draw_text(
-              {x: 222, y: 8 + 32 * (i - @top_idx), text: "x", color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200)},
-              {x: 264, y: 10 + 32 * (i - @top_idx), text: @items[i][:count].to_s, color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200),
+              {x: 222, y: 8 + 32 * (i - @top_idx), text: "x", color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
+              {x: 264, y: 10 + 32 * (i - @top_idx), text: @items[i][:count].to_s, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW,
                small: true, alignment: :right}
           )
         end
         @sprites["text"].draw_text(
-          {x: 18, y: 10 + 32 * (i - @top_idx), text: name, color: Color.new(96, 96, 96), shadow_color: Color.new(208, 208, 200)}
+          {x: 18, y: 10 + 32 * (i - @top_idx), text: name, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW}
         )
       end
     end
@@ -100,7 +100,7 @@ class BagUI < BaseUI
   def draw_item
     @sprites["bgtext"].bitmap.clear
     @sprites["bgtext"].draw_text(
-      {x: 88, y: 24, text: pocket_name, color: Color.new(248, 248, 248), shadow_color: Color.new(96, 96, 96),
+      {x: 88, y: 24, text: pocket_name, color: Color::LIGHTBASE, shadow_color: Color::LIGHTSHADOW,
        alignment: :center}
     )
     filename = @path + "cancel"
@@ -112,7 +112,7 @@ class BagUI < BaseUI
     end
     description.each_with_index do |txt, i|
       @sprites["bgtext"].draw_text(
-        x: 80, y: 236 + 28 * i, text: txt, color: Color.new(248, 248, 248), shadow_color: Color.new(96, 96, 96)
+        x: 80, y: 236 + 28 * i, text: txt, color: Color::LIGHTBASE, shadow_color: Color::LIGHTSHADOW
       )
     end
     @sprites["icon"].set_bitmap(filename)
@@ -244,8 +244,8 @@ class BagUI < BaseUI
       text: item.name + " is\nselected.",
       viewport: @viewport,
       windowskin: :helper,
-      color: Color.new(96, 96, 96),
-      shadow_color: Color.new(208, 208, 200),
+      color: Color::GREYBASE,
+      shadow_color: Color::GREYSHADOW,
       letter_by_letter: false
     )
     choices = ["USE", "GIVE", "TOSS", "CANCEL"]
@@ -337,12 +337,12 @@ class BagUI < BaseUI
     else
       black = Sprite.new(@viewport)
       black.set_bitmap(Graphics.width, Graphics.height)
-      black.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0))
+      black.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color::BLACK)
       black.opacity = 0
       black.z = 99999
       sliding = Sprite.new(@viewport)
       sliding.set_bitmap(Graphics.width, Graphics.height)
-      sliding.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0))
+      sliding.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color::BLACK)
       sliding.src_rect.height = 0
       sliding.z = 99999
       frames = framecount(0.15)
@@ -367,11 +367,11 @@ class BagUI < BaseUI
     else
       black = Sprite.new(@viewport)
       black.set_bitmap(Graphics.width, Graphics.height)
-      black.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0))
+      black.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color::BLACK)
       black.z = 99999
       sliding = Sprite.new(@viewport)
       sliding.set_bitmap(Graphics.width, Graphics.height)
-      sliding.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0))
+      sliding.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color::BLACK)
       sliding.z = 99999
       frames = framecount(0.15)
       increment_opacity = 255.0 / frames

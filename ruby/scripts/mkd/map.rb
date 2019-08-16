@@ -24,7 +24,7 @@ module MKD
     # @return [Map] the map with the specified ID.
     def self.fetch(id)
       return Cache[id] if Cache[id]
-      Cache[id] = FileUtils.load_data("data/maps/map#{id.to_digits(3)}.mkd")
+      Cache[id] = FileUtils.load_data("data/maps/map#{id.to_digits(3)}.mkd", :map)
       return Cache[id]
     end
 

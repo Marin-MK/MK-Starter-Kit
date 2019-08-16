@@ -1,10 +1,13 @@
-# Inherit on a class to allow Class.Constant besides Class::Constant.
-class Enum
-  class << self
-    def method_missing(name)
-      return const_get(name)
-    end
-  end
+# Translates symbols to actual special characters in the font
+def symbol(n)
+  characters = {
+    PKMN: "²³",
+    Lv: "¤",
+    female: "¬",
+    male: "£"
+  }
+  return characters[n] if characters[n]
+  raise "Invalid symbol #{n.inspect}"
 end
 
 # Ensures #msgbox always pops up a box, no matter the RGSS version
@@ -46,6 +49,7 @@ class Sprite
   end
 end
 
+#temp
 # @return [Integer] the amount of memory the game is currently using.
 def get_memory
   ret = `pmap #{Process.pid} | tail -1`.reverse
@@ -97,10 +101,17 @@ class FalseClass
 end
 
 class Color
-  RED = Color.new(224, 8, 8)
-  BLUE = Color.new(48, 80, 200)
-  GREY = Color.new(96, 96, 96)
-  SHADOW = Color.new(208, 208, 200)
+  RED = Color.new(255, 0, 0)
+  GREEN = Color.new(0, 255, 0)
+  BLUE = Color.new(0, 0, 255)
+  WHITE = Color.new(255, 255, 255)
+  BLACK = Color.new(0, 0, 0)
+
+  GREYBASE = Color.new(96, 96, 96)
+  GREYSHADOW = Color.new(208, 208, 200)
+
+  LIGHTBASE = Color.new(248, 248, 248)
+  LIGHTSHADOW = Color.new(96, 96, 96)
 end
 
 

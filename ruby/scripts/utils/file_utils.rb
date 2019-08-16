@@ -5,11 +5,11 @@ module FileUtils
   # Loads data from a file.
   # @param filename [String] the file path.
   # @return [Object] the object that was loaded from the file.
-  def load_data(filename)
+  def load_data(filename, type)
     data = File.open(filename, 'rb') do |f|
       next Marshal.load(Zlib::Inflate.inflate(Marshal.load(f)).reverse)
     end
-    validate_mkd(data, filename)
+    validate_mkd(data, type, filename)
     return data[:data]
   end
 
