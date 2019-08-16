@@ -17,7 +17,6 @@ class Stats
   alias spd= speed=
 end
 
-
 class Species
   Cache = {}
 
@@ -112,8 +111,8 @@ class Species
     return @catch_rate
   end
 
-  # @return [Integer] the minimum number of steps it takes to hatch an egg of the species.
-  def hatch_time(form = 0)
+  # @return [Integer] the number of Egg cycles it takes to hatch an egg of the species.
+  def hatch_cycles(form = 0)
     return @forms[form][:hatch_time] || @hatch_time if @forms[form] && form != 0
     return @hatch_time
   end
@@ -197,7 +196,7 @@ class Species
         @leveling_rate => Symbol,
         @gender_ratio => Symbol,
         @catch_rate => Integer,
-        @hatch_time => Range,
+        @hatch_cycles => Integer,
         @pokedex_color => Symbol,
         @pokedex_entry => String,
         @happiness => Integer,
@@ -272,7 +271,7 @@ Species.new do
   @leveling_rate = :MEDIUMSLOW
   @gender_ratio = :FEMALEONEEIGHTH
   @catch_rate = 45
-  @hatch_time = 5140..5396
+  @hatch_cycles = 20
   @pokedex_color = :GREEN
   @pokedex_entry = "There is a plant seed on its back right from the day this Pokémon is born. The seed slowly grows larger."
   @happiness = 70
@@ -289,7 +288,7 @@ Species.new do
     46 => :SOLARBEAM
   }
   @moveset.tms = [:TOXIC, :BULLETSEED, :HIDDENPOWER, :SUNNYDAY, :PROTECT, :GIGADRAIN, :FRUSTRATION, :SOLARBEAM, :RETURN, :DOUBLETEAM, :SLUDGEBOMB, :FACADE, :SECRETPOWER, :REST, :ATTRACT, :CUT, :STRENGTH, :FLASH, :ROCKSMASH]
-  @moveset.egg = [:CHARM, :CURSE, :GRASSWHISTLE, :LIGHTSCREEN, :MAGICALLEAF, :PETALDANCE, :SAFEFUARD, :SKULLBASH],
+  @moveset.egg = [:CHARM, :CURSE, :GRASSWHISTLE, :LIGHTSCREEN, :MAGICALLEAF, :PETALDANCE, :SAFEFUARD, :SKULLBASH]
   @moveset.tutor = [:BODYSLAM, :DOUBLEEDGE, :MIMIC, :SUBSTITUTE, :SWORDSDANCE, :SOLARBEAM]
   @evolutions = [
     {
@@ -304,12 +303,14 @@ Species.new do
   #@get_form = proc do |pokemon|
   #  next 1 if pokemon.has_item?(:REPEL)
   #end
-  #@forms = {
-  #  1 => {
-  #    name: "Boolbasaurus",
-  #    type1: :FIGHTING,
-  #    type2: :FLYING,
-  #    leveling_rate: :SLOW
-  #  }
-  #}
+  @forms = {
+    1 => {
+      name: "Boolbasaurus",
+      type1: :FIGHTING,
+      type2: :FLYING,
+      leveling_rate: :SLOW
+    }
+  }
 end
+
+FileUtils.save_data("data/species.mkd", :species, Species::Cache)

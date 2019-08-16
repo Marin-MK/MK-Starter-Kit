@@ -89,7 +89,7 @@ class OptionsUI < BaseUI
   end
 
   def update
-    if Input.cancel?
+    if Input.cancel? || Input.confirm? && @index == 6
       stop
     end
     if Input.repeat_down?

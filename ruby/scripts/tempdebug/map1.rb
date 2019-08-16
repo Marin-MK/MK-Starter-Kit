@@ -1,12 +1,24 @@
 # Creates a new map (normally loaded from a file)
 map = MKD::Map.new(1)
-map.name = "MT. MOON"
+map.name = "Top Left Map"
 map.width = 5
 map.height = 5
-map.tilesets = [1]
+map.tilesets = [1, 3]
 map.tiles = [
-  # Fills exactly the whole map with [0, 1]
-  [[0, 0]] * map.width * map.height
+  [
+    [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],
+    [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],
+    [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],
+    [0, 0], [0, 0], [0, 0], [0, 0], [0, 0],
+    [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]
+  ],
+  [
+    nil, nil,     [1, 20],  nil,      nil,
+    nil, [1, 27], [1, 28],  [1, 29],  nil,
+    nil, [1, 35], [1, 36],  [1, 37],  nil,
+    nil, [1, 43], [1, 44],  [1, 45],  nil,
+    nil, nil,     nil,      nil,      nil,
+  ]
 ]
 
 def create_event(map, id, x, y, dir)
@@ -82,17 +94,12 @@ def create_event(map, id, x, y, dir)
   ]
 
   page.automoveroute[:frequency] = 0
-  page.automoveroute[:commands] = [:down, :down, :right, :right, :up, :up, :left, :left]
+  page.automoveroute[:commands] = [:down, :down, :down, :down, :right, :right, :right, :right, :up, :up, :up, :up, :left, :left, :left, :left]
 
   event.pages = [page]
   map.events[id] = event
 end
 
-create_event(map, 1, 1, 1, 2)
+create_event(map, 1, 0, 0, 2)
 
-# Overwrites tileset passability data for non-nil entries.
-map.passabilities = [
-  # Makes x=2,y=0 impassable
-  #15/nil, 15/nil, 0
-]
 map.save

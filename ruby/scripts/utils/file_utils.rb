@@ -6,14 +6,9 @@ module FileUtils
   # @param filename [String] the file path.
   # @return [Object] the object that was loaded from the file.
   def load_data(filename)
-    f = File.open(filename, 'rb')
-    begin
-      data = YAML.load(f.read)
-    rescue
-      raise "Invalid MKD file - #{filename}\n\nFile cannot be parsed by YAML."
+    data = File.open(filename, 'rb') do |f|
+      next Marshal.load(Zlib::Inflate.inflate(Marshal.load(f)).reverse)
     end
-    f.close
-    errmsg = nil
     validate_mkd(data, filename)
     return data[:data]
   end
@@ -24,7 +19,7 @@ module FileUtils
   # @param data [Object] the object to save to the file.
   def save_data(filename, type, data)
     f = File.new(filename, 'wb')
-    f.write YAML.dump({type: type, data: data})
+    Marshal.dump(Zlib::Deflate.deflate(Marshal.dump({type: type, data: data}).reverse), f)
     f.close
     return nil
   end

@@ -35,12 +35,6 @@ class Game
       end
     end
 
-    def tileset_passabilities
-      hash = {}
-      tilesets.each { |id| hash[id] = MKD::Tileset.fetch(id).passabilities }
-      return hash
-    end
-
     def data
       return MKD::Map.fetch(@id)
     end
@@ -61,10 +55,6 @@ class Game
 
     def tilesets
       return data.tilesets
-    end
-
-    def passabilities
-      return data.passabilities
     end
 
     def connection
@@ -97,18 +87,11 @@ class Game
       return false if checking_event != $game.player && x == $game.player.x && y == $game.player.y && map_id == $game.player.map_id
       event = @events.values.find { |e| e.x == x && e.y == y }
       return false if event && event.current_page && !event.settings.passable
-      unless passabilities[x + y * width].nil?
-        val = passabilities[x + y * width]
-        return false if val == 0
-        return true if val == 15 || !direction
-        dirbit = [1, 2, 4, 8][(direction / 2) - 1]
-        return (val & dirbit) == dirbit
-      end
       for layer in 0...tiles.size
         tile_type, tile_id = tiles[layer][x + y * width]
         next if tile_type.nil?
         tileset_id = tilesets[tile_type]
-        val = tileset_passabilities[tileset_id][tile_id % 8 + (tile_id / 8).floor * 8]
+        val = MKD::Tileset.fetch(tileset_id).passabilities[tile_id % 8 + (tile_id / 8).floor * 8]
         return false if val == 0
         next unless direction
         dirbit = [1, 2, 4, 8][(direction / 2) - 1]

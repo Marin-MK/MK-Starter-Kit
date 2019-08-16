@@ -51,7 +51,7 @@ module MKD
         @commands = []
         @conditions = []
         @graphic = {type: :file, direction: 2}
-        @triggers = [:action]
+        @triggers = [[:action]]
         @automoveroute = {frequency: 80, commands: []}
       end
     end

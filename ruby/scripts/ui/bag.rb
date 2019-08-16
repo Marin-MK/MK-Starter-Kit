@@ -271,19 +271,24 @@ class BagUI < BaseUI
         routine.stop
         break
       when "TOSS"
+        value = 0
         cmdwin.visible = false
-        msgwin.width = 288
-        msgwin.text = "Toss out how many\n" + item.name + "(s)?"
-        numwin = NumericChoiceWindow.new(
-          x: 368,
-          y: 224,
-          z: 3,
-          max: selected_item[:count],
-          viewport: @viewport
-        )
-        value = numwin.get_choice
-        numwin.dispose
-        if value > -1
+        if selected_item[:count] == 1
+          value = 1
+        else
+          msgwin.width = 288
+          msgwin.text = "Toss out how many\n" + item.name + "(s)?"
+          numwin = NumericChoiceWindow.new(
+            x: 368,
+            y: 224,
+            z: 3,
+            max: selected_item[:count],
+            viewport: @viewport
+          )
+          value = numwin.get_choice
+          numwin.dispose
+        end
+        if value > 0
           msgwin.width = 272
           msgwin.text = "Throw away #{value} of this item?"
           confirmwin = ChoiceWindow.new(

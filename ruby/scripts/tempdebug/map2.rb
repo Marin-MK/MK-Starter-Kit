@@ -1,5 +1,5 @@
 map = MKD::Map.new(2)
-map.name = "MT. MOON"
+map.name = "Top Right Map"
 map.width = 5
 map.height = 5
 map.tilesets = [1]

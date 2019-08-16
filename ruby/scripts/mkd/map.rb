@@ -7,8 +7,6 @@ module MKD
     attr_accessor :width
     attr_accessor :height
     attr_accessor :tiles
-    attr_accessor :passabilities
-    attr_accessor :tags
     attr_accessor :tilesets
     attr_accessor :events
 
@@ -18,8 +16,6 @@ module MKD
       @width = 0
       @height = 0
       @tiles = []
-      @passabilities = []
-      @tags = []
       @tilesets = [0]
       @events = {}
     end
