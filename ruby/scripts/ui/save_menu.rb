@@ -69,6 +69,7 @@ class SaveUI < BaseUI
   def save_message
     show_message("SAVING...\nDON'T TURN OFF THE POWER.")
     Game.save_game
+	Audio.se_play("audio/se/save")
     show_message($trainer.name + " saved the game.")
   end
 
