@@ -1,5 +1,5 @@
 module MKD
-  class Map
+  class Map < Serializable
     Cache = []
 
     attr_accessor :id

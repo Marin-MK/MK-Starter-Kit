@@ -1,7 +1,7 @@
 module MKD
   class Event
     # Provides the basic template for all other commands.
-    class BasicCommand
+    class BasicCommand < Serializable
       def initialize(event, hash)
         @event = event
         hash ||= {}

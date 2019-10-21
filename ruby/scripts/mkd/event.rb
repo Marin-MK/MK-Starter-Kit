@@ -1,5 +1,5 @@
 module MKD
-  class Event
+  class Event < Serializable
     attr_accessor :id
     attr_accessor :name
     attr_accessor :x
@@ -20,7 +20,7 @@ end
 
 module MKD
   class Event
-    class Settings
+    class Settings < Serializable
       attr_accessor :priority
       attr_accessor :passable
       attr_accessor :can_start_surfing_here
@@ -40,7 +40,7 @@ end
 
 module MKD
   class Event
-    class Page
+    class Page < Serializable
       attr_accessor :commands
       attr_accessor :conditions
       attr_accessor :graphic

@@ -1,5 +1,5 @@
 module MKD
-	class Tileset
+	class Tileset < Serializable
 		Cache = nil
 
 		attr_accessor :id
@@ -24,7 +24,8 @@ module MKD
 			if Cache
 				return id ? Cache[id] : Cache
 			elsif File.file?("data/tilesets.mkd")
-				self.const_set(:Cache, FileUtils.load_data("data/tilesets.mkd", :tilesets))
+				tilesets = FileUtils.load_data("data/tilesets.mkd", :tilesets)
+				self.const_set(:Cache, tilesets)
 			  return Cache unless id
 			  return Cache[id]
 			end

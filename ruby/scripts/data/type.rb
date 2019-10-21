@@ -1,4 +1,4 @@
-class Type
+class Type < Serializable
   Cache = {}
 
   # @return [Symbol] the internal name of the type.

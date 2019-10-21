@@ -1,4 +1,4 @@
-class Move
+class Move < Serializable
   Cache = {}
 
   # @return [Symbol] the internal name of the move.

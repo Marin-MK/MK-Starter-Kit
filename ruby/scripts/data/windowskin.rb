@@ -1,4 +1,4 @@
-class Windowskin
+class Windowskin < Serializable
   Cache = {}
 
   # @return [Symbol] the internal name of the windowskin.

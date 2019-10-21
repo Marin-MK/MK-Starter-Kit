@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'yaml'
+require 'json'
 require 'fileutils'
 
 class Encoding

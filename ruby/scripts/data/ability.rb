@@ -1,4 +1,4 @@
-class Ability
+class Ability < Serializable
   Cache = {}
 
   # @return [String] the internal name of the ability.

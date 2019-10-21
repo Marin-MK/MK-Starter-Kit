@@ -1,4 +1,4 @@
-class Nature
+class Nature < Serializable
   Cache = {}
 
   # @return [String] the internal name of the nature.

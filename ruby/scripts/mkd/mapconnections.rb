@@ -1,5 +1,5 @@
 module MKD
-  class MapConnections
+  class MapConnections < Serializable
     Cache = nil
 
     attr_accessor :maps

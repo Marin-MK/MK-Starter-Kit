@@ -1,7 +1,7 @@
 module MKD
   class Event
     # Provides the basic template for all other conditions.
-    class BasicCondition
+    class BasicCondition < Serializable
       def initialize(event, hash)
         @event = event
         hash ||= {}

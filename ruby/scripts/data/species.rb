@@ -1,6 +1,8 @@
 Stats = Struct.new(:hp, :attack, :defense, :spatk, :spdef, :speed)
 
 class Stats
+  prepend SerializableModule
+
   alias atk attack
   alias atk= attack=
   alias def defense
@@ -17,7 +19,7 @@ class Stats
   alias spd= speed=
 end
 
-class Species
+class Species < Serializable
   Cache = {}
 
   Moveset = Struct.new(:level, :tms, :tutor, :evolution, :egg)

@@ -1,4 +1,4 @@
-class Item
+class Item < Serializable
   Cache = {}
 
   # @return [Symbol] the internal name of the item.
