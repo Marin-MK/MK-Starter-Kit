@@ -185,17 +185,20 @@ class Serializable
     instance_variables.each do |e|
       vars[e] = instance_variable_get(e)
       vars[e] = vars[e].replace_symbols if vars[e].is_a?(Array, Hash)
+      vars[e] = ":" + vars[e].to_s if vars[e].is_a?(Symbol)
     end
     return vars.to_json
   end
 end
 
-module SerializableModule
+class Struct
   def to_json(options = {})
     vars = {"^c" => self.class}
-    instance_variables.each do |e|
-      vars[e] = instance_variable_get(e)
-      vars[e] = vars[e].replace_symbols if vars[e].is_a?(Array, Hash)
+    self.keys.each do |e|
+      key = "@" + e.to_s
+      vars[key] = get(e)
+      vars[key] = vars[key].replace_symbols if vars[key].is_a?(Array, Hash)
+      vars[key] = ":" + vars[key].to_s if vars[key].is_a?(Symbol)
     end
     return vars.to_json
   end

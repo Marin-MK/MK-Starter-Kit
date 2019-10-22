@@ -3,7 +3,8 @@ module MKD
     Cache = []
 
     attr_accessor :id
-    attr_accessor :name
+    attr_accessor :dev_name
+    attr_accessor :display_name
     attr_accessor :width
     attr_accessor :height
     attr_accessor :tiles
@@ -12,7 +13,8 @@ module MKD
 
     def initialize(id = 0)
       @id = id
-      @name = ""
+      @dev_name = ""
+      @display_name = ""
       @width = 0
       @height = 0
       @tiles = []

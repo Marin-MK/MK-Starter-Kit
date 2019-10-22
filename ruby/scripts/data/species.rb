@@ -1,8 +1,6 @@
 Stats = Struct.new(:hp, :attack, :defense, :spatk, :spdef, :speed)
 
 class Stats
-  prepend SerializableModule
-
   alias atk attack
   alias atk= attack=
   alias def defense

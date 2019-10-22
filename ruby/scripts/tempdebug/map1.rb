@@ -1,6 +1,6 @@
 # Creates a new map (normally loaded from a file)
 map = MKD::Map.new(1)
-map.name = "Top Left Map"
+map.dev_name = map.display_name = "Top Left Map"
 map.width = 5
 map.height = 5
 map.tilesets = [1, 3]
@@ -22,7 +22,7 @@ map.tiles = [
 ]
 
 def create_event(map, id, x, y, dir)
-  event = MKD::Event.new
+  event = MKD::Event.new(id)
   event.x = x
   event.y = y
   event.name = "New event"

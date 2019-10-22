@@ -1,5 +1,5 @@
 map = MKD::Map.new(3)
-map.name = "Bottom Left Map"
+map.dev_name = map.display_name = "Bottom Left Map"
 map.width = 5
 map.height = 5
 map.tilesets = [1]
