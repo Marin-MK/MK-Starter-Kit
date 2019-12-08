@@ -31,10 +31,6 @@ tempdebug/tileset3.rb: Temp Debug Tileset 3
 tempdebug/tileset4.rb: Temp Debug Tileset 4
 tempdebug/tileset5.rb: Temp Debug Tileset 5
 tempdebug/tileset6.rb: Temp Debug Tileset 6
-tempdebug/map1.rb: Temp Debug Map 1
-tempdebug/map2.rb: Temp Debug Map 2
-tempdebug/map3.rb: Temp Debug Map 3
-tempdebug/map4.rb: Temp Debug Map 4
 tempdebug/connections.rb: Temp Debug Connections
 game/game.rb: Game
 data/exp.rb: EXP

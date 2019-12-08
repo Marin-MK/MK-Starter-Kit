@@ -1,1 +1,1 @@
-{":type":":map_connections",":data":{"^c":"MKD::MapConnections","@maps":[{"[0, 0]":1,"[5, 0]":2,"[0, 5]":3,"[5, 5]":4}]}}
+{":type":":map_connections",":data":{"^c":"MKD::MapConnections","@maps":[]}}
