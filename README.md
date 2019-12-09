@@ -1,6 +1,6 @@
 <h1>MK Starter Kit</h1>
 
-The aim of the MK Starter Kit is to provide a fast, free, cross-platform and open-source alternative to RPG Maker XP and Pokémon Essentials, while still using Ruby. It will have an editor similar to PRG Maker but customized entirely with Pokémon in mind.
+The aim of the MK Starter Kit is to provide a fast, free, cross-platform and open-source alternative to RPG Maker XP and Pokémon Essentials, while still using Ruby. It will have an editor similar to RPG Maker but customized entirely with Pokémon in mind.
 
 Our main goal is currently to replicate Fire Red and Leaf Green in terms of visuals and mechanics. Once that's done, we can add newer features onto the base.
 
