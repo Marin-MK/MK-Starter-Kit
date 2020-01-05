@@ -30,6 +30,10 @@ module MKD
       return Cache[id]
     end
 
+    def name
+      return @display_name
+    end
+
     #temp
     def save
       FileUtils.save_data("data/maps/map#{@id.to_digits}.mkd", :map, self)

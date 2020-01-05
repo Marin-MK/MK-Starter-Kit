@@ -1,6 +1,6 @@
 module MKD
 	class Tileset < Serializable
-		Cache = nil
+		Cache = []
 
 		attr_accessor :id
 		attr_accessor :name
@@ -21,11 +21,11 @@ module MKD
 		# @param id [Integer, NilClass] the ID of the tileset to fetch.
 		# @return [Tileset, Array] the tileset with the specified ID or the list of tilesets.
 		def self.fetch(id = nil)
-			if Cache
+			if !Cache.empty?
 				return id ? Cache[id] : Cache
 			elsif File.file?("data/tilesets.mkd")
 				tilesets = FileUtils.load_data("data/tilesets.mkd", :tilesets)
-				self.const_set(:Cache, tilesets)
+				Cache.replace(tilesets)
 			  return Cache unless id
 			  return Cache[id]
 			end

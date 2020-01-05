@@ -49,35 +49,165 @@ class Pokemon
   # Creates a new Pokemon object.
   # @param species [Symbol, Integer] the species of the Pokemon.
   # @param level [Integer] the level of the Pokemon.
-  def initialize(species, level, trainer = nil)
-    validate species => [Symbol, Integer], level => Integer, trainer => [NilClass, Trainer]
+  def initialize(*args)
+    #species, level, trainer = nil
+    hash = nil
+    if args.size == 1 && args[0].is_a?(Hash)
+      hash = args[0]
+    elsif args.size < 2
+      raise ArgumentError, "wrong number of arguments (given #{args.size}, expected 2)"
+    elsif args.size == 2
+      if (args[0].is_a?(Symbol) || args[0].is_a?(Integer)) &&
+         (args[1].is_a?(Integer) || args[1].is_a?(Hash))
+        species = args[0]
+        level = args[1] if args[1].is_a?(Integer)
+        hash = args[1] if args[1].is_a?(Hash)
+      else
+        raise ArgumentError, "unknown argument format for Pokemon creation."
+      end
+    elsif args.size == 3
+      if (args[0].is_a?(Symbol) || args[0].is_a?(Integer)) &&
+         args[1].is_a?(Integer) &&
+         (args[2].is_a?(Trainer) || args[2].is_a?(Hash))
+        species = args[0]
+        level = args[1]
+        trainer = args[2] if args[2].is_a?(Trainer)
+        hash = args[2] if args[2].is_a?(Hash)
+      else
+        raise ArgumentError, "unknown argument format for Pokemon creation."
+      end
+    elsif args.size == 4
+      if (args[0].is_a?(Symbol) || args[0].is_a?(Integer)) &&
+         args[1].is_a?(Integer) &&
+         args[2].is_a?(Trainer) &&
+         args[3].is_a?(Hash)
+        species = args[0]
+        level = args[1]
+        trainer = args[2]
+        hash = args[3]
+      else
+        raise ArgumentError, "unknown argument format for Pokemon creation."
+      end
+    end
+    if !hash.nil?
+      species ||= hash[:species]
+      level ||= hash[:level]
+      trainer ||= hash[:trainer]
+      @genderflag = hash[:gender]
+      @name = hash[:name]
+      @form = hash[:form]
+      @pid = hash[:pid]
+      @ivs = hash[:ivs]
+      @evs = hash[:evs]
+      @happiness = hash[:happiness]
+      @ball_used = hash[:ball_used]
+      @obtain_type = hash[:obtain_type]
+      @obtain_map = hash[:obtain_map]
+      @obtain_time = hash[:obtain_time]
+      @obtain_level = hash[:obtain_level]
+      @moves = hash[:moves]
+      @item = hash[:item]
+      @status = hash[:status]
+      @hp = hash[:hp]
+    end
+    raise ArgumentError, "must specify a species to create a Pokemon." if species.nil?
+    raise ArgumentError, "must specify a level to create a Pokemon." if level.nil?
+
+    validate \
+        species => [Symbol, Integer],
+        level => Integer,
+        trainer => [NilClass, Trainer],
+        @genderflag => [NilClass, Integer],
+        @name => [NilClass, String],
+        @form => [NilClass, Integer],
+        @pid => [NilClass, Integer],
+        @ivs => [NilClass, Stats],
+        @evs => [NilClass, Stats],
+        @happiness => [NilClass, Integer],
+        @ball_used => [NilClass, Symbol],
+        @obtain_type => [NilClass, Symbol],
+        @obtain_map => [NilClass, Integer],
+        @obtain_time => [NilClass, Time],
+        @obtain_level => [NilClass, Integer],
+        @moves => [NilClass, Array],
+        @item => [NilClass, Symbol, Integer],
+        @status => [NilClass, Symbol],
+        @hp => [NilClass, Integer]
+
+    # Extra validation for properties passes through via a hash.
+    if @genderflag.is_a?(Integer) && (@genderflag < 0 || @genderflag > 2)
+      raise ArgumentError, "must specify either 0, 1 or 2 for the gender flag."
+    end
+    if !@form.nil? && @form < 0
+      raise ArgumentError, "forms below id 0 do not exist."
+    end
+    if !@pid.nil? && (@pid < 0 || @pid >= 2 ** 32)
+      raise ArgumentError, "pid has to be between 0 and 2^32."
+    end
+    if !@ivs.nil? && (@ivs.hp < 1 || @ivs.attack < 1 || @ivs.defense < 1 ||
+       @ivs.spatk < 1 || @ivs.spdef < 1 || @ivs.speed < 1)
+      raise ArgumentError, "IV stats must be greater than 0."
+    end
+    if !@evs.nil? && (@evs.hp < 0 || @ivs.attack < 0 || @ivs.defense < 0 ||
+       @evs.spatk < 0 || @evs.spdef < 0 || @ivs.speed < 0)
+      raise ArgumentError, "EV stats cannot be negative."
+    end
+    if !@happiness.nil? && (@happiness < 0 || @happiness > 255)
+      raise ArgumentError, "happiness must be between 0 and 255."
+    end
+    if !@ball_used.nil? && !Item.exists?(@ball_used)
+      raise ArgumentError, "the ball used must be an existing item."
+    end
+    if !@obtain_type.nil? && ![:MET].include?(@obtain_type)
+      raise ArgumentError, "invalid obtain type."
+    end
+    if !@moves.nil?
+      validate_array @moves => UsableMove
+    end
+    if !@item.nil? && !Item.exists?(@item)
+      raise ArgumentError, "the held item must be an existing item."
+    end
+    if !@status.nil? && ![:BURN,:FROZEN,:PARALYSIS,:POISON,:SLEEP].include?(@status)
+      raise ArgumentError, "the status must be a given status condition."
+    end
+    if !@hp.nil? && @hp < 0
+      raise ArgumentError, "the hp stat cannot be negative."
+    end
+
     # Ensure the species exists and set some initial values
+    # without overwriting possibly pre-set values from the hash.
     species = Species.get(species)
     @species_intname = species.intname
-    @form = 0
-    if species.get_form_on_creation
-      f = species.get_form_on_creation.call(self)
-      @form = f || 0
+    if @form.nil?
+      @form = 0
+      if species.get_form_on_creation
+        f = species.get_form_on_creation.call(self)
+        @form = f || 0
+      end
     end
-    @name = species.name(self.form)
+    @name ||= species.name(self.form)
     @exp = EXP.get_exp(species.leveling_rate(self.form), level)
-    @pid = rand(2 ** 32)
-    @ivs = Stats.new
-    @ivs.hp = rand(32)
-    @ivs.attack = rand(32)
-    @ivs.defense = rand(32)
-    @ivs.spatk = rand(32)
-    @ivs.spdef = rand(32)
-    @ivs.speed = rand(32)
-    @evs = Stats.new
-    @evs.hp = 0
-    @evs.attack = 0
-    @evs.defense = 0
-    @evs.spatk = 0
-    @evs.spdef = 0
-    @evs.speed = 0
-    @happiness = species.happiness(self.form)
-    @ball_used = :POKEBALL
+    @pid ||= rand(2 ** 32)
+    if @ivs.nil?
+      @ivs = Stats.new
+      @ivs.hp = rand(32)
+      @ivs.attack = rand(32)
+      @ivs.defense = rand(32)
+      @ivs.spatk = rand(32)
+      @ivs.spdef = rand(32)
+      @ivs.speed = rand(32)
+    end
+    if @evs.nil?
+      @evs = Stats.new
+      @evs.hp = 0
+      @evs.attack = 0
+      @evs.defense = 0
+      @evs.spatk = 0
+      @evs.spdef = 0
+      @evs.speed = 0
+    end
+    @happiness ||= species.happiness(self.form)
+    @ball_used ||= :POKEBALL
     if trainer
       @ot_name = trainer.name
       @ot_gender = trainer.gender
@@ -87,19 +217,23 @@ class Pokemon
       @ot_gender = nil
       @ot_pid = nil
     end
-    @obtain_type = :MET
-    @obtain_map = 0
-    @obtain_time = Time.now
-    @obtain_level = self.level
-    @moves = get_moveset_for_level
+    @obtain_type ||= :MET
+    @obtain_map ||= 0
+    @obtain_time ||= Time.now
+    @obtain_level ||= self.level
+    @moves ||= get_moveset_for_level
     calc_stats
-    @hp = @totalhp
+    @hp ||= @totalhp
   end
+
+
 
   # @return [Species] the species object associated with this Pokemon.
   def species
     return Species.get(@species_intname)
   end
+
+
 
   # @return [Integer] the form of the Pokemon.
   def form
@@ -247,7 +381,7 @@ class Pokemon
   # @param nature [Integer, NilClass] the gender value.
   def set_gender(value)
     validate value => [Integer, NilClass]
-    raise "Invalid gender #{value.inspect}" unless value == 0 || value == 1 || value == 2 || value.nil?
+    raise "Invalid gender #{value.inspect}" unless [nil, 0, 1, 2].include?(value)
     @genderflag = value
   end
 

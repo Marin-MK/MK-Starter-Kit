@@ -1,7 +1,5 @@
 module MKD
   class MapConnections < Serializable
-    Cache = nil
-
     attr_accessor :maps
 
     def initialize(maps = [])
@@ -29,7 +27,7 @@ module MKD
     # @param [id] the ID of the map to fetch.
     # @return [Map] the map with the specified ID.
     def self.fetch(id = nil)
-      if Cache
+      if defined?(Cache)
         if id
           c = Cache.maps.find { |h| h.has_value?(id) }
           return nil unless c
