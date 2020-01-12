@@ -100,6 +100,13 @@ class Game
       return true
     end
 
+    # Turns a global position into a local position
+    def global_to_local(globalx, globaly)
+      c = self.connection
+      return [globalx, globaly] if c.nil?
+      return [globalx - c[1], globaly - c[2]]
+    end
+
     # Updates this map's events and interpreters.
     def update
       @events.values.each(&:update)
@@ -177,6 +184,34 @@ class Game
           e.y == newy
         end
         events.each { |e| e.trigger(:player_touch) }
+      end
+    end
+
+    def check_terrain_tag
+      return if $game.map != self
+      tags = []
+      for layer in 0...self.tiles.size
+        for i in 0...self.tiles[layer].size
+          mapx = i % self.width
+          mapy = (i / self.height).floor
+          if mapx == $game.player.x && mapy == $game.player.y
+            tiledata = self.tiles[layer][i]
+            next if tiledata.nil?
+            tileset_index, tile_id = tiledata
+            tileset_id = self.tilesets[tileset_index]
+            tilesetx = tile_id % 8
+            tilesety = (tile_id / 8).floor
+            tileset = MKD::Tileset.fetch(tileset_id)
+            tag = tileset.tags[tilesetx + tilesety * 8]
+            tags << tag unless tag.nil?
+          end
+        end
+      end
+      for i in 0...tags.size
+        tag = tags[tags.size - 1 - i]
+        if tag == :grass
+          Encounter.stepped_on_grass
+        end
       end
     end
   end

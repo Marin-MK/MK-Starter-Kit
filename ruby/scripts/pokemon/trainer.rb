@@ -1,4 +1,4 @@
-# The trainer class that stores most Pokemon related data that's also specific to the player.
+# The Trainer class that stores most Pokemon related data that's also specific to the player.
 # For an instance of this class, use $trainer.
 class Trainer
   # @return [Array<Pokemon>] the party of the player.
@@ -34,7 +34,7 @@ class Trainer
     @secret_id = rand(2 ** 16)
     @name = "RED"
     @gender = 0
-    @badges = [false, false, false, false, false, false, false, false]
+    @badges = [false] * 8
     @money = INITIAL_MONEY
     @options = Options.new
   end
@@ -145,14 +145,14 @@ class Trainer
   def get_money_text
     str = @money.to_s
     return "$" + str if str.size <= 4 # $3000
-    # If bigger, add commas
+    # If more than 4 digits, add commas
     str.reverse!
     newstr = ""
     for i in 0...str.size
       newstr << str[i]
       newstr << "," if (i + 1) % 3 == 0 && i < str.size - 1
     end
-    return "$" + newstr.reverse
+    return "$" + newstr.reverse # $30,000
   end
 
   #============================================================================#

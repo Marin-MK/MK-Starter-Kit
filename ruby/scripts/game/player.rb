@@ -112,10 +112,14 @@ class Game
       elsif @downcount.nil? || @downcount == 0 || @fake_move
         self.direction_noanim = :down if @direction != 2
         if $game.map.passable?(@x, @y + 1, :down, self)
+          oldy = @y
+          oldmapid = @map_id
           @y += 1
           try_transfer
+          SystemEvent.trigger(:taking_step, @x, oldy, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
         else
+          log(:OVERWORLD, "Can't move to (#{@x},#{@y})", true)
           @fake_move = true
         end
         @downcount = nil
@@ -131,10 +135,14 @@ class Game
       elsif @leftcount.nil? || @leftcount == 0 || @fake_move
         self.direction_noanim = :left if @direction != 4
         if $game.map.passable?(@x - 1, @y, :left, self)
+          oldx = @x
+          oldmapid = @map_id
           @x -= 1
           try_transfer
+          SystemEvent.trigger(:taking_step, oldx, @y, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
         else
+          log(:OVERWORLD, "Can't move to (#{@x},#{@y})", true)
           @fake_move = true
         end
         @leftcount = nil
@@ -150,10 +158,14 @@ class Game
       elsif @rightcount.nil? || @rightcount == 0 || @fake_move
         self.direction_noanim = :right if @direction != 6
         if $game.map.passable?(@x + 1, @y, :right, self)
+          oldx = @x
+          oldmapid = @map_id
           @x += 1
           try_transfer
+          SystemEvent.trigger(:taking_step, oldx, @y, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
         else
+          log(:OVERWORLD, "Can't move to (#{@x},#{@y})", true)
           @fake_move = true
         end
         @rightcount = nil
@@ -169,10 +181,14 @@ class Game
       elsif @upcount.nil? || @upcount == 0 || @fake_move
         self.direction_noanim = :up if @direction != 8
         if $game.map.passable?(@x, @y - 1, :up, self)
+          oldy = @y
+          oldmapid = @map_id
           @y -= 1
           try_transfer
+          SystemEvent.trigger(:taking_step, @x, oldy, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
         else
+          log(:OVERWORLD, "Can't move to (#{@x},#{@y})", true)
           @fake_move = true
         end
         @upcount = nil

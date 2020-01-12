@@ -24,8 +24,8 @@ module MKD
       @maps[idx][[x, y]] = value
     end
 
-    # @param [id] the ID of the map to fetch.
-    # @return [Map] the map with the specified ID.
+    # @param id [Numeric, NilClass] the ID of the map to fetch or nil to fetch all connections.
+    # @return [Array<SystemID, MapX, MapY>] all map connections if no ID was specified, or the system the specified ID is in.
     def self.fetch(id = nil)
       if defined?(Cache)
         if id

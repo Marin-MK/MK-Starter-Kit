@@ -1,4 +1,5 @@
 settings.rb: Settings
+system_event.rb: System Event
 utils/os.rb: OS Utilities
 utils/other.rb: Other Utilities
 utils/file_utils.rb: File Utilities
@@ -68,6 +69,7 @@ ui/party.rb: Party UI
 ui/summary.rb: Summary UI
 ui/save_menu.rb: Save UI
 ui/options_menu.rb: Options UI
+battle/encounter.rb: Encounters
 routines/give_item_routine.rb: GiveItem Routine
 temp.rb: Temporary Data
 main.rb: Main

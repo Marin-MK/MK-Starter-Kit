@@ -25,9 +25,11 @@ class Visuals
       @xdist = []
       @xtrav = []
       @xstart = []
+      @xloc = []
       @ydist = []
       @ytrav = []
       @ystart = []
+      @yloc = []
       @anim = []
       @fake_anim = nil
       @stop_fake_anim = false
@@ -118,6 +120,7 @@ class Visuals
       if @game_player.global_x != @oldx && !@skip_movement
         @xdist << 32 * (@game_player.global_x - @oldx)
         @xtrav << 0
+        @xloc << @game_player.global_x
         h = {}
         if @xstart[0]
           @xstart.last.each_key { |k| h[k] = @xstart.last[k] - @xdist.last }
@@ -141,6 +144,7 @@ class Visuals
       if @game_player.global_y != @oldy && !@skip_movement
         @ydist << 32 * (@game_player.global_y - @oldy)
         @ytrav << 0
+        @yloc << @game_player.global_y
         h = {}
         if @ystart[0]
           @ystart.last.each_key { |k| h[k] = @ystart.last[k] - @ydist.last }
@@ -174,10 +178,14 @@ class Visuals
           end
           $visuals.maps.values.each { |m| m.real_x = @xstart[0][m.id] - @xtrav[0] }
           $visuals.map_renderer.move_x(@xtrav[0] - oldtrav)
-        else
+        else # Movement completed
           @xtrav.delete_at(0)
           @xdist.delete_at(0)
           @xstart.delete_at(0)
+          x = @xloc[0]
+          y = @yloc[0] || @game_player.global_y
+          SystemEvent.trigger(:taken_step, *$game.map.global_to_local(x, y))
+          @xloc.delete_at(0)
           @anim.delete_at(0)
         end
       end
@@ -199,6 +207,10 @@ class Visuals
           @ytrav.delete_at(0)
           @ydist.delete_at(0)
           @ystart.delete_at(0)
+          x = @xloc[0] || @game_player.global_x
+          y = @yloc[0]
+          SystemEvent.trigger(:taken_step, *$game.map.global_to_local(x, y))
+          @yloc.delete_at(0)
           @anim.delete_at(0)
         end
       end

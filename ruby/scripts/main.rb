@@ -1,6 +1,7 @@
 # Starts the main game loop required to keep the game running.
 
 # Initializes the game
+$LOG = {}
 $temp = TempData.new
 $visuals = Visuals.new
 $game = Game.new
@@ -20,6 +21,8 @@ $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 5, hp: 6, status: :POISON))
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 6, gender: 1, hp: 0))
 
 $trainer.add_item(:MAXREPEL, 5)
+
+$LOG[:OVERWORLD] = true
 
 def main_function
   $game.update

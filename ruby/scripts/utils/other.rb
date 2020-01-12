@@ -62,6 +62,16 @@ def warn(*args)
   p *args
 end
 
+def log(category, msg, no_duplicates = false)
+  if $LOG && $LOG[category]
+    line = "#{category}: #{msg}\n"
+    unless line == $LOG[:_last] && no_duplicates
+      $LOG[:_last] = line
+      print line
+    end
+  end
+end
+
 # Returns the coordinates of the facing tile based on x,y,direction.
 # @param x [Integer] the current X value.
 # @param y [Integer] the current Y value.
