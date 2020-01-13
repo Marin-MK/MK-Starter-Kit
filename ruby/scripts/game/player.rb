@@ -109,6 +109,7 @@ class Game
       if @direction != 2 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :down
         @downcount = 8
+        log(:OVERWORLD, "Turn down")
       elsif @downcount.nil? || @downcount == 0 || @fake_move
         self.direction_noanim = :down if @direction != 2
         if $game.map.passable?(@x, @y + 1, :down, self)
@@ -132,6 +133,7 @@ class Game
       if @direction != 4 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :left
         @leftcount = 8
+        log(:OVERWORLD, "Turn left")
       elsif @leftcount.nil? || @leftcount == 0 || @fake_move
         self.direction_noanim = :left if @direction != 4
         if $game.map.passable?(@x - 1, @y, :left, self)
@@ -155,6 +157,7 @@ class Game
       if @direction != 6 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :right
         @rightcount = 8
+        log(:OVERWORLD, "Turn right")
       elsif @rightcount.nil? || @rightcount == 0 || @fake_move
         self.direction_noanim = :right if @direction != 6
         if $game.map.passable?(@x + 1, @y, :right, self)
@@ -178,6 +181,7 @@ class Game
       if @direction != 8 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :up
         @upcount = 8
+        log(:OVERWORLD, "Turn up")
       elsif @upcount.nil? || @upcount == 0 || @fake_move
         self.direction_noanim = :up if @direction != 8
         if $game.map.passable?(@x, @y - 1, :up, self)

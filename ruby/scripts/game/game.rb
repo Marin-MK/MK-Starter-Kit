@@ -40,7 +40,7 @@ class Game
   end
 
   def load_map(id)
-    # Dispose all game maps/visual maps (might need to add here later)
+    # TODO: Dispose all game maps/visual maps (might need to add here later)
     # Haven't implemented Game::Map#dispose yet
     @maps.values.each { |e| e.dispose if e.respond_to?(:dispose) }
     @maps = {}

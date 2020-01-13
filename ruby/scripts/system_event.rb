@@ -20,5 +20,13 @@ end)
 
 SystemEvent.register(:taken_step, proc do |x, y|
   log :OVERWORLD, "Moved to (#{x},#{y})"
+  # Terrain tag
   $game.map.check_terrain_tag
+  # Encounter
+  for i in 0...$game.map.data.encounter_tables.size
+    table = $game.map.data.encounter_tables[i]
+    if table.tiles.include?([x, y])
+      Encounter.test_table(table)
+    end
+  end
 end)

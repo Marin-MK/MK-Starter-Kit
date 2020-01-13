@@ -10,6 +10,7 @@ module MKD
     attr_accessor :tiles
     attr_accessor :tilesets
     attr_accessor :events
+    attr_accessor :encounter_tables
 
     def initialize(id = 0)
       @id = id
@@ -20,6 +21,7 @@ module MKD
       @tiles = []
       @tilesets = [0]
       @events = {}
+      @encounter_tables = []
     end
 
     # @param [id] the ID of the map to fetch.

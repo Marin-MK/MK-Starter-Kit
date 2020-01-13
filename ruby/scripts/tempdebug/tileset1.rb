@@ -78,7 +78,7 @@ tileset.priorities = [
 ]
 tileset.tags = [
   nil, nil, nil, nil, nil, nil, nil, nil,
-  nil, :grass, nil, nil, nil, nil, nil, nil,
+  nil, nil, nil, nil, nil, nil, nil, nil,
   nil, nil, nil, nil, nil, nil, nil, nil,
   nil, nil, nil, nil, nil, nil, nil, nil,
   nil, nil, nil, nil, nil, nil, nil, nil,
