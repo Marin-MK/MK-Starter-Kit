@@ -90,7 +90,7 @@ def validate_mkd(data, type, filename = nil)
     errmsg = "File content does not contain a type header key."
   elsif !data[:data]
     errmsg = "File content does not contain a data header key."
-  elsif data[:type] != type
+  elsif data[:type] != type && !type.nil?
     errmsg = "Expected a file of type '#{type}' but got '#{data[:type]}'"
   end
   if errmsg

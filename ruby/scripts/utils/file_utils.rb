@@ -15,7 +15,11 @@ def deserialize_json_hash(hash)
     object = klass.allocate
     hash.each do |key, value|
       next if key == "^c"
-      object.instance_variable_set(key, deserialize_json_object(value))
+      if object.is_a?(Struct)
+        object.set(key.sub(/@/,""), deserialize_json_object(value))
+      else
+        object.instance_variable_set(key, deserialize_json_object(value))
+      end
     end
     return object
   else # Normal hash
@@ -42,13 +46,14 @@ module FileUtils
   # Loads data from a file.
   # @param filename [String] the file path.
   # @return [Object] the object that was loaded from the file.
-  def load_data(filename, type)
+  def load_data(filename, type = nil, return_everything = false)
     data = File.open(filename, 'rb') do |f|
       next f.read
     end
-    data = deserialize_json_object(JSON.parse(data))
+    json = JSON.parse(data)
+    data = deserialize_json_object(json)
     validate_mkd(data, type, filename)
-    return data[:data]
+    return return_everything ? data : data[:data]
   end
 
   # Saves data to a file.
@@ -57,8 +62,16 @@ module FileUtils
   # @param data [Object] the object to save to the file.
   def save_data(filename, type, data)
     f2 = File.new(filename, 'wb')
-    f2.write ({type: type, data: data}).replace_symbols.to_json
+    f2.write JSON.pretty_generate(({type: type, data: data}).dump_data.replace_symbols)
     f2.close
     return nil
+  end
+
+  def refresh_data_files
+    Dir.glob('data/**/*').each do |f|
+      next if !File.file?(f) || f == "data/order.mkd" || f[-4..-1] != '.mkd'
+      data = FileUtils.load_data(f, nil, true)
+      FileUtils.save_data(f, data[:type], data[:data])
+    end
   end
 end

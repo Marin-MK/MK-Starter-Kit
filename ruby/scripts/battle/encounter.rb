@@ -20,7 +20,7 @@ module Encounter
       # Not possible, but can be done during testing.
       if !enc.nil?
         poke = Pokemon.new(enc)
-        log(:OVERWORLD, "Start battle (#{poke.species.intname}, level #{poke.level})")
+        log(:OVERWORLD, "Wild encounter (#{poke.species.intname}, level #{poke.level})")
       end
     end
   end

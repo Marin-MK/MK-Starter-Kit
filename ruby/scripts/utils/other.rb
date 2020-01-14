@@ -17,28 +17,6 @@ class Array
   end
 end
 
-class Hash
-  # Converts all :symbol keys to ":symbol" keys for JSON compatibility
-  def replace_symbols
-    hash = {}
-    self.each do |key, value|
-      if key.is_a?(Symbol)
-        key = ":" + key.to_s
-      end
-      value = value.replace_symbols if value.is_a?(Array, Hash)
-      value = ":" + value.to_s if value.is_a?(Symbol)
-      hash[key] = value
-    end
-    return hash
-  end
-
-  def rename(oldkey, newkey)
-    self[newkey] = self[oldkey]
-    self.delete(oldkey)
-    return self
-  end
-end
-
 # Translates symbols to actual special characters in the font
 def symbol(n)
   characters = {
@@ -186,30 +164,74 @@ class Array
   def swap!(idx1, idx2)
     self.replace(self.swap(idx1, idx2))
   end
+
+  def dump_data
+    array = []
+    self.each do |value|
+      value = value.dump_data if value.respond_to?(:dump_data)
+      array << value
+    end
+    return array
+  end
+end
+
+class Hash
+  # Converts all :symbol keys to ":symbol" keys for JSON compatibility
+  def replace_symbols
+    hash = {}
+    self.each do |key, value|
+      if key.is_a?(Symbol)
+        key = ":" + key.to_s
+      end
+      value = value.replace_symbols if value.is_a?(Array, Hash)
+      value = ":" + value.to_s if value.is_a?(Symbol)
+      hash[key] = value
+    end
+    return hash
+  end
+
+  def dump_data
+    hash = {}
+    self.each do |key, value|
+      key = key.dump_data if key.respond_to?(:dump_data)
+      value = value.dump_data if value.respond_to?(:dump_data)
+      hash[key] = value
+    end
+    return hash
+  end
+
+  def rename(oldkey, newkey)
+    self[newkey] = self[oldkey]
+    self.delete(oldkey)
+    return self
+  end
 end
 
 class Serializable
   # Converts an object to JSON
-  def to_json(options = {})
+  def dump_data(options = {})
     vars = {"^c" => self.class}
     instance_variables.each do |e|
-      vars[e] = instance_variable_get(e)
-      vars[e] = vars[e].replace_symbols if vars[e].is_a?(Array, Hash)
-      vars[e] = ":" + vars[e].to_s if vars[e].is_a?(Symbol)
+      key = e.to_s
+      vars[key] = instance_variable_get(e)
+      vars[key] = vars[key].dump_data if vars[key].respond_to?(:dump_data)
+      vars[key] = vars[key].replace_symbols if vars[key].is_a?(Array, Hash)
+      vars[key] = ":" + vars[key].to_s if vars[key].is_a?(Symbol)
     end
-    return vars.to_json
+    return vars
   end
 end
 
 class Struct
-  def to_json(options = {})
+  def dump_data(options = {})
     vars = {"^c" => self.class}
     self.keys.each do |e|
       key = "@" + e.to_s
       vars[key] = get(e)
+      vars[key] = vars[key].dump_data if vars[key].respond_to?(:dump_data)
       vars[key] = vars[key].replace_symbols if vars[key].is_a?(Array, Hash)
       vars[key] = ":" + vars[key].to_s if vars[key].is_a?(Symbol)
     end
-    return vars.to_json
+    return vars
   end
 end
