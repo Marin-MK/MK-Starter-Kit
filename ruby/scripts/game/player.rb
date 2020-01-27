@@ -24,6 +24,7 @@ class Game
       @graphic_name = "boy"
       @running = false
       @runcount = 0
+      log(:OVERWORLD, "Created player object")
     end
 
     def setup_visuals
@@ -70,7 +71,6 @@ class Game
         end
       end
       @fake_move = false
-      #@fake_move = true if $visuals.player.fake_anim
       oldrun = @running
       if Input.press_cancel?
         @runcount = 7 if !moving? && !@wasmoving && @runcount == 0

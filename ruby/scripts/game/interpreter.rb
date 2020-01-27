@@ -19,6 +19,7 @@ class Game
       @triggered_by = triggered_by
       @wait_for_move_completion = false
       @initial = true
+      log(:OVERWORLD, "Event #{@event.id} triggered", true)
     end
 
     # @return [Boolean] whether or not the interpreter can run the next command.

@@ -36,7 +36,8 @@ class Move < Serializable
 
   # Ensures this move contains valid data.
   def validate_move
-    validate @intname => Symbol,
+    validate \
+        @intname => Symbol,
         @id => Integer,
         @name => String,
         @type => Symbol,

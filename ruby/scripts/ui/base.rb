@@ -15,7 +15,9 @@ class BaseUI
   attr_accessor :ret
 
   def start(path: nil, fade: true, fade_time: 0.3, wait_time: 0.3)
-    validate path => [NilClass, String],
+    log(:UI, "Starting scene " + self.class.to_s)
+    validate \
+        path => [NilClass, String],
         fade => Boolean,
         fade_time => Float
     if path
@@ -79,6 +81,7 @@ class BaseUI
   end
 
   def dispose
+    log(:UI, "Stopping scene " + self.class.to_s)
     test_disposed
     stop
     @sprites.each_value(&:dispose)

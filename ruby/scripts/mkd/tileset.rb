@@ -26,6 +26,7 @@ module MKD
 			elsif File.file?("data/tilesets.mkd")
 				tilesets = FileUtils.load_data("data/tilesets.mkd", :tilesets)
 				Cache.replace(tilesets)
+				log(:SYSTEM, "Loaded tilesets")
 			  return Cache unless id
 			  return Cache[id]
 			end

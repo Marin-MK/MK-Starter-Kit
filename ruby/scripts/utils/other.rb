@@ -36,8 +36,8 @@ unless defined?(msgbox) == "method"
 	end
 end
 
-def warn(*args)
-  p *args
+def warn(msg)
+  log(:WARNING, msg)
 end
 
 def log(category, msg, no_duplicates = false)

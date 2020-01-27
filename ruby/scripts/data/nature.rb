@@ -25,7 +25,8 @@ class Nature < Serializable
 
   # Ensures this nature contains valid data.
   def validate_nature
-    validate @intname => Symbol,
+    validate \
+        @intname => Symbol,
         @id => Integer,
         @name => String,
         @buff => [Symbol, NilClass],

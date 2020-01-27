@@ -27,7 +27,12 @@ map.encounter_tables = [
 map.save
 
 # Initializes the game
-$LOG = {}
+$LOG = {
+  WARNING: true,
+  SYSTEM: true,
+  OVERWORLD: false,
+  UI: false
+}
 $temp = TempData.new
 $visuals = Visuals.new
 $game = Game.new
@@ -48,16 +53,15 @@ $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 6, gender: 1, hp: 0))
 
 $trainer.add_item(:MAXREPEL, 5)
 
-$LOG[:OVERWORLD] = true
 
 def main_function
   $game.update
   $visuals.update
-  if Input.trigger?(Input::SHIFT)
-    $visuals.map_renderer.toggle_grid
-  end
   if Input.trigger?(Input::CTRL)
     abort
+  end
+  if Input.trigger?(Input::SHIFT)
+    $visuals.map_renderer.toggle_grid
   end
 end
 

@@ -25,7 +25,8 @@ class MessageWindow < BaseWindow
         line_x_start: 0, # offset for this specific instance of the messagewindow
         cmdwin: nil,
         update: nil)
-    validate text => String,
+    validate \
+        text => String,
         x => Integer,
         y => Integer,
         z => Integer,

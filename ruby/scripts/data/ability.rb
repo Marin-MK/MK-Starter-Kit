@@ -23,7 +23,8 @@ class Ability < Serializable
 
   # Ensures this ability contains valid data.
   def validate_ability
-    validate @intname => Symbol,
+    validate \
+        @intname => Symbol,
         @id => Integer,
         @name => String,
         @description => String

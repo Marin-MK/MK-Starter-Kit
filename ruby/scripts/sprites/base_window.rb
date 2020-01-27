@@ -7,7 +7,8 @@ class BaseWindow
   attr_reader :viewport
 
   def initialize(width, height, windowskin, viewport = nil)
-    validate width => Integer,
+    validate \
+        width => Integer,
         height => Integer,
         windowskin => [Symbol, Integer, NilClass, Windowskin],
         viewport => [NilClass, Viewport]

@@ -29,9 +29,11 @@ class Type < Serializable
 
   # Ensures this type contains valid data.
   def validate_type
-    validate @intname => Symbol,
+    validate \
+        @intname => Symbol,
         @id => Integer
-    validate_array @strong_against => [Symbol, Integer],
+    validate_array \
+        @strong_against => [Symbol, Integer],
         @resistant_to => [Symbol, Integer],
         @immune_to => [Symbol, Integer]
     raise "Cannot have an ID of 0 or lower for new Type object" if @id < 1

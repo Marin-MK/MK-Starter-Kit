@@ -23,6 +23,7 @@ class Game
       @event_interpreters = []
       @parallel_interpreters = []
       @wait_count = 0
+      log(:OVERWORLD, "Created Map (#{id}) object")
     end
 
     def setup_visuals
@@ -209,9 +210,7 @@ class Game
       end
       for i in 0...tags.size
         tag = tags[tags.size - 1 - i]
-        if tag == :grass
-          Encounter.stepped_on_grass
-        end
+        # Check for tags here
       end
     end
   end

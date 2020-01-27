@@ -24,7 +24,8 @@ class ChoiceWindow < BaseWindow
         line_x_start: 0, # offset for this specific instance of the choicewindow
         viewport: nil)
     validate_array choices => String
-    validate x => Integer,
+    validate \
+        x => Integer,
         ox => [Symbol, Integer],
         y => Integer,
         oy => [Symbol, Integer],

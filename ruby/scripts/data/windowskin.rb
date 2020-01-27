@@ -29,7 +29,8 @@ class Windowskin < Serializable
 
   # Ensures this windowskin contains valid data.
   def validate_windowskin
-    validate @intname => Symbol,
+    validate \
+        @intname => Symbol,
         @id => Integer,
         @line_x_start => Integer,
         @line_x_end => Integer,

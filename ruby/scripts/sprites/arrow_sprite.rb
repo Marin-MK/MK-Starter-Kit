@@ -1,7 +1,6 @@
 class ArrowSprite < Sprite
   def initialize(direction, viewport = nil)
-    validate direction => Symbol,
-        viewport => [Viewport, NilClass]
+    validate direction => Symbol, viewport => [Viewport, NilClass]
     @direction = direction
     super(viewport)
     self.set_bitmap("gfx/misc/arrow_#{direction.to_s}")

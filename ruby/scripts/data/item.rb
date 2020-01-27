@@ -30,7 +30,8 @@ class Item < Serializable
 
   # Ensures this item contains valid data.
   def validate_item
-    validate @intname => Symbol,
+    validate \
+        @intname => Symbol,
         @id => Integer,
         @name => String,
         @pocket => Symbol,

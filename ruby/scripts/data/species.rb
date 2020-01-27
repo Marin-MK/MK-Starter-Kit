@@ -180,7 +180,8 @@ class Species < Serializable
 
   # Ensures this species contains valid data.
   def validate_species
-    validate @intname => Symbol,
+    validate \
+        @intname => Symbol,
         @id => Integer,
         @name => String,
         @type1 => Symbol,
@@ -202,7 +203,8 @@ class Species < Serializable
         @happiness => Integer,
         @moveset => Moveset,
         @evolutions => Array
-    validate_array @abilities => Symbol,
+    validate_array \
+        @abilities => Symbol,
         @egg_groups => Symbol,
         @evolutions => Hash
     raise "Cannot have an ID of 0 or lower for new Species object" if @id < 1

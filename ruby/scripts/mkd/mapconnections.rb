@@ -37,6 +37,7 @@ module MKD
         end
       else
         self.const_set(:Cache, FileUtils.load_data("data/maps/connections.mkd", :map_connections))
+        log(:SYSTEM, "Loaded map connections")
         return self.fetch(id)
       end
     end

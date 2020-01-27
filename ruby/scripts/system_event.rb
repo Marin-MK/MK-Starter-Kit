@@ -2,6 +2,7 @@ class SystemEvent
   Events = {}
 
   def self.trigger(event, *args)
+    validate event => Symbol
     if Events[event]
       Events[event].call(*args)
     else
@@ -10,6 +11,7 @@ class SystemEvent
   end
 
   def self.register(event, code)
+    validate event => Symbol, code => Proc
     Events[event] = code
   end
 end
@@ -29,4 +31,8 @@ SystemEvent.register(:taken_step, proc do |x, y|
       Encounter.test_table(table)
     end
   end
+end)
+
+SystemEvent.register(:wild_pokemon_generated, proc do |poke|
+  next poke
 end)

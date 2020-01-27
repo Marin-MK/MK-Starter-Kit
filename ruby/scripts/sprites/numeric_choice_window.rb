@@ -13,7 +13,8 @@ class NumericChoiceWindow < BaseWindow
       viewport: nil,
       windowskin: :choice
     )
-    validate x => Integer,
+    validate \
+        x => Integer,
         y => Integer,
         z => Integer,
         width => Integer,

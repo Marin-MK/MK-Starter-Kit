@@ -14,7 +14,8 @@ class Sprite
       outline_color = arg[:outline_color]
       alignment = arg[:alignment] || :left
       small = arg[:small] || false
-      validate x => Integer,
+      validate \
+          x => Integer,
           y => Integer,
           text => String,
           color => Color,
