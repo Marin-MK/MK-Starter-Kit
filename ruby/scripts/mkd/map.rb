@@ -9,8 +9,20 @@ module MKD
     attr_accessor :height
     attr_accessor :tiles
     attr_accessor :tilesets
+    attr_accessor :autotiles
     attr_accessor :events
     attr_accessor :encounter_tables
+    attr_accessor :connections
+    attr_accessor :panoramas
+    attr_accessor :fogs
+
+    def panoramas
+      return @panoramas ||= []
+    end
+
+    def fogs
+      return @fogs ||= []
+    end
 
     def initialize(id = 0)
       @id = id
@@ -20,8 +32,12 @@ module MKD
       @height = 0
       @tiles = []
       @tilesets = [0]
+      @autotiles = []
       @events = {}
       @encounter_tables = []
+      @connections = {north: [], east: [], south: [], west: []}
+      @panoramas = []
+      @fogs = []
     end
 
     # @param [id] the ID of the map to fetch.

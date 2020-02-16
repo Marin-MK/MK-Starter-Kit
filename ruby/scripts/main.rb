@@ -24,6 +24,16 @@ map.encounter_tables = [
     ]
   end
 ]
+w = map.width
+map.autotiles = [2, 3]
+map.tiles[1][17] = [1, 0, 34]
+map.tiles[1][18] = [1, 0, 20]
+map.tiles[1][19] = [1, 0, 36]
+map.tiles[1][32] = [1, 0, 40]
+map.tiles[1][33] = [1, 0, 28]
+map.tiles[1][34] = [1, 0, 38]
+
+map.tiles[1][2] = [1, 1, 0]
 map.save
 
 # Initializes the game
@@ -53,7 +63,6 @@ $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 6, gender: 1, hp: 0))
 
 $trainer.add_item(:MAXREPEL, 5)
 
-
 def main_function
   $game.update
   $visuals.update
@@ -61,12 +70,12 @@ def main_function
     abort
   end
   if Input.trigger?(Input::SHIFT)
-    $visuals.map_renderer.toggle_grid
+    p "test"
   end
 end
 
 loop do
   Input.update
-  main_function
   Graphics.update
+  main_function
 end

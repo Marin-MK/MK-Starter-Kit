@@ -1,5 +1,4 @@
 settings.rb: Settings
-system_event.rb: System Event
 utils/os.rb: OS Utilities
 utils/other.rb: Other Utilities
 utils/file_utils.rb: File Utilities
@@ -8,8 +7,11 @@ utils/numeric.rb: Numeric Utilities
 utils/validate.rb: Validator Utilities
 utils/viewport.rb: Viewport Utilities
 utils/sprite.rb: Sprite Utilities
+system_event.rb: System Event
+mkd/map_overlay.rb: Map Overlay
 mkd/map.rb: Map
 mkd/tileset.rb: Tileset
+mkd/autotile.rb: Autotile
 mkd/event.rb: Event
 mkd/eventcommands.rb: Event Commands
 mkd/eventconditions.rb: Event Conditions
@@ -26,12 +28,7 @@ game/event.rb: Event
 game/switches.rb: Game Switches
 game/variables.rb: Game Variables
 game/interpreter.rb: Interpreter
-tempdebug/tileset1.rb: Temp Debug Tileset 1
-tempdebug/tileset2.rb: Temp Debug Tileset 2
-tempdebug/tileset3.rb: Temp Debug Tileset 3
-tempdebug/tileset4.rb: Temp Debug Tileset 4
-tempdebug/tileset5.rb: Temp Debug Tileset 5
-tempdebug/tileset6.rb: Temp Debug Tileset 6
+tempdebug/autotiles.rb: Temp Debug Autotiles
 tempdebug/connections.rb: Temp Debug Connections
 game/game.rb: Game
 data/exp.rb: EXP

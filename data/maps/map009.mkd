@@ -1,0 +1,1 @@
+{":type":":map",":data":{"^c":"MKD::Map","@id":9,"@dev_name":"c","@display_name":"c","@width":2,"@height":3,"@tiles":[[[0,0,8],[0,0,8],[0,0,8],[0,0,8],[0,0,8],[0,0,8]]],"@tilesets":[1],"@events":{},"@connections":{":north":[],":east":[],":south":[],":west":[]}}}

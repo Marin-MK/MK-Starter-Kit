@@ -89,10 +89,11 @@ class Game
       event = @events.values.find { |e| e.x == x && e.y == y }
       return false if event && event.current_page && !event.settings.passable
       for layer in 0...tiles.size
-        tile_type, tile_id = tiles[layer][x + y * width]
+        tile_type, index, id = tiles[layer][x + y * width]
         next if tile_type.nil?
-        tileset_id = tilesets[tile_type]
-        val = MKD::Tileset.fetch(tileset_id).passabilities[tile_id % 8 + (tile_id / 8).floor * 8]
+        raise "Cannot determine autotile possiblity yet." if tile_type == 1
+        tileset_id = tilesets[index]
+        val = MKD::Tileset.fetch(tileset_id).passabilities[id % 8 + (id / 8).floor * 8]
         return false if val == 0
         next unless direction
         dirbit = [1, 2, 4, 8][(direction / 2) - 1]
@@ -198,10 +199,11 @@ class Game
           if mapx == $game.player.x && mapy == $game.player.y
             tiledata = self.tiles[layer][i]
             next if tiledata.nil?
-            tileset_index, tile_id = tiledata
-            tileset_id = self.tilesets[tileset_index]
-            tilesetx = tile_id % 8
-            tilesety = (tile_id / 8).floor
+            tile_type, index, id = tiledata
+            raise "Cannot determine terrain tag for autotile yet." if tile_type == 1
+            tileset_id = self.tilesets[index]
+            tilesetx = id % 8
+            tilesety = (id / 8).floor
             tileset = MKD::Tileset.fetch(tileset_id)
             tag = tileset.tags[tilesetx + tilesety * 8]
             tags << tag unless tag.nil?

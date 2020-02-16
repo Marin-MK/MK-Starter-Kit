@@ -1,9 +1,9 @@
-c = MKD::MapConnections.new
-c[0, 0, 0] = 1
-c[0, 15, 0] = 2
+#c = MKD::MapConnections.new
+#c[0, 0, 0] = 1
+#c[0, 15, 0] = 2
 #c[0, 0, 5] = 3
 #c[0, 5, 5] = 4
-c.save
+#c.save
 
 
 

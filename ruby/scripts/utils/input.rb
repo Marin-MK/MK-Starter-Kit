@@ -1,5 +1,43 @@
 # This allows you to do Input::START as an alias for Input::V and Input::SELECT as an alias for Input::Z.
 module Input
+=begin
+  # Only when run with odlgss
+  A = 0x61
+  B = 0x62
+  C = 0x63
+  D = 0x64
+  E = 0x65
+  F = 0x66
+  G = 0x67
+  H = 0x68
+  I = 0x69
+  J = 0x6A
+  K = 0x6B
+  L = 0x6C
+  M = 0x6D
+  N = 0x6E
+  O = 0x6F
+  P = 0x70
+  Q = 0x71
+  R = 0x72
+  S = 0x73
+  T = 0x74
+  U = 0x75
+  V = 0x76
+  W = 0x77
+  X = 0x78
+  Y = 0x79
+  Z = 0x7A
+
+  RIGHT = 0x4000004F
+  LEFT = 0x40000050
+  DOWN = 0x40000051
+  UP = 0x40000052
+
+  SHIFT = 0x400000E1
+  CTRL = 0x400000E0
+=end
+
   START = V
   SELECT = Z
 end

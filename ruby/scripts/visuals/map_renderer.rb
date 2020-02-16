@@ -226,7 +226,6 @@ class Visuals
     # @param mapx [Integer] the x position of the tile on the map.
     # @param mapy [Integer] the y position of the tile on the map.
     def draw_tile(sprite, mapx, mapy)
-      $temp_bitmaps ||= {}
       # Reset the sprite to a blank tilesprite
       sprite.clear
       sprite.mapx = mapx
@@ -239,20 +238,17 @@ class Visuals
       end
       if id
         for layer in 0...$game.maps[id].data.tiles.size
-          tile_type, tile_id = $game.maps[id].data.tiles[layer][mapx + $game.maps[id].width * mapy]
-          next if tile_type.nil?
-          tileset_id = $game.maps[id].data.tilesets[tile_type]
-          tileset = MKD::Tileset.fetch(tileset_id)
-          # Temporary bitmap cache
-          if $temp_bitmaps[tileset.graphic_name]
-            bmp = $temp_bitmaps[tileset.graphic_name]
-          else
-            bmp = $temp_bitmaps[tileset.graphic_name] = Bitmap.new("gfx/tilesets/" + tileset.graphic_name)
-          end
-          priority = tileset.priorities[tile_id] || 0
-          sprite.set(layer, bmp, tile_id, priority)
+          tile_data = $game.maps[id].data.tiles[layer][mapx + $game.maps[id].width * mapy]
+          sprite.set(layer, id, tile_data)
         end
       end
+    end
+
+    # Updates all tiles (used for autotile animation)
+    def update
+      @i ||= 0
+      @array.each { |tile| tile.update(@i) }
+      @i += 1
     end
   end
 end
