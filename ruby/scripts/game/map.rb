@@ -58,6 +58,10 @@ class Game
       return data.tilesets
     end
 
+    def autotiles
+      return data.autotiles
+    end
+
     def connection
       return MKD::MapConnections.fetch(id)
     end
@@ -91,9 +95,16 @@ class Game
       for layer in 0...tiles.size
         tile_type, index, id = tiles[layer][x + y * width]
         next if tile_type.nil?
-        raise "Cannot determine autotile possiblity yet." if tile_type == 1
-        tileset_id = tilesets[index]
-        val = MKD::Tileset.fetch(tileset_id).passabilities[id % 8 + (id / 8).floor * 8]
+        val = 0 # Default to impassable
+        if tile_type == 0 # Tileset
+          tileset_id = tilesets[index]
+          val = MKD::Tileset.fetch(tileset_id).passabilities[id]
+        elsif tile_type == 1 # Autotile
+          autotile_id = autotiles[index]
+          val = MKD::Autotile.fetch(autotile_id).passabilities[id]
+        else
+          raise "Invalid tile type."
+        end
         return false if val == 0
         next unless direction
         dirbit = [1, 2, 4, 8][(direction / 2) - 1]
@@ -200,12 +211,15 @@ class Game
             tiledata = self.tiles[layer][i]
             next if tiledata.nil?
             tile_type, index, id = tiledata
-            raise "Cannot determine terrain tag for autotile yet." if tile_type == 1
-            tileset_id = self.tilesets[index]
-            tilesetx = id % 8
-            tilesety = (id / 8).floor
-            tileset = MKD::Tileset.fetch(tileset_id)
-            tag = tileset.tags[tilesetx + tilesety * 8]
+            if tile_type == 0 # Tileset
+              tileset_id = self.tilesets[index]
+              tag = MKD::Tileset.fetch(tileset_id).tags[id]
+            elsif tile_type == 1 # Autotile
+              autotile_id = self.autotiles[index]
+              tag = MKD::Autotile.fetch(autotile_id).tags[id]
+            else
+              raise "Invalid tile type."
+            end
             tags << tag unless tag.nil?
           end
         end

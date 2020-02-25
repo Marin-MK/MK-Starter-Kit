@@ -24,16 +24,6 @@ map.encounter_tables = [
     ]
   end
 ]
-w = map.width
-map.autotiles = [2, 3]
-map.tiles[1][17] = [1, 0, 34]
-map.tiles[1][18] = [1, 0, 20]
-map.tiles[1][19] = [1, 0, 36]
-map.tiles[1][32] = [1, 0, 40]
-map.tiles[1][33] = [1, 0, 28]
-map.tiles[1][34] = [1, 0, 38]
-
-map.tiles[1][2] = [1, 1, 0]
 map.save
 
 # Initializes the game
@@ -68,9 +58,6 @@ def main_function
   $visuals.update
   if Input.trigger?(Input::CTRL)
     abort
-  end
-  if Input.trigger?(Input::SHIFT)
-    p "test"
   end
 end
 
