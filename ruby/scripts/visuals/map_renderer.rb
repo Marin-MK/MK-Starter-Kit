@@ -165,14 +165,15 @@ class Visuals
     end
 
     # Adjusts the map renderer coordinates to treat the new main map as the relative parent map
-    def map_transition(oldx, oldy)
-      xoffset = 0
-      if oldx > $game.player.x
-        xoffset = -1
-      elsif oldx < $game.player.x
-        xoffset = 1
+    def map_transition(old_map_id, old_x, old_y)
+      # If an old connection is not the active map and the active map doesn't have the map as a connection, unload it
+      for c in $game.maps[old_map_id].connections
+        if $game.map.id != c.map_id && !$game.map.connections.find { |conn| conn.map_id == c.map_id }
+          $game.unload_map(c.map_id) if $game.is_map_loaded?(c.map_id)
+        end
       end
-      startx = $game.player.x - XSIZE / 2 + xoffset
+      x_offset = $game.player.x <=> old_x
+      startx = $game.player.x - XSIZE / 2 + x_offset
       starty = $game.player.y - YSIZE / 2
       for y in 0...YSIZE
         for x in 0...XSIZE

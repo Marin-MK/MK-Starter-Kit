@@ -49,5 +49,4 @@ e.pages[0].graphic.param = "gfx/characters/boy"
 e.pages[0].automoveroute.commands = [:down, :down, :right, :right, :up, :up, :left, :left]
 e.pages[0].automoveroute.frequency = 0
 e.settings.passable = false
-e.settings.frame_update_interval = 2
 map.events[e.id] = e

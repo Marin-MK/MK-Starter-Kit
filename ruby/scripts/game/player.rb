@@ -151,7 +151,7 @@ class Game
           oldmapid = @map_id
           @y += 1
           $visuals.player.move_down
-          try_transfer
+          check_map_transition
           SystemEvent.trigger(:taking_step, @x, oldy, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
         else
@@ -176,7 +176,7 @@ class Game
           oldmapid = @map_id
           @x -= 1
           $visuals.player.move_left
-          try_transfer
+          check_map_transition
           SystemEvent.trigger(:taking_step, oldx, @y, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
         else
@@ -201,7 +201,7 @@ class Game
           oldmapid = @map_id
           @x += 1
           $visuals.player.move_right
-          try_transfer
+          check_map_transition
           SystemEvent.trigger(:taking_step, oldx, @y, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
         else
@@ -226,7 +226,7 @@ class Game
           oldmapid = @map_id
           @y -= 1
           $visuals.player.move_up
-          try_transfer
+          check_map_transition
           SystemEvent.trigger(:taking_step, @x, oldy, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
         else
@@ -239,7 +239,7 @@ class Game
     end
 
     # Switches active map and position of the player if its x or y position are out of the current map.
-    def try_transfer
+    def check_map_transition
       xsmall = @x < 0
       ysmall = @y < 0
       xgreat = @x >= $game.map.width
@@ -247,12 +247,13 @@ class Game
       if xsmall || ysmall || xgreat || ygreat
         if !$game.map.connections.empty?
           map_id, mapx, mapy = $game.get_map_from_connection($game.map, @x, @y)
+          old_map_id = @map_id
+          old_x = @x
+          old_y = @y
           @map_id = map_id
-          oldx = @x
-          oldy = @y
           @x = mapx
           @y = mapy
-          $visuals.map_renderer.map_transition(oldx, oldy)
+          $visuals.map_renderer.map_transition(old_map_id, old_x, old_y)
         else
           raise "Player is off the active game map, but no map connection was specified for that map."
         end

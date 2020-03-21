@@ -78,8 +78,14 @@ class Game
             if move_command_possible?(command)
               $visuals.maps[@map_id].events[@id].automoveroute(command)
             else
+              # If the movement cannot be executed, at least turn in that direction.
+              if command == :down || command == :left || command == :right || command == :up
+                $visuals.maps[@map_id].events[@id].automoveroute(command.to_s.prepend("turn_").to_sym)
+              end
               # Reset index to try again next frame
               @automoveroute_idx = start_idx
+              # Makes sure the event doesn't get stuck on a moving frame
+              $visuals.maps[@map_id].events[@id].finish_movement
             end
           end
         end
@@ -219,6 +225,8 @@ class Game
           command = [:turn_down, :turn_left, :turn_right, :turn_up].sample if command == :turn_random
           @moveroute[0] = args ? [command, args] : command
           if !move_command_possible?(@moveroute[0])
+            # Makes sure the event doesn't get stuck on the moving frame.
+            $visuals.maps[@map_id].events[@id].finish_movement
             if @moveroute_ignore_impassable
               moveroute_next
             else

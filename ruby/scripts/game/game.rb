@@ -16,27 +16,6 @@ class Game
   # @return [Game::Map] the map the player is currently on.
   def map
     return @maps[$game.player.map_id]
-  rescue
-    msgbox caller
-    abort
-  end
-
-  def setup
-    Input.update
-    $visuals.dispose
-    $visuals = nil
-    $visuals = Visuals.new
-    @maps.each_value { |e| e.setup_visuals }
-    @player.setup_visuals
-    $visuals.map_renderer.create_tiles
-    $visuals.maps.each_value do |e|
-      e.real_x -= @player.global_x * 32
-      e.real_y -= @player.global_y * 32
-    end
-    $visuals.map_renderer.move_x(@player.global_x * 32)
-    $visuals.map_renderer.move_y(@player.global_y * 32)
-    $game.update
-    $visuals.update
   end
 
   def load_map(id)
@@ -59,11 +38,12 @@ class Game
     log(:SYSTEM, "Unloaded map ##{id}")
   end
 
-  def get_map_from_connection(map, mapx, mapy)
-    if mapx >= 0 && mapy >= 0 && mapx < map.width && mapy < map.height
-      return [map.id, mapx, mapy]
+  # Takes coordinates relative to map A, and returns the corresponding map and coordinates.
+  def get_map_from_connection(mainmap, mapx, mapy)
+    if mapx >= 0 && mapy >= 0 && mapx < mainmap.width && mapy < mainmap.height
+      return [mainmap.id, mapx, mapy]
     end
-    for c in map.connections
+    for c in mainmap.connections
       map = MKD::Map.fetch(c.map_id)
       width, height = map.width, map.height
       if mapx >= c.relative_x && mapy >= c.relative_y && mapx < c.relative_x + width && mapy < c.relative_y + height
@@ -85,7 +65,7 @@ class Game
   end
 
   def self.get_save_data
-    data = {
+    return {
       game: $game,
       trainer: $trainer
     }
@@ -112,9 +92,7 @@ class Game
       FileUtils.copy(filename, filename + ".bak")
     end
     begin
-      f = File.new(filename, 'wb')
-      f.write YAML.dump({type: :savefile, data: Game.get_save_data})
-      f.close
+      FileUtils.save_data(filename, Game.get_save_data, :save)
       File.delete(filename + ".bak") if File.file?(filename + ".bak")
       return true
     rescue
@@ -123,23 +101,16 @@ class Game
     end
   end
 
-  def self.load_game # to implement
+  def self.load_game
     if !Game.save_exists?
       raise "No save file could be found."
     else
       filename = Game.get_save_folder + "/save.mkd"
-      begin
-        f = File.open(filename, 'rb')
-        data = YAML.load(f.read)
-        f.close
-      rescue
-        raise "Invalid MKD file - #{filename}\n\nFile cannot be parsed by YAML."
-      end
-      validate_mkd(data)
-      data = data[:data]
+      data = FileUtils.load_data(filename, :save)
       $trainer = data[:trainer]
       $game = data[:game]
-      $game.setup
+      # Set up game data
+      raise "Game.load_game not implemented fully yet"
     end
   end
 end

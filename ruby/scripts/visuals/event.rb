@@ -238,7 +238,7 @@ class Visuals
     # @return [Boolean] whether the event is actually moving.
     def moving?
       return @moveroute_moving_command if !@moveroute_ready
-      return false
+      return !@x_travelled.nil? || !@x_destination.nil? || !@y_travelled.nil? || !@y_destination.nil?
     end
 
     # Performs a move command from an Autonomous Move Route
