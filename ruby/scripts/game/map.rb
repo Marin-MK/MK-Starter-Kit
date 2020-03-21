@@ -11,8 +11,6 @@ class Game
     attr_accessor :parallel_interpreters
     # @return [Integer] how long to wait before updating the active event interpreters again.
     attr_accessor :wait_count
-    # @return [Array<Integer>] map connection data (idx, x, y).
-    attr_accessor :connection
 
     # Creates a new Map object.
     def initialize(id = 0, x = 0, y = 0)
@@ -62,8 +60,14 @@ class Game
       return data.autotiles
     end
 
-    def connection
-      return MKD::MapConnections.fetch(id)
+    def connections
+      return data.connections
+    end
+
+    def unload
+      $visuals.maps[@id].dispose
+      $visuals.maps.delete(@id) if $visuals.maps[@id]
+      $game.maps.delete(@id) if $game.maps[@id]
     end
 
     # Tests if the specified tile is passable.
@@ -73,10 +77,16 @@ class Game
     # @param checking_event [Game::Event, NilClass] the event object that is performing the test.
     # @return [Boolean] whether the tile is passable.
     def passable?(x, y, direction = nil, checking_event = nil)
-      validate x => Integer, y => Integer
+      validate \
+          x => Integer,
+          y => Integer,
+          direction => [Integer, Symbol, NilClass],
+          checking_event => [Game::Player, Game::Event, NilClass]
       map_id = checking_event.map_id
       if x < 0 || x >= width || y < 0 || y >= height
-        if connection
+        if checking_event.is_a?(Game::Event)
+          return false
+        elsif checking_event.is_a?(Game::Player) && !connections.empty?
           map_id, mapx, mapy = $game.get_map_from_connection(self, x, y)
           if map_id
             return $game.maps[map_id].passable?(mapx, mapy, direction, checking_event)
@@ -111,13 +121,6 @@ class Game
         return false if (val & dirbit) != dirbit
       end
       return true
-    end
-
-    # Turns a global position into a local position
-    def global_to_local(globalx, globaly)
-      c = self.connection
-      return [globalx, globaly] if c.nil?
-      return [globalx - c[1], globaly - c[2]]
     end
 
     # Updates this map's events and interpreters.

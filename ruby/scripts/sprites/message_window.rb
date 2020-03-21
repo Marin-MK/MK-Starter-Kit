@@ -322,8 +322,7 @@ def create_message_window(text = "")
       z: 999999,
       width: 480,
       height: 96,
-      windowskin: :speech,
-      update: proc { $visuals.update(:no_events) }
+      windowskin: :speech
   )
 end
 

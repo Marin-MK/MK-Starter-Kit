@@ -35,6 +35,7 @@ class Visuals
       @real_x = Graphics.width / 2 - 16 + 32 * x
       @real_y = Graphics.height / 2 - 16 + 32 * y
       @overlays = @game_map.data.panoramas.map do |pan|
+        # Creates the sprites for the map's panoramas
         s = Sprite.new($visuals.viewport)
         s.bitmap = Bitmap.new("gfx/panoramas/#{pan.filename}");
         s.src_rect.width = [s.bitmap.width, @game_map.width * 32].min
@@ -47,6 +48,7 @@ class Visuals
         s.z = -1
         next [s, pan, 0]
       end.concat(@game_map.data.fogs.map do |fog|
+        # Creates the sprites for the map's fogs
         s = Sprite.new($visuals.viewport)
         s.bitmap = Bitmap.new("gfx/fogs/#{fog.filename}");
         s.src_rect.width = [s.bitmap.width, @game_map.width * 32].min
@@ -64,7 +66,7 @@ class Visuals
 
     def dispose
       @events.each_value(&:dispose)
-      @events = {}
+      @events.clear
     end
 
     # Updates all this map's events.
@@ -72,6 +74,7 @@ class Visuals
     def update(*args)
       @events.each_value(&:update) unless args.include?(:no_events)
       @overlays.each do |o|
+        # Animates scrolling fogs/panoramas
         next if o[1].animate_speed.nil? || o[1].animate_speed < 1
         if o[2] % o[1].animate_speed == 0
           s = o[0]

@@ -64,6 +64,7 @@ class Visuals
         @priority = 0
         @mapx = 0
         @mapy = 0
+        @i = 0
       end
 
       def real_x=(value)
@@ -114,10 +115,10 @@ class Visuals
           if sprite.hash[:autotile]
             map_id, tile_data = sprite.hash[:map_id], sprite.hash[:tile_data]
             tile_type, index, tile_id = tile_data
-            autotile_id = $game.maps[map_id].data.autotiles[index]
+            autotile_id = MKD::Map.fetch(map_id).autotiles[index]
             autotile = MKD::Autotile.fetch(autotile_id)
             if autotile.animate_speed > 0 && @i % autotile.animate_speed == 0
-              draw_autotile(key, map_id, tile_data, sprite.hash[:frame] + 1)
+              draw_autotile(key, map_id, tile_data, (@i / autotile.animate_speed).floor)
             end
           end
         end
@@ -144,10 +145,11 @@ class Visuals
         @sprites[layer].hash = {priority: priority, map_id: map_id, tile_data: tile_data, autotile: false}
       end
 
-      def draw_autotile(layer, map_id, tile_data, frame = 0)
+      def draw_autotile(layer, map_id, tile_data, frame = nil)
         tile_type, index, tile_id = tile_data
-        autotile_id = $game.maps[map_id].data.autotiles[index]
+        autotile_id = MKD::Map.fetch(map_id).autotiles[index]
         autotile = MKD::Autotile.fetch(autotile_id)
+        frame = (@i / autotile.animate_speed).floor if frame.nil?
         # Temporary autotile cache; this way not every tile has to create a new bitmap.
         $temp_autotiles ||= {}
         if $temp_autotiles[autotile.graphic_name]
@@ -159,28 +161,13 @@ class Visuals
         @sprites[layer].bitmap.dispose if @sprites[layer].bitmap
         @sprites[layer].bitmap = Bitmap.new(32, 32)
         if autotile.format == :single
-          anim_x = 32 * frame # 32px * 1 tile per frame = 32px
-          if anim_x >= bmp.width
-            anim_x = 0
-            frame = 0
-          end
+          anim_x = (32 * frame) % bmp.width # 32px * 1 tile per frame = 32px
           @sprites[layer].bitmap.blt(0, 0, bmp, Rect.new(anim_x, 0, 32, 32))
-        elsif autotile.format == :manual
-          anim_x = 256 * frame # 32px * 8 tiles per frame = 256px
-          if anim_x >= bmp.width
-            anim_x = 0
-            frame = 0
-          end
-          @sprites[layer].bitmap.blt(0, 0, bmp. Rect.new(32 * (tile_id % 8) + anim_x, 32 * (tile_id / 8).floor, 32, 32))
         else
-          anim_x = 96 * frame # 32px * 3 tiles per frame = 96px
-          if anim_x >= bmp.width
-            anim_x = 0
-            frame = 0
-          end
-          tiles = AutotileCombinations[autotile.format][tile_id]
-          # tiles contains the coordinations of the 4 16x16 chunks of the original autotile image
+          anim_x = (96 * frame) % bmp.width # 32px * 3 tiles per frame = 96px
+          # Fetch the coordinates of the 4 16x16 chunks in the original autotile image
           # with which to create one big 32x32 tile.
+          tiles = AutotileCombinations[autotile.format][tile_id]
           for i in 0...4
             @sprites[layer].bitmap.blt(16 * (i % 2), 16 * (i / 2).floor, bmp,
                 Rect.new(16 * (tiles[i] % 6) + anim_x, 16 * (tiles[i] / 6).floor, 16, 16))

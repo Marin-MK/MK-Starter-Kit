@@ -20,17 +20,11 @@ class Visuals
       @sprite.x = Graphics.width / 2
       @sprite.y = Graphics.height / 2 + 16
       @sprite.z = @sprite.y + 31
-      @oldx = @game_player.global_x
-      @oldy = @game_player.global_y
-      @xdist = []
-      @xtrav = []
-      @xstart = []
-      @xloc = []
-      @ydist = []
-      @ytrav = []
-      @ystart = []
-      @yloc = []
-      @anim = []
+      @x_travelled = nil
+      @x_destination = nil
+      @y_travelled = nil
+      @y_destination = nil
+      @animate_count = 0
       @fake_anim = nil
       @stop_fake_anim = false
     end
@@ -48,8 +42,7 @@ class Visuals
       @sprite.src_rect.x += @sprite.src_rect.width
       if @turncount
         @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
-        @sprite.src_rect.x += @sprite.src_rect.width
-        @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
+        next_frame
       end
       @turncount = 6
     end
@@ -61,8 +54,37 @@ class Visuals
       @sprite.src_rect.y = @sprite.src_rect.height * (value / 2 - 1)
     end
 
+    def move_down
+      @y_travelled = 0
+      @y_destination = 32
+      @fake_anim = nil
+      @stop_fake_anim = false
+    end
+
+    def move_left
+      @x_travelled = 0
+      @x_destination = -32
+      @fake_anim = nil
+      @stop_fake_anim = false
+    end
+
+    def move_right
+      @x_travelled = 0
+      @x_destination = 32
+      @fake_anim = nil
+      @stop_fake_anim = false
+    end
+
+    def move_up
+      @y_travelled = 0
+      @y_destination = -32
+      @fake_anim = nil
+      @stop_fake_anim = false
+    end
+
     # Updates the player sprite and performs movement.
     def update
+      old_animate_count = @animate_count
       moving = moving?
       # Executes the animation when turning
       if @turncount
@@ -106,8 +128,8 @@ class Visuals
       end
       # Changes the sprite's bitmap if the player's graphic changed
       if @game_player.graphic_name != @oldgraphic
-        frame_x = @sprite.src_rect.x.to_f / @sprite.bitmap.width * 4
-        frame_y = @sprite.src_rect.y.to_f / @sprite.bitmap.height * 4
+        frame_x = (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4).round
+        frame_y = (@sprite.src_rect.y.to_f / @sprite.bitmap.height * 4).round
         @sprite.set_bitmap("gfx/characters/" + @game_player.graphic_name)
         @sprite.src_rect.width = @sprite.bitmap.width / 4
         @sprite.src_rect.height = @sprite.bitmap.height / 4
@@ -116,110 +138,55 @@ class Visuals
         @sprite.src_rect.x = frame_x * @sprite.src_rect.width
         @sprite.src_rect.y = frame_y * @sprite.src_rect.height
       end
-      # Add horizontal movement to the move queue
-      if @game_player.global_x != @oldx && !@skip_movement
-        @xdist << 32 * (@game_player.global_x - @oldx)
-        @xtrav << 0
-        @xloc << @game_player.global_x
-        h = {}
-        if @xstart[0]
-          @xstart.last.each_key { |k| h[k] = @xstart.last[k] - @xdist.last }
-        else
-          $visuals.maps.each_key { |k| h[k] = $visuals.maps[k].real_x }
-        end
-        @xstart << h
-        anims = []
-        pos = @game_player.global_x - @oldx > 0
-        aframes = 2
-        (aframes * (@game_player.global_x - @oldx).abs).times { |i| anims << (32.0 / aframes) * i * (pos ? 1 : -1) }
-        @anim << anims
-        if @xtrav.size == 1
-          @sprite.src_rect.x += @sprite.src_rect.width if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 != 0
-          @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
-        end
-        @fake_anim = nil
-        @stop_fake_anim = false
-      end
-      # Add vertical movement to the move queue
-      if @game_player.global_y != @oldy && !@skip_movement
-        @ydist << 32 * (@game_player.global_y - @oldy)
-        @ytrav << 0
-        @yloc << @game_player.global_y
-        h = {}
-        if @ystart[0]
-          @ystart.last.each_key { |k| h[k] = @ystart.last[k] - @ydist.last }
-        else
-          $visuals.maps.each_key { |k| h[k] = $visuals.maps[k].real_y }
-        end
-        @ystart << h
-        anims = []
-        pos = @game_player.global_y - @oldy > 0
-        aframes = 2
-        (aframes * (@game_player.global_y - @oldy).abs).times { |i| anims << (32.0 / aframes) * i * (pos ? 1 : -1) }
-        @anim << anims
-        if @ytrav.size == 1
-          @sprite.src_rect.x += @sprite.src_rect.width if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 != 0
-          @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
-        end
-        @fake_anim = nil
-        @stop_fake_anim = false
-      end
-      # Executes the horizontal movement
-      if @xtrav[0] && @xdist[0]
-        if @xtrav[0].abs < @xdist[0].abs
-          dist = @game_player.speed * (@xdist[0] < 0 ? -1 : 1)
-          oldtrav = @xtrav[0]
-          @xtrav[0] += dist
-          @xtrav[0] = @xdist[0] < 0 ? [@xtrav[0], @xdist[0]].max : [@xtrav[0], @xdist[0]].min
-          if @anim[0].size > 0 && (@xdist[0] > 0 && @xtrav[0] > @anim[0][0] || @xdist[0] < 0 && @xtrav[0] < @anim[0][0])
-            @sprite.src_rect.x += @sprite.src_rect.width
-            @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
-            @anim[0].delete_at(0)
-          end
-          $visuals.maps.values.each { |m| m.real_x = @xstart[0][m.id] - @xtrav[0] }
-          $visuals.map_renderer.move_x(@xtrav[0] - oldtrav)
-        else # Movement completed
-          @xtrav.delete_at(0)
-          @xdist.delete_at(0)
-          @xstart.delete_at(0)
-          x = @xloc[0]
-          y = @yloc[0] || @game_player.global_y
-          SystemEvent.trigger(:taken_step, *$game.map.global_to_local(x, y))
-          @xloc.delete_at(0)
-          @anim.delete_at(0)
+      # Executes horizontal movement
+      if @x_travelled && @x_destination && @x_travelled.abs < @x_destination.abs
+        # Floating point precision movement
+        pixels = @game_player.speed * (@x_destination <=> 0)
+        old_x_travelled = @x_travelled
+        @x_travelled += pixels
+        @animate_count += pixels.abs
+        $visuals.map_renderer.move_horizontal(pixels)
+        if @x_travelled.abs >= @x_destination.abs
+          # Account for overshooting the tile, due to rounding errors
+          $visuals.map_renderer.move_horizontal(@x_destination - @x_travelled)
+          @x_travelled = nil
+          @x_destination = nil
+          SystemEvent.trigger(:taken_step, @game_player.x, @game_player.y)
         end
       end
-      # Executes the vertical movement
-      if @ytrav[0] && @ydist[0]
-        if @ytrav[0].abs < @ydist[0].abs
-          dist = @game_player.speed * (@ydist[0] < 0 ? -1 : 1)
-          oldtrav = @ytrav[0]
-          @ytrav[0] += dist
-          @ytrav[0] = @ydist[0] < 0 ? [@ytrav[0], @ydist[0]].max : [@ytrav[0], @ydist[0]].min
-          if @anim[0].size > 0 && (@ydist[0] > 0 && @ytrav[0] > @anim[0][0] || @ydist[0] < 0 && @ytrav[0] < @anim[0][0])
-            @sprite.src_rect.x += @sprite.src_rect.width
-            @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
-            @anim[0].delete_at(0)
-          end
-          $visuals.maps.values.each { |m| m.real_y = @ystart[0][m.id] - @ytrav[0] }
-          $visuals.map_renderer.move_y(@ytrav[0] - oldtrav)
-        else
-          @ytrav.delete_at(0)
-          @ydist.delete_at(0)
-          @ystart.delete_at(0)
-          x = @xloc[0] || @game_player.global_x
-          y = @yloc[0]
-          SystemEvent.trigger(:taken_step, *$game.map.global_to_local(x, y))
-          @yloc.delete_at(0)
-          @anim.delete_at(0)
+      # Executes vertical movement
+      if @y_travelled && @y_destination && @y_travelled.abs < @y_destination.abs
+        # Floating point precision movement
+        pixels = @game_player.speed * (@y_destination <=> 0)
+        old_y_travelled = @y_travelled
+        @y_travelled += pixels
+        @animate_count += pixels.abs
+        $visuals.map_renderer.move_vertical(pixels)
+        if @y_travelled.abs >= @y_destination.abs
+          # Account for overshooting the tile, due to rounding errors
+          $visuals.map_renderer.move_vertical(@y_destination - @y_travelled)
+          @y_travelled = nil
+          @y_destination = nil
+          SystemEvent.trigger(:taken_step, @game_player.x, @game_player.y)
         end
+      end
+      if @game_player.speed > @game_player.frame_update_interval ||
+         old_animate_count % @game_player.frame_update_interval > @animate_count % @game_player.frame_update_interval
+        next_frame
       end
       # Stores old values for comparison in the next #update call
-      @oldx = @game_player.global_x
-      @oldy = @game_player.global_y
       @oldgraphic = @game_player.graphic_name
       @oldfake_move = @game_player.fake_move
       @skip_movement = false if @skip_movement
+    end
+
+    def next_frame
+      @sprite.src_rect.x += @sprite.src_rect.width
+      @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
+    end
+
+    def finish_movement
+      next_frame if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 == 1
     end
 
     def skip_movement
@@ -243,7 +210,7 @@ class Visuals
 
     # @return [Boolean] whether or not the player is moving.
     def moving?
-      return @ytrav[0] && @ydist[0] && @ytrav[0].abs < @ydist[0].abs || @xtrav[0] && @xdist[0] && @xtrav[0].abs < @xdist[0].abs
+      return !@x_travelled.nil? || !@x_destination.nil? || !@y_travelled.nil? || !@y_destination.nil?
     end
 
     attr_reader :fake_anim

@@ -35,9 +35,13 @@ module MKD
       @autotiles = []
       @events = {}
       @encounter_tables = []
-      @connections = {north: [], east: [], south: [], west: []}
+      @connections = []
       @panoramas = []
       @fogs = []
+    end
+
+    def encounter_tables
+      return @encounter_tables ||= []
     end
 
     # @param [id] the ID of the map to fetch.

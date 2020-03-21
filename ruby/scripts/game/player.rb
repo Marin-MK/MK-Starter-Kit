@@ -2,17 +2,19 @@ class Game
   # The logical component of player objects.
   class Player
     # @return [Integer] the ID of the map the player is currently on.
-    attr_accessor :map_id
+    attr_reader :map_id
     # @return [Integer] the x position of the player.
-    attr_accessor :x
+    attr_reader :x
     # @return [Integer] the y position of the player.
-    attr_accessor :y
+    attr_reader :y
     # @return [String] the name of the graphic the player currently has applied.
     attr_accessor :graphic_name
     # @return [Integer] the direction the player is currently facing in.
     attr_accessor :direction
     # @return [Float] how fast the player can move.
     attr_accessor :speed
+    # @return [Integer] the interval for updating the player's frame while walking.
+    attr_accessor :frame_update_interval
 
     # Creates a new Player object.
     def initialize(map_id = 0)
@@ -24,7 +26,8 @@ class Game
       @graphic_name = "boy"
       @running = false
       @runcount = 0
-      log(:OVERWORLD, "Created player object")
+      @frame_update_interval = 16
+      @initialized = false
     end
 
     def setup_visuals
@@ -60,29 +63,23 @@ class Game
     # Fetches button input to move, trigger events, run, etc.
     def update
       unless moving?
+        # Only when standing still
+
         # Tile/event interaction
         if Input.confirm?
           newx, newy = facing_coordinates(@x, @y, @direction)
           $game.map.tile_interaction(newx, newy)
         end
+
         # Pause Menu
         if Input.start?
           PauseMenuUI.start
         end
       end
+
+      # Movement
       @fake_move = false
       oldrun = @running
-      if Input.press_cancel?
-        @runcount = 7 if !moving? && !@wasmoving && @runcount == 0
-        @runcount += 1
-      else
-        @runcount = 0
-      end
-      @running = @runcount > 7 && moving?
-      @speed = @running ? PLAYERRUNSPEED : PLAYERWALKSPEED
-      if oldrun != @running # Walking to running or running to walking
-        @graphic_name = @running ? "boy_run" : "boy"
-      end
       if input_possible?
         case input = Input.dir4
         when 2
@@ -94,9 +91,46 @@ class Game
         when 8
           move_up
         end
+        # Running
+        if input == 2 || input == 4 || input == 6 || input == 8
+          @running = moving? && Input.press_cancel?
+        else
+          @running = false
+          $visuals.player.finish_movement
+        end
         @lastdir4 = input
       end
+      # Adjusting to run state
+      if oldrun != @running # Walking to running or running to walking
+        @speed = @running ? PLAYERRUNSPEED : PLAYERWALKSPEED
+        @graphic_name = @running ? "boy_run" : "boy"
+        @frame_update_interval = @running ? 24 : 16
+      end
+      # Only when the player starts moving to a new tile
+      if !@initialized || moving? != @wasmoving && moving?
+        @initialized = true
+        # Load/unload map connections
+        update_nearby_maps
+      end
       @wasmoving = moving?
+    end
+
+    def update_nearby_maps
+      this = Rect.new(@x, @y, 1, 1)
+      for c in $game.map.connections
+        map = MKD::Map.fetch(c.map_id)
+        rect = Rect.new(c.relative_x, c.relative_y, map.width, map.height)
+        dist = rect.distance(this)
+        if dist.nil?
+          raise "Map ##{c.map_id} overlaps map ##{@map_id} and can thus not be loaded."
+        elsif !$game.is_map_loaded?(c.map_id) && dist[0] <= MAP_LOAD_BUFFER_HORIZONTAL && dist[1] <= MAP_LOAD_BUFFER_VERTICAL
+          $game.load_map(c.map_id)
+          $visuals.maps[c.map_id].real_x = $visuals.map.real_x + c.relative_x * 32
+          $visuals.maps[c.map_id].real_y = $visuals.map.real_y + c.relative_y * 32
+        elsif $game.is_map_loaded?(c.map_id) && (dist[0] > MAP_UNLOAD_BUFFER_HORIZONTAL || dist[1] > MAP_UNLOAD_BUFFER_VERTICAL)
+          $game.unload_map(c.map_id)
+        end
+      end
     end
 
     # @return [Boolean] whether or not player input is possible. Used for pause menu, registered items and movement.
@@ -116,6 +150,7 @@ class Game
           oldy = @y
           oldmapid = @map_id
           @y += 1
+          $visuals.player.move_down
           try_transfer
           SystemEvent.trigger(:taking_step, @x, oldy, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
@@ -140,6 +175,7 @@ class Game
           oldx = @x
           oldmapid = @map_id
           @x -= 1
+          $visuals.player.move_left
           try_transfer
           SystemEvent.trigger(:taking_step, oldx, @y, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
@@ -164,6 +200,7 @@ class Game
           oldx = @x
           oldmapid = @map_id
           @x += 1
+          $visuals.player.move_right
           try_transfer
           SystemEvent.trigger(:taking_step, oldx, @y, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
@@ -188,6 +225,7 @@ class Game
           oldy = @y
           oldmapid = @map_id
           @y -= 1
+          $visuals.player.move_up
           try_transfer
           SystemEvent.trigger(:taking_step, @x, oldy, oldmapid, @x, @y, @map_id)
           $game.map.check_event_triggers(true)
@@ -200,16 +238,6 @@ class Game
       @upcount -= 1 if @upcount
     end
 
-    def global_x
-      c = MKD::MapConnections.fetch(@map_id)
-      return c ? c[1] + @x : @x
-    end
-
-    def global_y
-      c = MKD::MapConnections.fetch(@map_id)
-      return c ? c[2] + @y : @y
-    end
-
     # Switches active map and position of the player if its x or y position are out of the current map.
     def try_transfer
       xsmall = @x < 0
@@ -217,14 +245,14 @@ class Game
       xgreat = @x >= $game.map.width
       ygreat = @y >= $game.map.height
       if xsmall || ysmall || xgreat || ygreat
-        if $game.map.connection
+        if !$game.map.connections.empty?
           map_id, mapx, mapy = $game.get_map_from_connection($game.map, @x, @y)
           @map_id = map_id
           oldx = @x
           oldy = @y
           @x = mapx
           @y = mapy
-          $visuals.map_renderer.adjust_to_player(oldx, oldy)
+          $visuals.map_renderer.map_transition(oldx, oldy)
         else
           raise "Player is off the active game map, but no map connection was specified for that map."
         end

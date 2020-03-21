@@ -40,49 +40,34 @@ class Game
   end
 
   def load_map(id)
-    # TODO: Dispose all game maps/visual maps (might need to add here later)
-    # Haven't implemented Game::Map#dispose yet
-    @maps.values.each { |e| e.dispose if e.respond_to?(:dispose) }
-    @maps = {}
-    c = MKD::MapConnections.fetch(id)
-    if c
-      idx = c[0]
-      maps = MKD::MapConnections.fetch.maps[idx]
-      maps.keys.each do |x,y|
-        id = maps[[x, y]]
-        @maps[id] = Game::Map.new(id, x, y)
-      end
-      x, y = self.map.connection[1], self.map.connection[2]
-      diffx = @player.x - x
-      diffy = @player.y - y
-      @maps.values.each do |m|
-        map = $visuals.maps[m.id]
-        map.real_x += diffx * 32
-        map.real_y += diffy * 32
-      end
-    else
-      @maps[id] = Game::Map.new(id)
+    if @maps[id]
+      raise "Map ##{id} is already loaded!"
     end
+    @maps[id] = Game::Map.new(id)
+    log(:SYSTEM, "Loaded map ##{id}")
+  end
+
+  def is_map_loaded?(id)
+    return !@maps[id].nil?
+  end
+
+  def unload_map(id)
+    if @maps[id].nil?
+      raise "Map #{id} cannot be unloaded as it was never loaded to begin with!"
+    end
+    @maps[id].unload
+    log(:SYSTEM, "Unloaded map ##{id}")
   end
 
   def get_map_from_connection(map, mapx, mapy)
     if mapx >= 0 && mapy >= 0 && mapx < map.width && mapy < map.height
       return [map.id, mapx, mapy]
     end
-    mx, my = map.connection[1], map.connection[2]
-    gx, gy = mx + mapx, my + mapy
-    if gx >= 0 && gy >= 0
-      maps = MKD::MapConnections.fetch.maps[map.connection[0]]
-      maps.keys.each do |x,y|
-        mid = maps[[x, y]]
-        next if mid == $game.map.id
-        map = MKD::Map.fetch(mid)
-        width, height = map.width, map.height
-        if gx >= x && gy >= y && gx < x + width && gy < y + height
-          mapx = gx - x
-          mapy = gy - y
-          return [mid, mapx, mapy]
-        end
+    for c in map.connections
+      map = MKD::Map.fetch(c.map_id)
+      width, height = map.width, map.height
+      if mapx >= c.relative_x && mapy >= c.relative_y && mapx < c.relative_x + width && mapy < c.relative_y + height
+        return [c.map_id, (c.relative_x - mapx).abs, (c.relative_y - mapy).abs]
       end
     end
     return nil

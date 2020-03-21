@@ -235,3 +235,31 @@ class Struct
     return vars
   end
 end
+
+class Rect
+  # @return [Boolean] whether this Rect overlaps the given rect or vice-versa.
+  def overlaps?(rect)
+    return (rect.x >= self.x && rect.x < self.x + self.width  || rect.x + rect.width  > self.x && rect.x + rect.width  < self.x + self.width ) &&
+           (rect.y >= self.y && rect.y < self.y + self.height || rect.y + rect.height > self.y && rect.y + rect.height < self.y + self.height) ||
+           (self.x >= rect.x && self.x < rect.x + rect.width  || self.x + self.width  > rect.x && self.x + self.width  < rect.x + rect.width ) &&
+           (self.y >= rect.y && self.y < rect.y + rect.height || self.y + self.height > rect.y && self.y + self.height < rect.y + rect.height)
+  end
+
+  # @return [Array<width, height>] the difference of the two rectangles; the space between them.
+  def distance(rect)
+    return nil if self.overlaps?(rect)
+    diffx = 0
+    if self.x > rect.x + rect.width
+      diffx = self.x - (rect.x + rect.width)
+    elsif rect.x > self.x + self.width
+      diffx = rect.x - (self.x + self.width)
+    end
+    diffy = 0
+    if self.y > rect.y + rect.height
+      diffy = self.y - (rect.y + rect.height)
+    elsif rect.y > self.y + self.height
+      diffy = rect.y - (self.y + self.height)
+    end
+    return [diffx, diffy]
+  end
+end

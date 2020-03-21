@@ -10,18 +10,8 @@ class Visuals
 
     XSIZE = TILECOUNTX + 2
     YSIZE = TILECOUNTY + 2
-    TOTALSIZE = XSIZE * YSIZE
-
-    GRIDBITMAP = Bitmap.new(32, 32)
-    for x in 0...32
-      for y in 0...32
-        next unless x % 32 == 0 || y % 32 == 0
-        GRIDBITMAP.set_pixel(x, y, Color.new(0, 0, 0))
-      end
-    end
 
     attr_accessor :array
-    attr_reader :show_grid
 
     def initialize(array = [])
       @array = array
@@ -52,13 +42,15 @@ class Visuals
       return @array.empty?
     end
 
-    def move_x(diff)
-      @array.each { |e| e.real_x -= diff }
+    def move_horizontal(px)
+      @array.each { |e| e.real_x -= px }
+      $visuals.maps.each_value { |map| map.real_x -= px }
       $visuals.map_renderer.refresh_tiles
     end
 
-    def move_y(diff)
-      @array.each { |e| e.real_y -= diff }
+    def move_vertical(px)
+      @array.each { |e| e.real_y -= px }
+      $visuals.maps.each_value { |map| map.real_y -= px }
       $visuals.map_renderer.refresh_tiles
     end
 
@@ -101,10 +93,10 @@ class Visuals
       # Screen fits exactly 15x10 tiles (for 480x320), but it has a buffer around it
       # so the game has time to refresh without showing a black border during movement.
       tiles = []
-      (TOTALSIZE).times { tiles << TileSprite.new($visuals.viewport) }
+      (XSIZE * YSIZE).times { tiles << TileSprite.new($visuals.viewport) }
       @array = tiles
-      startx = $visuals.map.real_x / -32 - 1
-      starty = $visuals.map.real_y / -32 - 1
+      startx = $game.player.x - XSIZE / 2
+      starty = $game.player.y - YSIZE / 2
       for y in 0...YSIZE
         for x in 0...XSIZE
           mapx = startx + x
@@ -122,6 +114,8 @@ class Visuals
     # Determines if new tiles should be rendered and if so, renders them.
     def refresh_tiles
       return if empty?
+      # Since sprites are moved when the player moves, they will eventually go off-screen.
+      # This difference is the number of rows/columns that are off-screen, and should thus be re-rendered.
       xdiff = @array[0].real_x.round / -32 - 1
       ydiff = @array[0].real_y.round / -32 - 1
       if ydiff > 0
@@ -165,58 +159,25 @@ class Visuals
     end
 
     # @return [TileSprite] the tile the player would be standing on if the player is centered.
-    # If the player is not centered to the screen, it will still return the center tile.
+    # NOTE: If the player is not centered to the screen, it will still return the center tile.
     def player_tile
       return @array[XSIZE * (YSIZE / 2) + (XSIZE / 2.0).floor]
     end
 
-    # Adjusts the map renderer to center on the player.
-    def adjust_to_player(x, y)
-      xsmall = x < 0
-      ysmall = y < 0
-      xgreat = x >= $game.map.width
-      ygreat = y >= $game.map.height
-      t = player_tile
-      diffx = t.mapx - $game.player.x
-      diffx += xgreat ? 1 : xsmall ? -1 : 0
-      diffy = t.mapy - $game.player.y
-      diffy += ygreat ? 1 : ysmall ? -1 : 0
-      self.each do |sprite|
-        sprite.mapx -= diffx
-        sprite.mapy -= diffy
+    # Adjusts the map renderer coordinates to treat the new main map as the relative parent map
+    def map_transition(oldx, oldy)
+      xoffset = 0
+      if oldx > $game.player.x
+        xoffset = -1
+      elsif oldx < $game.player.x
+        xoffset = 1
       end
-    end
-
-    # Makes the grid visible if it was invisible, and invisible if it was visible.
-    def toggle_grid
-      if @show_grid
-        self.show_grid = false
-      else
-        self.show_grid = true
-      end
-    end
-
-    # Changes what the show_grid variable is set to. If true, a grid will be displayed on the map on layer 1000.
-    # If false, it will delete any remaining grid tiles and turn the variable off again.
-    def show_grid=(value)
-      old = @show_grid
-      @show_grid = value
-      if old != @show_grid
-        @array.each do |tile|
-          if @show_grid
-            if !tile.sprites[999]
-              tile.sprites[999] = Sprite.new($visuals.viewport, {special: true})
-              tile.sprites[999].set_bitmap(GRIDBITMAP)
-              tile.sprites[999].x = tile.sprites[0].x
-              tile.sprites[999].y = tile.sprites[0].y
-              tile.sprites[999].z = 999
-            end
-          else
-            if tile.sprites[999]
-              tile.sprites[999].dispose
-              tile.sprites.delete(999)
-            end
-          end
+      startx = $game.player.x - XSIZE / 2 + xoffset
+      starty = $game.player.y - YSIZE / 2
+      for y in 0...YSIZE
+        for x in 0...XSIZE
+          @array[x + y * XSIZE].mapx = startx + x
+          @array[x + y * XSIZE].mapy = starty + y
         end
       end
     end
@@ -233,8 +194,11 @@ class Visuals
       # Reconfigure if it's a valid and visible tile
       if mapx >= 0 && mapx < $game.map.width && mapy >= 0 && mapy < $game.map.height
         id = $game.map.id
-      elsif $game.map.connection
+      elsif !$game.map.connections.empty?
         id, mapx, mapy = $game.get_map_from_connection($game.map, mapx, mapy)
+        if !$game.is_map_loaded?(id)
+          id = nil
+        end
       end
       if id
         for layer in 0...$game.maps[id].data.tiles.size

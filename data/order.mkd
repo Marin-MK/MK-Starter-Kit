@@ -15,7 +15,7 @@ mkd/autotile.rb: Autotile
 mkd/event.rb: Event
 mkd/eventcommands.rb: Event Commands
 mkd/eventconditions.rb: Event Conditions
-mkd/mapconnections.rb: Map Connections
+mkd/mapconnection.rb: Map Connection
 visuals/map.rb: Map
 visuals/player.rb: Player
 visuals/event.rb: Event
@@ -29,7 +29,6 @@ game/switches.rb: Game Switches
 game/variables.rb: Game Variables
 game/interpreter.rb: Interpreter
 tempdebug/autotiles.rb: Temp Debug Autotiles
-tempdebug/connections.rb: Temp Debug Connections
 game/game.rb: Game
 data/exp.rb: EXP
 data/nature.rb: Nature
