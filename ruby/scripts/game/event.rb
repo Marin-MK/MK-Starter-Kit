@@ -6,9 +6,9 @@ class Game
     # @return [Integer] the ID of this event.
     attr_accessor :id
     # @return [Integer] the x position of this event.
-    attr_accessor :x
+    attr_reader :x
     # @return [Integer] the y position of this event.
-    attr_accessor :y
+    attr_reader :y
     # @return [Array<Symbol, Array>] an array of move commands that are to be executed.
     attr_accessor :moveroute
     # @return [Float] how fast the event moves.
@@ -58,7 +58,7 @@ class Game
     # Updates the event, but is only called once per frame.
     def update
       test_pages
-      if current_page && current_page.automoveroute[:commands].size > 0
+      if current_page && current_page.automoveroute.commands.size > 0
         run = true
         run = false if $game.map.event_interpreters.any? { |i| i.event == self }
         run = false if moving?
@@ -68,13 +68,13 @@ class Game
             @automove_wait -= 1
           else
             start_idx = @automoveroute_idx
-            command = current_page.automoveroute[:commands][@automoveroute_idx]
+            command = current_page.automoveroute.commands[@automoveroute_idx]
             command, args = command if command.is_a?(Array)
             command = [:down, :left, :right, :up].sample if command == :move_random
             command = [:turn_down, :turn_left, :turn_right, :turn_up].sample if command == :turn_random
             command = [command, args] if args
             @automoveroute_idx += 1
-            @automoveroute_idx = 0 if @automoveroute_idx >= current_page.automoveroute[:commands].size
+            @automoveroute_idx = 0 if @automoveroute_idx >= current_page.automoveroute.commands.size
             if move_command_possible?(command)
               $visuals.maps[@map_id].events[@id].automoveroute(command)
             else
@@ -95,7 +95,7 @@ class Game
           @current_page = i
           if oldpage != @current_page
             # Run only if the page actually changed
-            @direction = current_page.graphic[:direction] || 2
+            @direction = current_page.graphic.direction || 2
             # Delete any interpreters there may be left trying to run the old page
             if oldpage
               if oldpage.has_trigger?(:parallel_process)
@@ -108,7 +108,7 @@ class Game
             if current_page.has_trigger?(:parallel_process) || current_page.has_trigger?(:autorun)
               trigger
             end
-            if current_page.automoveroute[:commands].size > 0
+            if current_page.automoveroute.commands.size > 0
               # Wait 1 frame to start the new autonomous move route so the visuals have time to adjust to the new page.
               @automove_wait = 1
             end
@@ -116,6 +116,30 @@ class Game
           break
         end
       end
+    end
+
+    def move_down
+      $visuals.maps[@map_id].events[@id].move_down
+      @y += 1
+      @direction = 2
+    end
+
+    def move_left
+      $visuals.maps[@map_id].events[@id].move_left
+      @x -= 1
+      @direction = 4
+    end
+
+    def move_right
+      $visuals.maps[@map_id].events[@id].move_right
+      @x += 1
+      @direction = 6
+    end
+
+    def move_up
+      $visuals.maps[@map_id].events[@id].move_up
+      @y -= 1
+      @direction = 8
     end
 
     # @param page_index [Integer] the index of the page to test the conditions of.
@@ -185,7 +209,7 @@ class Game
         @moveroute.clear if !automoveroute
       elsif automoveroute # Next move command for an Autonomous Move Route
         # Apply a wait until the next auto move command
-        @automove_wait = current_page.automoveroute[:frequency]
+        @automove_wait = current_page.automoveroute.frequency
       else # Next move command for a normal moveroute
         @moveroute.delete_at(0)
         if @moveroute.size > 0
@@ -202,7 +226,8 @@ class Game
             end
           end
         else
-          if current_page.automoveroute[:commands].size > 0
+          $visuals.maps[@map_id].events[@id].finish_movement
+          if current_page.automoveroute.commands.size > 0
             moveroute_next(true)
           end
         end

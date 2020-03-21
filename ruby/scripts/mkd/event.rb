@@ -25,6 +25,7 @@ module MKD
       attr_accessor :passable
       attr_accessor :can_start_surfing_here
       attr_accessor :reset_position_on_transfer
+      attr_accessor :frame_update_interval
       attr_accessor :speed
 
       def initialize
@@ -32,6 +33,7 @@ module MKD
         @passable = true
         @can_start_surfing_here = true
         @reset_position_on_transfer = true
+        @frame_update_interval = 16
         @speed = 2.2
       end
     end
@@ -50,9 +52,39 @@ module MKD
       def initialize
         @commands = []
         @conditions = []
-        @graphic = {type: :file, direction: 2}
+        @graphic = Graphic.new
         @triggers = [[:action]]
-        @automoveroute = {frequency: 80, commands: []}
+        @automoveroute = AutoMoveRoute.new
+      end
+    end
+  end
+end
+
+module MKD
+  class Event
+    class Graphic
+      attr_accessor :type
+      attr_accessor :direction
+      attr_accessor :param
+
+      def initialize
+        @type = :file
+        @direction = 2
+        @param = nil
+      end
+    end
+  end
+end
+
+module MKD
+  class Event
+    class AutoMoveRoute
+      attr_accessor :frequency
+      attr_accessor :commands
+
+      def initialize
+        @frequency = 80
+        @commands = []
       end
     end
   end

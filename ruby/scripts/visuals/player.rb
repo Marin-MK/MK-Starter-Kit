@@ -170,6 +170,7 @@ class Visuals
           SystemEvent.trigger(:taken_step, @game_player.x, @game_player.y)
         end
       end
+      # Animates the sprite.
       if @game_player.speed > @game_player.frame_update_interval ||
          old_animate_count % @game_player.frame_update_interval > @animate_count % @game_player.frame_update_interval
         next_frame
@@ -195,6 +196,7 @@ class Visuals
 
     # Moves the screen without animation.
     def move(xdiff, ydiff, xtilediff, ytilediff)
+      raise "$visuals.player.move error"
       if xtilediff != 0
         xdiff *= 32
         $visuals.maps.values.each { |m| m.real_x -= xtilediff * 32 }

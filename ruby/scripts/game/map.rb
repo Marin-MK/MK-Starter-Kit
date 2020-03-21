@@ -21,7 +21,6 @@ class Game
       @event_interpreters = []
       @parallel_interpreters = []
       @wait_count = 0
-      log(:OVERWORLD, "Created Map (#{id}) object")
     end
 
     def setup_visuals

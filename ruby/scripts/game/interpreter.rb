@@ -46,7 +46,7 @@ class Game
         end
       end
       if @type == :event
-        if $game.map.wait_count > 0 || $game.player.moving?
+        if $game.map.wait_count > 0 || $game.player.moving? || @event.moving?
           return false
         end
       end
