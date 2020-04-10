@@ -58,6 +58,8 @@ sprites/status_condition_icon.rb: Status Condition Icon
 sprites/type_icon.rb: Type Icon
 sprites/pokemon_icon.rb: Pokemon Icon
 sprites/pokemon_battler_sprite.rb: Pokemon Battler Sprite
+particles/basicparticle.rb: Basic Particle
+intro/introscene.rb: Intro Scene
 ui/base.rb: Base UI
 ui/pause_menu.rb: Pause Menu UI
 ui/trainer_card.rb: Trainer Card UI

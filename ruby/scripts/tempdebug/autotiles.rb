@@ -37,16 +37,3 @@ template.passabilities = [15] * 48
 template.tags = [0] * 48
 template.priorities = [0] * 48
 template.save
-
-map = MKD::Map.fetch(5)
-e = MKD::Event.new(1)
-e.x = 1
-e.y = 2
-e.name = "Untitled Event"
-e.pages[0] = MKD::Event::Page.new
-e.pages[0].commands = [[0, :message, {text: "This is an event!"}]]
-e.pages[0].graphic.param = "gfx/characters/boy"
-e.pages[0].automoveroute.commands = [:down, :down, :right, :right, :up, :up, :left, :left]
-e.pages[0].automoveroute.frequency = 0
-e.settings.passable = false
-map.events[e.id] = e

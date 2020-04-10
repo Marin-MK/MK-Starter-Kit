@@ -103,6 +103,10 @@ class Object
   def is_a?(*args)
     return args.any? { |e| old_is_a?(e) }
   end
+
+  def deep_clone
+    return Marshal.load(Marshal.dump(self))
+  end
 end
 
 class Struct

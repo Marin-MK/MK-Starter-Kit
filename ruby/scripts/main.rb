@@ -39,9 +39,9 @@ $visuals = Visuals.new
 $game = Game.new
 $game.switches = Game::Switches.new
 $game.variables = Game::Variables.new
-$game.player = Game::Player.new(5)
+$game.player = Game::Player.new(1)
 $game.player.setup_visuals
-$game.load_map(5)
+$game.load_map(1)
 $trainer = Trainer.new
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 100, gender: 1, item: :REPEL, hp: 37))
 $trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 32);p.exp+=2000;p))
