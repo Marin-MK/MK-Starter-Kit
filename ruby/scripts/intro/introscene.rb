@@ -475,15 +475,55 @@ Animations = {
           translate_x: -42
         },
         {
-          seconds: 4.75
+          seconds: 0.4,
+          set_cell: 1
         },
         {
-          seconds: 0.8,
+          seconds: 0.4,
+          set_cell: 0
+        },
+        {
+          seconds: 0.4,
+          set_cell: 1
+        },
+        {
+          seconds: 0.4,
+          set_cell: 0
+        },
+        {
+          seconds: 0.4,
+          set_cell: 1
+        },
+        {
+          seconds: 0.4,
+          set_cell: 0
+        },
+        {
+          seconds: 0.4,
+          set_cell: 1
+        },
+        {
+          seconds: 0.4,
+          set_cell: 0
+        },
+        {
+          seconds: 0.4,
+          set_cell: 1
+        },
+        {
+          seconds: 0.4,
+          set_cell: 0
+        },
+        {
+          seconds: 0.59
+        },
+        {
+          seconds: 0.2,
           translate_x: -52,
           scale: 1.6
         },
         {
-          seconds: 0.4,
+          seconds: 0.2,
           opacity: 0
         }
       ]
@@ -799,13 +839,13 @@ Animations = {
           translate_y: -10
         },
         {
-          seconds: 0.8,
+          seconds: 0.2,
           translate_x: -2,
           translate_y: -8,
           scale: 1.6
         },
         {
-          seconds: 0.4,
+          seconds: 0.2,
           opacity: 0
         }
       ]
@@ -888,10 +928,10 @@ Animations = {
           opacity: 255
         },
         {
-          seconds: 0.8
+          seconds: 0.2
         },
         {
-          seconds: 0.4,
+          seconds: 0.2,
           opacity: 0
         }
       ]
@@ -1189,8 +1229,21 @@ class IntroScene
     loop do
       Graphics.update
       Input.update
-      @anim.update
+      @anim.update if !@anim.disposed?
       break if @anim.disposed?
+      if Input.confirm? || Input.cancel?
+        frames = framecount(0.2)
+        decrease = 255.0 / frames
+        for i in 1..frames
+          Graphics.brightness = 255 - (decrease * i).round
+          @anim.update if !@anim.disposed?
+          Graphics.update
+          Input.update
+        end
+        @anim.dispose if !@anim.disposed?
+        Graphics.brightness = 255
+        break
+      end
     end
   end
 

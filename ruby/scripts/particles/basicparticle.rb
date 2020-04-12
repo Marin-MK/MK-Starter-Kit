@@ -384,7 +384,7 @@ class BasicParticle
   end
 
   def during(seconds, &block)
-    frames = (seconds.to_f * Graphics.frame_rate).round
+    frames = [1, (seconds.to_f * Graphics.frame_rate).round].max
     @queue << {frames: frames}
     block.call
   end
@@ -393,7 +393,7 @@ class BasicParticle
     if seconds.nil? || seconds < 0
       @queue << {frames: -1}
     else
-      frames = (seconds.to_f * Graphics.frame_rate).round
+      frames = [1, (seconds.to_f * Graphics.frame_rate).round].max
       @queue << {frames: frames}
     end
   end
