@@ -19,6 +19,8 @@ end
 
 class Species < Serializable
   Cache = {}
+  GetFormOnCreation = {}
+  GetForm = {}
 
   Moveset = Struct.new(:level, :tms, :tutor, :evolution, :egg)
 
@@ -147,11 +149,6 @@ class Species < Serializable
     return @evolutions
   end
 
-  # @return [Proc] the proc used to determine the form of the Pokemon upon creation.
-  attr_reader :get_form_on_creation
-  # @return [Proc] the proc used to determine the form of the Pokemon after creation.
-  attr_reader :get_form
-
   # Creates a new Species object.
   def initialize(&block)
     #validate block => Proc
@@ -248,6 +245,32 @@ class Species < Serializable
   def self.count
     return Cache.size
   end
+
+  # Registers the proc used to determine the form of the Pokemon upon creation.
+  def self.get_form_on_creation(species, code)
+    GetFormOnCreation[species] = code
+  end
+
+  # Calls the GetFormOnCreation proc if it exists.
+  def get_form_on_creation(pokemon)
+    if GetFormOnCreation[@intname]
+      return GetFormOnCreation[@intname].call(pokemon)
+    end
+    return nil
+  end
+
+  # Registers the proc used to determine the form of the Pokemon after creation.
+  def self.get_form(species, code)
+    GetForm[species] = code
+  end
+
+  # Calls the GetForm proc if it exists.
+  def get_form(pokemon)
+    if GetForm[@intname]
+      return GetForm[@intname].call(pokemon)
+    end
+    return nil
+  end
 end
 
 # This would be loaded from a data file
@@ -299,12 +322,6 @@ Species.new do
       argument: 16
     }
   ]
-  #@get_form_on_creation = proc do |pokemon|
-  #  next 0
-  #end
-  #@get_form = proc do |pokemon|
-  #  next 1 if pokemon.has_item?(:REPEL)
-  #end
   @forms = {
     1 => {
       name: "Boolbasaurus",

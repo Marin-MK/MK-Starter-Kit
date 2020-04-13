@@ -180,10 +180,7 @@ class Pokemon
     @species_intname = species.intname
     if @form.nil?
       @form = 0
-      if species.get_form_on_creation
-        f = species.get_form_on_creation.call(self)
-        @form = f || 0
-      end
+      @form = species.get_form_on_creation(self) || 0
     end
     @name ||= species.name(self.form)
     @exp = EXP.get_exp(species.leveling_rate(self.form), level)
@@ -238,10 +235,7 @@ class Pokemon
   # @return [Integer] the form of the Pokemon.
   def form
     return @formflag if @formflag
-    if species.get_form
-      f = species.get_form.call(self)
-      self.set_form(f) if f
-    end
+    self.set_form(species.get_form(self) || @form)
     return @form
   end
 
@@ -334,7 +328,7 @@ class Pokemon
   end
 
   # Forces a value for the Pokemon's shininess.
-  # @param nature [Boolean, NilClass] the shininess value.
+  # @param shiny [Boolean, NilClass] the shininess value.
   def set_shiny(shiny)
     validate shiny => [Boolean, NilClass]
     @shinyflag = shiny

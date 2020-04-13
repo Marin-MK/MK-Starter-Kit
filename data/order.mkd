@@ -39,6 +39,7 @@ data/move.rb: Move
 data/species.rb: Species
 data/windowskin.rb: Windowskin
 data/encounter_table.rb: Encounter Table
+data/form_code.rb: Form Code
 pokemon/usable_move.rb: Usable Move
 pokemon/pokemon.rb: Pokemon
 pokemon/pc.rb: PC

@@ -8,9 +8,17 @@ class Encoding
   end
 end
 
-scripts = File.open('data/order.mkd').read
-scripts.each_line do |line|
-  file, *name = line.split(':')
-  name = name.join(' ').strip.chomp
-  require File.expand_path("ruby/scripts/#{file}")
+def start_game
+  scripts = File.open('data/order.mkd').read
+  scripts.each_line do |line|
+    file, *name = line.split(':')
+    name = name.join(' ').strip.chomp
+    require File.expand_path("ruby/scripts/#{file}")
+  end
+end
+
+begin
+  start_game
+rescue RGSSReset
+  raise "Unimplemented F12 functionality"
 end

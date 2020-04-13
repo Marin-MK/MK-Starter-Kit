@@ -13,11 +13,11 @@ end
 def validate(hash)
   errors = hash.map do |key, value|
     if value.is_a?(Array)
-      "Expected #{key} to be one of [#{value.join(", ")}], but got #{key.class}." unless value.any? { |c| key.is_a?(c) }
+      next "Expected #{key} to be one of [#{value.join(", ")}], but got #{key.class}." unless value.any? { |c| key.is_a?(c) }
     elsif value.is_a?(Symbol)
-      "Expected #{key} to respond_to #{value}." unless key.respond_to?(value)
+      next "Expected #{key} to respond_to #{value}." unless key.respond_to?(value)
     else
-      "Expected #{key} to be a #{value}, but got #{key.class}." unless key.is_a?(value)
+      next "Expected #{key} to be a #{value}, but got #{key.class}." unless key.is_a?(value)
     end
   end
   return if errors.none?
@@ -32,11 +32,11 @@ def validate_binding(input_binding, **hash)
     if input_binding.local_variable_defined?(lv_name)
       key = input_binding.local_variable_get(lv_name)
       if value.is_a?(Array)
-        "Expected `#{lv_name}` to be one of [#{value.join(", ")}], but got #{key.class}." unless value.any? { |c| key.is_a?(c) }
+        next "Expected `#{lv_name}` to be one of [#{value.join(", ")}], but got #{key.class}." unless value.any? { |c| key.is_a?(c) }
       elsif value.is_a?(Symbol)
-        "Expected `#{lv_name}` (#{key}) to respond_to #{value}." unless key.respond_to?(value)
+        next "Expected `#{lv_name}` (#{key}) to respond_to #{value}." unless key.respond_to?(value)
       else
-        "Expected `#{lv_name}` to be a #{value}, but got #{key.class}." unless key.is_a?(value)
+        next "Expected `#{lv_name}` to be a #{value}, but got #{key.class}." unless key.is_a?(value)
       end
     else
       "Expected the `#{lv_name}` argument to be defined, did you miss-use validate_binding?"
@@ -68,11 +68,11 @@ def validate_array(hash)
     validate key => Array
     suberrors = key.map do |e|
       if value.is_a?(Array)
-        "Expected #{key} to contain elements of [#{value.join(", ")}], but got #{e.class}." unless value.any? { |c| e.is_a?(c) }
+        next "Expected #{key} to contain elements of [#{value.join(", ")}], but got #{e.class}." unless value.any? { |c| e.is_a?(c) }
       elsif value.is_a?(Symbol)
-        "Expected #{key} to contain elements that respond_to #{value}." unless e.respond_to?(value)
+        next "Expected #{key} to contain elements that respond_to #{value}." unless e.respond_to?(value)
       else
-        "Expected #{key} to contain elements of #{value}, but got #{e.class}." unless e.is_a?(value)
+        next "Expected #{key} to contain elements of #{value}, but got #{e.class}." unless e.is_a?(value)
       end
     end
     next if suberrors.none?
