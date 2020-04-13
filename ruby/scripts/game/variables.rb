@@ -3,25 +3,27 @@ class Game
   class Variables
     # Creates a new Variables object.
     def initialize
-      @values = []
+      @groups = [nil]
     end
 
-    # Fetches the value of the game variable with the specified ID.
-    # @param id [Integer] the ID of the variable to fetch.
-    # @return [Object] the value of the variable.
-    def get(id)
-      validate id => Integer
-      return @values[id]
+    def get(group_id, var_id)
+      return @groups[group_id].get(var_id)
     end
     alias [] get
 
-    # Sets the value of the game variable with the specified ID.
-    # @param id [Integer] the ID of the variable to set.
-    # @param value [Object] the new value for the variable.
-    def set(id, value)
-      validate id => Integer
-      @values[id] = value
+    def set(group_id, var_id, value)
+      @groups[group_id].set(var_id, value)
     end
     alias []= set
+  end
+
+  class VariableGroup
+    def get(id)
+      return @variables[id]
+    end
+
+    def set(id, value)
+      @variables[id] = value
+    end
   end
 end

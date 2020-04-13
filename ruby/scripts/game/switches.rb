@@ -3,25 +3,27 @@ class Game
   class Switches
     # Creates a new Switches object.
     def initialize
-      @values = []
+      @groups = [nil]
     end
-
-    # Fetches the value of the game switch with the specified ID.
-    # @param id [Integer] the ID of the switch to fetch.
-    # @return [Boolean] the value of the switch.
-    def get(id)
-      validate id => Integer
-      return @values[id] == true
+    
+    def get(group_id, switch_id)
+      return @groups[group_id].get(switch_id)
     end
     alias [] get
 
-    # Sets the value of the game switch with the specified ID.
-    # @param id [Integer] the ID of the switch to set.
-    # @param value [Boolean] the new value for the switch.
-    def set(id, value)
-      validate id => Integer, value => [FalseClass, TrueClass]
-      @values[id] = value
+    def set(group_id, switch_id, value)
+      @groups[group_id].set(switch_id, value)
     end
     alias []= set
+  end
+
+  class SwitchGroup
+    def get(id)
+      return @switches[id] == true
+    end
+
+    def set(id, value)
+      @switches[id] = value
+    end
   end
 end

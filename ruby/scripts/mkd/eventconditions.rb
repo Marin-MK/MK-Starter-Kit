@@ -17,14 +17,14 @@ module MKD
     # Tests a Game Switch for a value.
     class SwitchCondition < BasicCondition
       def valid?
-        return $game.switches[@switchid] == @value
+        return $game.switches[@group_id, @switch_id] == @value
       end
     end
 
     # Tests a Game Variable for a value.
     class VariableCondition < BasicCondition
       def valid?
-        return $game.variables[@variableid] == @value
+        return $game.variables[@group_id, @variable_id] == @value
       end
     end
 

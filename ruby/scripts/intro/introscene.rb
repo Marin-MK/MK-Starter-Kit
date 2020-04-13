@@ -1253,4 +1253,4 @@ class IntroScene
   end
 end
 
-IntroScene.start
+#IntroScene.start

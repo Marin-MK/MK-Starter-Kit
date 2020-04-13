@@ -56,9 +56,9 @@ module MKD
     class SetSwitchCommand < BasicCommand
       def call
         if @value == :inverted
-          $game.switches[@switchid] = !$game.switches[@switchid]
+          $game.switches[@group_id, @switch_id] = !$game.switches[@group_id, @switch_id]
         else
-          $game.switches[@switchid] = @value
+          $game.switches[@group_id, @switch_id] = @value
         end
       end
     end
@@ -66,7 +66,7 @@ module MKD
     # Changes the value of a Game Variable.
     class SetVariableCommand < BasicCommand
       def call
-        $game.variables[@variableid] = @value
+        $game.variables[@group_id, @variable_id] = @value
       end
     end
 
