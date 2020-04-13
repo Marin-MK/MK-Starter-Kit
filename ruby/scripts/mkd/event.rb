@@ -53,7 +53,8 @@ module MKD
         @commands = []
         @conditions = []
         @graphic = Graphic.new
-        @triggers = [[:action]]
+        @trigger_mode = :action
+        @trigger_param = nil
         @automoveroute = AutoMoveRoute.new
       end
     end

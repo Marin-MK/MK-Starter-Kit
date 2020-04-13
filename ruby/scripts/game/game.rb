@@ -65,6 +65,7 @@ class Game
   end
 
   def self.get_save_data
+    # TO-DO: Not save $game.maps, but only changes in events/maps in an array.
     return {
       game: $game,
       trainer: $trainer
@@ -92,7 +93,7 @@ class Game
       FileUtils.copy(filename, filename + ".bak")
     end
     begin
-      FileUtils.save_data(filename, Game.get_save_data, :save)
+      FileUtils.save_binary_data(filename, Game.get_save_data, :save)
       File.delete(filename + ".bak") if File.file?(filename + ".bak")
       return true
     rescue
@@ -106,11 +107,11 @@ class Game
       raise "No save file could be found."
     else
       filename = Game.get_save_folder + "/save.mkd"
-      data = FileUtils.load_data(filename, :save)
+      data = FileUtils.load_binary_data(filename, :save)
       $trainer = data[:trainer]
       $game = data[:game]
       # Set up game data
-      raise "Game.load_game not implemented fully yet"
+      raise "Game.load_game not implemented yet"
     end
   end
 end

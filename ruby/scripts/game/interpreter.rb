@@ -11,12 +11,12 @@ class Game
     attr_accessor :triggered_by
 
     # Creates a new Interpreter object.
-    def initialize(event, commands, type, triggered_by)
+    def initialize(event, commands, is_autorun = false, is_parallel = false)
       @event = event
       @commands = commands
       @index = 0
-      @type = type
-      @triggered_by = triggered_by
+      @is_autorun = is_autorun
+      @is_parallel = is_parallel
       @wait_for_move_completion = false
       @initial = true
       log(:OVERWORLD, "Event #{@event.id} triggered", true)
@@ -38,14 +38,14 @@ class Game
         @wait_for_move_completion = false
       end
       if @index >= @commands.size
-        if @type == :autorun
+        if @is_autorun
           restart
         else
           @done = true
           return false
         end
       end
-      if @type == :event
+      if !@is_autorun && !@is_parallel
         if $game.map.wait_count > 0 || $game.player.moving? || @event.moving?
           return false
         end
@@ -59,7 +59,6 @@ class Game
       if @initial
         @event.turn_to_player
         @initial = false
-        @event.triggered_by = @triggered_by
         return
       end
       indent, cmd, params = @commands[@index]
@@ -132,9 +131,7 @@ class Game
 
     # Disposes this interpreter if it's a Parallel Process.
     def dispose
-      if @type == :parallel
-        $game.map.parallel_interpreters.delete_if { |i| i == self }
-      end
+      $game.map.parallel_interpreters.delete(self) if @is_parallel
     end
   end
 end

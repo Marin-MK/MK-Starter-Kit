@@ -82,10 +82,14 @@ class Game
           direction => [Integer, Symbol, NilClass],
           checking_event => [Game::Player, Game::Event, NilClass]
       map_id = checking_event.map_id
+      # If the coordinate goes off the map
       if x < 0 || x >= width || y < 0 || y >= height
+        # If an event is checking
         if checking_event.is_a?(Game::Event)
+          # Return false - Events can't cross maps
           return false
         elsif checking_event.is_a?(Game::Player) && !connections.empty?
+          # Return passability check run by the facing map.
           map_id, mapx, mapy = $game.get_map_from_connection(self, x, y)
           if map_id
             return $game.maps[map_id].passable?(mapx, mapy, direction, checking_event)
@@ -150,9 +154,11 @@ class Game
     def tile_interaction(x, y)
       validate x => Integer, y => Integer
       return if x < 0 || x >= width || y < 0 || y >= height
-      if e = @events.values.find { |e| e.x == x && e.y == y && e.current_page && e.current_page.has_trigger?(:action) }
-        e.trigger(:action)
+      event = @events.values.find do |e|
+        next e.x == x && e.y == y && e.current_page &&
+             [:action, :player_touch, :event_touch].include?(e.current_page.trigger_mode)
       end
+      event.trigger if event
     end
 
     # Tests event triggers that happen with ranges or lines of sight.
@@ -160,10 +166,13 @@ class Game
     def check_event_triggers(new_step = false)
       return if $game.map != self
       # Line of Sight triggers
-      events = @events.values.select { |e| e.current_page && e.current_page.has_trigger?(:line_of_sight) }
+      events = @events.values.select do |e|
+        next e.current_page && e.current_page.trigger_mode.is_a?(Integer) &&
+             (e.current_page.trigger_mode == :event_touch || e.current_page.trigger_mode == :player_touch)
+      end
       events.select! do |e|
         dir = e.direction
-        maxdiff = e.current_page.trigger_argument(:line_of_sight, :tiles)
+        maxdiff = e.current_page.trigger_mode
         if dir == 2 && e.x == $game.player.x
           diff = $game.player.y - e.y
           next diff > 0 && diff <= maxdiff
@@ -178,27 +187,17 @@ class Game
           next diff > 0 && diff <= maxdiff
         end
       end
-      events.each { |e| e.trigger(:line_of_sight) }
-
-      # On Tile triggers
-      events = @events.values.select { |e| e.current_page && e.current_page.has_trigger?(:on_tile) }
-      events.select! do |e|
-        tiles = e.current_page.trigger_argument(:on_tile, :tiles)
-        on_trigger_tile = tiles.any? { |e| e[0] == $game.player.x && e[1] == $game.player.y }
-        next on_trigger_tile
-      end
-      events.each { |e| e.trigger(:on_tile) }
+      events.each { |e| e.trigger }
 
       # If the check happens just after moving. This would trigger Player Touch events,
       # where the player touches an event.
       if new_step
         newx, newy = facing_coordinates($game.player.x, $game.player.y, $game.player.direction)
         events = @events.values.select do |e|
-          e.current_page && e.current_page.has_trigger?(:player_touch) &&
-          e.x == newx &&
-          e.y == newy
+          e.current_page && e.current_page.trigger_mode == :player_touch &&
+          e.x == newx && e.y == newy
         end
-        events.each { |e| e.trigger(:player_touch) }
+        events.each { |e| e.trigger }
       end
     end
 

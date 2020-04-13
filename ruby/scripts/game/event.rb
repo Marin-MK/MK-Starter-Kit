@@ -97,21 +97,21 @@ class Game
       oldpage = @current_page
       @current_page = nil
       for i in 0...pages.size
-        if test_page_conditions(i)
+        if all_conditions_true?(i)
           @current_page = i
           if oldpage != @current_page
             # Run only if the page actually changed
             @direction = current_page.graphic.direction || 2
             # Delete any interpreters there may be left trying to run the old page
             if oldpage
-              if oldpage.has_trigger?(:parallel_process)
+              if oldpage.trigger_mode == :parallel_process
                 $game.map.parallel_interpreters.delete_if { |i| i.event == self }
               else
                 $game.map.event_interpreters.delete_if { |i| i.event == self }
               end
             end
             # Execute event if new page is Parallel Process or Autorun
-            if current_page.has_trigger?(:parallel_process) || current_page.has_trigger?(:autorun)
+            if current_page.trigger_mode == :parallel_process || current_page.trigger_mode == :autorun
               trigger
             end
             if current_page.automoveroute.commands.size > 0
@@ -150,7 +150,7 @@ class Game
 
     # @param page_index [Integer] the index of the page to test the conditions of.
     # @return [Boolean] whether all the conditions on the page are true.
-    def test_page_conditions(page_index)
+    def all_conditions_true?(page_index)
       return !pages[page_index].conditions.any? do |cond, params|
         !MKD::Event::SymbolToCondition[cond].new(self, params).valid?
       end
@@ -158,15 +158,15 @@ class Game
 
     # Executes the event.
     # @param mode [NilClass, Symbol] how the event was triggered.
-    def trigger(mode = :manual)
-      if current_page.has_trigger?(:parallel_process)
-        $game.map.parallel_interpreters << Interpreter.new(self, current_page.commands, :parallel, :parallel_process)
-      elsif current_page.has_trigger?(:autorun)
-        autorun = Interpreter.new(self, current_page.commands, :main, :autorun)
+    def trigger
+      if current_page.trigger_mode == :parallel_process
+        $game.maps[@map_id].parallel_interpreters << Interpreter.new(self, current_page.commands, false, true)
+      elsif current_page.trigger_mode == :autorun
+        autorun = Interpreter.new(self, current_page.commands, true, false)
         autorun.update until autorun.done?
       else
-        unless $game.map.event_interpreters.any? { |i| i.event == self }
-          $game.map.event_interpreters << Interpreter.new(self, current_page.commands, :event, mode)
+        unless $game.maps[@map_id].event_interpreters.any? { |i| i.event == self }
+          $game.maps[@map_id].event_interpreters << Interpreter.new(self, current_page.commands, false, false)
         end
       end
     end
@@ -175,9 +175,7 @@ class Game
     # @param commands [Symbol, Array] list of move commands.
     def move(*commands)
       commands = [commands] unless commands[0].is_a?(Array)
-      commands.each do |e|
-        @moveroute.concat(e)
-      end
+      commands.each { |e| @moveroute.concat(e) }
     end
 
     # Turns the event to face the player.
@@ -210,7 +208,7 @@ class Game
     # @param automoveroute [Boolean] whether or not the previous move command was from an autonomous move route.
     def moveroute_next(automoveroute = false)
       newx, newy = facing_coordinates(@x, @y, @direction)
-      if $game.player.x == newx && $game.player.y == newy && current_page && current_page.has_trigger?(:event_touch)
+      if $game.player.x == newx && $game.player.y == newy && current_page && current_page.trigger_mode == :event_touch
         trigger(:event_touch)
         @moveroute.clear if !automoveroute
       elsif automoveroute # Next move command for an Autonomous Move Route
@@ -259,27 +257,5 @@ class Game
     attr_accessor :moveroute_ignore_impassable
     attr_accessor :triggered_by
     attr_accessor :automove_wait
-  end
-end
-
-module MKD
-  class Event
-    class Page
-      # @param mode [Symbol] the trigger mode to look for.
-      # @return [Boolean] whether the page can be triggered by the mode specified.
-      def has_trigger?(mode)
-        return @triggers.any? { |e| e[0] == mode }
-      end
-
-      # @param mode [Symbol] the trigger mode to look for.
-      # @param key [Symbol] the key in the parameter hash to look for.
-      # @return [Object, NilClass] the parameter specified.
-      def trigger_argument(mode, key)
-        if m = @triggers.find { |e| e[0] == mode }
-          return m[1][key]
-        end
-        return nil
-      end
-    end
   end
 end
