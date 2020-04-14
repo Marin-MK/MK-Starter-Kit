@@ -4,7 +4,11 @@ class SystemEvent
   def self.trigger(event, *args)
     validate event => Symbol
     if Events[event]
-      Events[event].call(*args)
+      if Events[event].is_a?(Array)
+        Events[event].each { |e| e.call(*args) }
+      else
+        Events[event].call(*args)
+      end
     else
       raise "No SystemEvent could be found with identifier #{event.inspect}"
     end
@@ -12,15 +16,22 @@ class SystemEvent
 
   def self.register(event, code)
     validate event => Symbol, code => Proc
-    Events[event] = code
+    if Events[event].is_a?(Proc)
+      Events[event] = [Events[event], code]
+    elsif Events[event].is_a?(Array)
+      Events[event] << code
+    else
+      Events[event] = code
+    end
   end
 end
 
-SystemEvent.register(:taking_step, proc do |oldx, oldy, oldmapid, newx, newy, newmapid|
 
-end)
 
-SystemEvent.register(:taken_step, proc do |x, y|
+SystemEvent.register(:taking_step, proc { |oldx, oldy, oldmapid, newx, newy, newmapid|
+})
+
+SystemEvent.register(:taken_step, proc { |x, y|
   log :OVERWORLD, "Moved to (#{x},#{y})"
   # Terrain tag
   $game.map.check_terrain_tag
@@ -31,8 +42,17 @@ SystemEvent.register(:taken_step, proc do |x, y|
       Encounter.test_table(table)
     end
   end
-end)
+})
 
-SystemEvent.register(:wild_pokemon_generated, proc do |poke|
+SystemEvent.register(:wild_pokemon_generated, proc { |poke|
   next poke
-end)
+})
+
+SystemEvent.register(:map_loaded, proc { |map|
+})
+
+SystemEvent.register(:map_unloading, proc { |map|
+})
+
+SystemEvent.register(:map_entered, proc { |oldmap, newmap|
+})

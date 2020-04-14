@@ -254,6 +254,7 @@ class Game
           @x = mapx
           @y = mapy
           $visuals.map_renderer.map_transition(old_map_id, old_x, old_y)
+          SystemEvent.trigger(:map_entered, $game.maps[old_map_id], $game.maps[map_id])
         else
           raise "Player is off the active game map, but no map connection was specified for that map."
         end
@@ -261,6 +262,8 @@ class Game
     end
 
     def transfer(x, y, map_id = nil)
+      # TO-DO: Fix for new map renderer without global coordinates
+
       xdiff = x - @x
       ydiff = y - @y
       if map_id == @map_id

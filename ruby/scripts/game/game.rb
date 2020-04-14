@@ -11,6 +11,8 @@ class Game
   # Creates a new Game object.
   def initialize
     @maps = {}
+    @switches = Game::Switches.new
+    @variables = Game::Variables.new
   end
 
   # @return [Game::Map] the map the player is currently on.
@@ -23,7 +25,8 @@ class Game
       raise "Map ##{id} is already loaded!"
     end
     @maps[id] = Game::Map.new(id)
-    log(:SYSTEM, "Loaded map ##{id}")
+    SystemEvent.trigger(:map_loaded, @maps[id])
+    log :SYSTEM, "Loaded map ##{id}"
   end
 
   def is_map_loaded?(id)
@@ -34,8 +37,9 @@ class Game
     if @maps[id].nil?
       raise "Map #{id} cannot be unloaded as it was never loaded to begin with!"
     end
+    SystemEvent.trigger(:map_unloading, @maps[id])
     @maps[id].unload
-    log(:SYSTEM, "Unloaded map ##{id}")
+    log :SYSTEM, "Unloaded map ##{id}"
   end
 
   # Takes coordinates relative to map A, and returns the corresponding map and coordinates.

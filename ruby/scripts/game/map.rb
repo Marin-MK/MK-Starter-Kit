@@ -64,6 +64,7 @@ class Game
     end
 
     def unload
+      @events.each { |e| e.unload }
       $visuals.maps[@id].dispose
       $visuals.maps.delete(@id) if $visuals.maps[@id]
       $game.maps.delete(@id) if $game.maps[@id]

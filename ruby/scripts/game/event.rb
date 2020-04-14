@@ -36,6 +36,10 @@ class Game
       Visuals::Event.create(self)
     end
 
+    def unload
+      # TO-DO: Save position
+    end
+
     def data
       return MKD::Map.fetch(@map_id).events[@id]
     end

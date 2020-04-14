@@ -163,8 +163,9 @@ class Visuals
         end
       end
       # Animates the sprite.
-      if @game_event.speed > @game_event.settings.frame_update_interval ||
-         old_animate_count % @game_event.settings.frame_update_interval > @animate_count % @game_event.settings.frame_update_interval
+      if @game_event.current_page && @game_event.current_page.graphic &&
+         (@game_event.speed > @game_event.current_page.graphic.frame_update_interval ||
+          old_animate_count % @game_event.current_page.graphic.frame_update_interval > @animate_count % @game_event.current_page.graphic.frame_update_interval)
         next_frame
       end
       # Sets the sprite's on-screen location based on the map's offset and the coordinates of the sprite relative to the map.

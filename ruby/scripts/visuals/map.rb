@@ -34,7 +34,7 @@ class Visuals
       @id = @game_map.id
       @real_x = Graphics.width / 2 - 16 + 32 * x
       @real_y = Graphics.height / 2 - 16 + 32 * y
-      @overlays = @game_map.data.panoramas.map do |pan|
+      @overlays = @game_map.data.panoramas.map { |pan|
         # Creates the sprites for the map's panoramas
         s = Sprite.new($visuals.viewport)
         s.bitmap = Bitmap.new("gfx/panoramas/#{pan.filename}");
@@ -47,7 +47,7 @@ class Visuals
         s.y = real_y
         s.z = -1
         next [s, pan, 0]
-      end.concat(@game_map.data.fogs.map do |fog|
+      }.concat(@game_map.data.fogs.map { |fog|
         # Creates the sprites for the map's fogs
         s = Sprite.new($visuals.viewport)
         s.bitmap = Bitmap.new("gfx/fogs/#{fog.filename}");
@@ -60,12 +60,12 @@ class Visuals
         s.y = real_y
         s.z = 999999
         next [s, fog, 0]
-      end)
+      })
       @events = {}
     end
 
     def dispose
-      @events.each_value(&:dispose)
+      @events.each { |e| e.dispose if !e.disposed? }
       @events.clear
     end
 
