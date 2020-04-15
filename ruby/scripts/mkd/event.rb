@@ -21,18 +21,14 @@ end
 module MKD
   class Event
     class Settings < Serializable
-      attr_accessor :priority
       attr_accessor :passable
-      attr_accessor :can_start_surfing_here
       attr_accessor :save_position
       attr_accessor :speed
 
       def initialize
-        @priority = 1
         @passable = true
-        @can_start_surfing_here = true
         @save_position = true
-        @speed = 2.2
+        @speed = PLAYERWALKSPEED
       end
     end
   end
@@ -44,7 +40,8 @@ module MKD
       attr_accessor :commands
       attr_accessor :conditions
       attr_accessor :graphic
-      attr_accessor :triggers
+      attr_accessor :trigger_mode
+      attr_accessor :trigger_param
       attr_accessor :automoveroute
 
       def initialize
@@ -84,7 +81,7 @@ module MKD
       attr_accessor :commands
 
       def initialize
-        @frequency = 80
+        @frequency = 1.3
         @commands = []
       end
     end

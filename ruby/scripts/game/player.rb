@@ -22,7 +22,7 @@ class Game
       @x = 0
       @y = 0
       @direction = 2
-      @speed = 2.2 # Has to be a float
+      @speed = PLAYERWALKSPEED
       @graphic_name = "boy"
       @running = false
       @runcount = 0

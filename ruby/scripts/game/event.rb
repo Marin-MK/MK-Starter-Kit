@@ -217,7 +217,7 @@ class Game
         @moveroute.clear if !automoveroute
       elsif automoveroute # Next move command for an Autonomous Move Route
         # Apply a wait until the next auto move command
-        @automove_wait = current_page.automoveroute.frequency
+        @automove_wait = [1, (Graphics.frame_rate * current_page.automoveroute.frequency).round].max
       else # Next move command for a normal moveroute
         @moveroute.delete_at(0)
         if @moveroute.size > 0

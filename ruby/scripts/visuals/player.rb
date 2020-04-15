@@ -139,14 +139,14 @@ class Visuals
         @sprite.src_rect.y = frame_y * @sprite.src_rect.height
       end
       # Executes horizontal movement
-      if @x_travelled && @x_destination && @x_travelled.abs < @x_destination.abs
+      if @x_travelled && @x_destination && (@x_destination.abs - @x_travelled.abs) >= 0.01
         # Floating point precision movement
-        pixels = @game_player.speed * (@x_destination <=> 0)
+        pixels = 32.0 / (@game_player.speed * Graphics.frame_rate) * (@x_destination <=> 0)
         old_x_travelled = @x_travelled
         @x_travelled += pixels
         @animate_count += pixels.abs
         $visuals.map_renderer.move_horizontal(pixels)
-        if @x_travelled.abs >= @x_destination.abs
+        if (@x_destination.abs - @x_travelled.abs) < 0.01
           # Account for overshooting the tile, due to rounding errors
           $visuals.map_renderer.move_horizontal(@x_destination - @x_travelled)
           @x_travelled = nil
@@ -155,14 +155,14 @@ class Visuals
         end
       end
       # Executes vertical movement
-      if @y_travelled && @y_destination && @y_travelled.abs < @y_destination.abs
+      if @y_travelled && @y_destination && (@y_destination.abs - @y_travelled.abs) >= 0.01
         # Floating point precision movement
-        pixels = @game_player.speed * (@y_destination <=> 0)
+        pixels = 32.0 / (@game_player.speed * Graphics.frame_rate) * (@y_destination <=> 0)
         old_y_travelled = @y_travelled
         @y_travelled += pixels
         @animate_count += pixels.abs
         $visuals.map_renderer.move_vertical(pixels)
-        if @y_travelled.abs >= @y_destination.abs
+        if (@y_destination.abs - @y_travelled.abs) < 0.01
           # Account for overshooting the tile, due to rounding errors
           $visuals.map_renderer.move_vertical(@y_destination - @y_travelled)
           @y_travelled = nil
@@ -171,7 +171,7 @@ class Visuals
         end
       end
       # Animates the sprite.
-      if @game_player.speed > @game_player.frame_update_interval ||
+      if 32.0 / (@game_player.speed * Graphics.frame_rate) > @game_player.frame_update_interval && old_animate_count != @animate_count ||
          old_animate_count % @game_player.frame_update_interval > @animate_count % @game_player.frame_update_interval
         next_frame
       end
