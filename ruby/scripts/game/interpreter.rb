@@ -24,8 +24,6 @@ class Game
 
     # @return [Boolean] whether or not the interpreter can run the next command.
     private def can_update?
-      # Re-check the conditions in case they're no longer valid
-      @event.test_pages
       if !@event.current_page || @commands != @event.current_page.commands
         @done = true
         dispose
@@ -35,8 +33,9 @@ class Game
       if @event.moving? && @wait_for_move_completion
         return false
       else
-        @wait_for_move_completion = false
+        @wait_for_move_completion = false unless @event.await_pathfinder
       end
+      return false if @event.await_pathfinder
       if @index >= @commands.size
         if @is_autorun
           restart
@@ -46,7 +45,7 @@ class Game
         end
       end
       if !@is_autorun && !@is_parallel
-        if $game.map.wait_count > 0 || $game.player.moving? || @event.moving?
+        if $game.maps[@event.map_id].wait_count > 0 || $game.player.moving?
           return false
         end
       end

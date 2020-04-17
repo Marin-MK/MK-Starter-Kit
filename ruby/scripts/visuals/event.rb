@@ -169,8 +169,8 @@ class Visuals
       end
       # Sets the sprite's on-screen location based on the map's offset and the coordinates of the sprite relative to the map.
       map = $visuals.maps[@game_event.map_id]
-      @sprite.x = map.real_x + @relative_x
-      @sprite.y = map.real_y + @relative_y
+      @sprite.x = (map.real_x + @relative_x).round
+      @sprite.y = (map.real_y + @relative_y).round
       @sprite.z = @sprite.y + 31
       @oldpage = @game_event.current_page
       @olddirection = @game_event.direction
@@ -193,12 +193,16 @@ class Visuals
       command, args = command if command.is_a?(Array)
       case command
       when :down
+        @game_event.direction = 2
         @game_event.move_down
       when :left
+        @game_event.direction = 4
         @game_event.move_left
       when :right
+        @game_event.direction = 6
         @game_event.move_right
       when :up
+        @game_event.direction = 8
         @game_event.move_up
       when :turn_down
         @game_event.direction = 2

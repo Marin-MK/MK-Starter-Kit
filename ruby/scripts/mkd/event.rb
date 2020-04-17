@@ -58,7 +58,7 @@ end
 
 module MKD
   class Event
-    class Graphic
+    class Graphic < Serializable
       attr_accessor :type
       attr_accessor :direction
       attr_accessor :param
@@ -76,7 +76,7 @@ end
 
 module MKD
   class Event
-    class AutoMoveRoute
+    class AutoMoveRoute < Serializable
       attr_accessor :frequency
       attr_accessor :commands
 

@@ -29,6 +29,7 @@ class Game
       @moveroute_ignore_impassable = false
       @automoveroute_idx = 0
       @automove_wait = 0
+      @await_pathfinder = false
       setup_visuals
     end
 
@@ -258,8 +259,37 @@ class Game
       return true
     end
 
+    def pathfind(x, y, await_pathfinder)
+      @await_pathfinder = await_pathfinder
+      Thread.new do
+        pathfinder = Pathfinder.new(self, @x, @y, x, y)
+        while pathfinder.can_run?
+          pathfinder.run
+        end
+        commands = []
+        oldx = @x
+        oldy = @y
+        pathfinder.result.each do |r|
+          if r.x > oldx
+            commands << :right
+          elsif r.x < oldx
+            commands << :left
+          elsif r.y > oldy
+            commands << :down
+          elsif r.y < oldy
+            commands << :up
+          end
+          oldx = r.x
+          oldy = r.y
+        end
+        self.move(commands)
+        p false
+        @await_pathfinder = false
+      end
+    end
+
     attr_accessor :moveroute_ignore_impassable
-    attr_accessor :triggered_by
     attr_accessor :automove_wait
+    attr_accessor :await_pathfinder
   end
 end

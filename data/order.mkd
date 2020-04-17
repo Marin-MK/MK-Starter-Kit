@@ -28,6 +28,7 @@ game/event.rb: Event
 game/switches.rb: Game Switches
 game/variables.rb: Game Variables
 game/interpreter.rb: Interpreter
+game/pathfinding.rb: Pathfinding
 tempdebug/autotiles.rb: Temp Debug Autotiles
 game/game.rb: Game
 data/exp.rb: EXP
