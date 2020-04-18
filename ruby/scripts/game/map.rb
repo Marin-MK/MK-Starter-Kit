@@ -104,8 +104,7 @@ class Game
       direction = 10 - direction if direction.is_a?(Integer)
 
       return false if checking_event != $game.player && x == $game.player.x && y == $game.player.y && map_id == $game.player.map_id
-      event = @events.values.find { |e| e.x == x && e.y == y }
-      return false if event && event.current_page && !event.settings.passable
+      return false if @events.values.any? { |e| e.x == x && e.y == y && e.current_page && !e.settings.passable }
       for layer in 0...tiles.size
         tile_type, index, id = tiles[layer][x + y * width]
         next if tile_type.nil?
@@ -147,6 +146,11 @@ class Game
     # @return [Boolean] whether or not there's currently an event running.
     def event_running?
       return @event_interpreters[0] && !@event_interpreters[0].done?
+    end
+
+    def can_move?
+      return false if @event_interpreters[0] && !@event_interpreters[0].done? && !@event_interpreters[0].wait_for_move_completion
+      return true
     end
 
     # Called when the player presses A on a tile. Triggers events if conditions are met.

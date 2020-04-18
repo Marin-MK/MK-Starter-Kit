@@ -36,7 +36,7 @@ map.events[1].pages[0] = MKD::Event::Page.new
 map.events[1].pages[0].graphic.param = "gfx/characters/boy"
 map.events[1].pages[0].commands = [
   [0, :message, {text: "I'm pathfinding now!"}],
-  [0, :pathfind, {x: 8, y: 8}],
+  [0, :pathfind, {player: true, x: 8, y: 8}],
   [0, :message, {text: "done!"}]
 ]
 map.save

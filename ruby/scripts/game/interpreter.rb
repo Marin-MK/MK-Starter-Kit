@@ -30,12 +30,11 @@ class Game
         return false
       end
       # Wait if the event is moving
-      if @event.moving? && @wait_for_move_completion
+      if (@event.moving? || $game.player.moving? && !$game.player.moveroute.empty?) && @wait_for_move_completion
         return false
       else
-        @wait_for_move_completion = false unless @event.await_pathfinder
+        @wait_for_move_completion = false
       end
-      return false if @event.await_pathfinder
       if @index >= @commands.size
         if @is_autorun
           restart
@@ -45,7 +44,7 @@ class Game
         end
       end
       if !@is_autorun && !@is_parallel
-        if $game.maps[@event.map_id].wait_count > 0 || $game.player.moving?
+        if $game.maps[@event.map_id].wait_count > 0 || $game.player.moving? && $game.player.moveroute.empty?
           return false
         end
       end

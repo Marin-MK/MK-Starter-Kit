@@ -124,19 +124,17 @@ class Visuals
     def update
       old_animate_count = @animate_count
       # Queues movement commands
-      if !moving?
-        if @moveroute_wait > 0
-          @moveroute_wait -= 1
-          next_move if @moveroute_wait == 0
-        end
-        if @moveroute_ready
-          move = @game_character.moveroute[0]
-          if move
-            @moveroute_ready = false
-            name = move
-            name = move[0] if move.is_a?(Array)
-            execute_move_command(name)
-          end
+      if @moveroute_wait > 0
+        @moveroute_wait -= 1
+        next_move if @moveroute_wait == 0
+      end
+      if @moveroute_ready
+        move = @game_character.moveroute[0]
+        if move
+          @moveroute_ready = false
+          name = move
+          name = move[0] if move.is_a?(Array)
+          execute_move_command(name)
         end
       end
       # Executes horizontal movement

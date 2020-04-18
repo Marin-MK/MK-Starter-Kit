@@ -125,7 +125,8 @@ module MKD
 
     class PathfindCommand < BasicCommand
       def call
-        @event.pathfind(@x, @y, @await_pathfinder)
+        object = @player ? $game.player : @event
+        object.pathfind(@x, @y)
         @interpreter.wait_for_move_completion = @wait_for_move_completion
       end
     end

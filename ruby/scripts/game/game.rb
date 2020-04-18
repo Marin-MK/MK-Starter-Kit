@@ -62,6 +62,10 @@ class Game
     return @maps.values.any? { |m| m.event_running? }
   end
 
+  def can_move?
+    return @maps.values.any? { |m| m.can_move? }
+  end
+
   # Updates the maps and player.
   def update
     @maps.values.each(&:update)

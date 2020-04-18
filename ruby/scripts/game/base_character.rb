@@ -19,8 +19,6 @@ class Game
     attr_accessor :frame_update_interval
     # @return [Boolean] whether to ignore impassable move commands.
     attr_accessor :moveroute_ignore_impassable
-    # @return [Boolean] whether to wait for the pathfinder to find a valid path.
-    attr_accessor :await_pathfinder
 
     def initialize(map_id, x = 0, y = 0, direction = 2, graphic_name = "", speed = PLAYERWALKSPEED, frame_update_interval = 16)
       @map_id = map_id
@@ -32,7 +30,6 @@ class Game
       @frame_update_interval = frame_update_interval
       @moveroute = []
       @moveroute_ignore_impassable = false
-      @await_pathfinder = false
       self.setup_visuals
     end
 
@@ -91,32 +88,29 @@ class Game
       end
     end
 
-    def pathfind(x, y, await_pathfinder)
-      @await_pathfinder = await_pathfinder
-      Thread.new do
-        pathfinder = Pathfinder.new(self, @x, @y, x, y)
-        while pathfinder.can_run?
-          pathfinder.run
-        end
-        commands = []
-        oldx = @x
-        oldy = @y
-        pathfinder.result.each do |r|
-          if r.x > oldx
-            commands << :right
-          elsif r.x < oldx
-            commands << :left
-          elsif r.y > oldy
-            commands << :down
-          elsif r.y < oldy
-            commands << :up
-          end
-          oldx = r.x
-          oldy = r.y
-        end
-        self.move(commands)
-        @await_pathfinder = false
+    def pathfind(x, y)
+      pathfinder = Pathfinder.new(self, @x, @y, x, y)
+      while pathfinder.can_run?
+        pathfinder.run
       end
+      commands = []
+      oldx = @x
+      oldy = @y
+      pathfinder.result.each do |r|
+        if r.x > oldx
+          commands << :right
+        elsif r.x < oldx
+          commands << :left
+        elsif r.y > oldy
+          commands << :down
+        elsif r.y < oldy
+          commands << :up
+        end
+        oldx = r.x
+        oldy = r.y
+      end
+      p commands
+      self.move(commands)
     end
 
     # @param command [Symbol, Array] the move command to test.
