@@ -16,6 +16,7 @@ mkd/event.rb: Event
 mkd/eventcommands.rb: Event Commands
 mkd/eventconditions.rb: Event Conditions
 mkd/mapconnection.rb: Map Connection
+visuals/base_character.rb: Base Character
 visuals/map.rb: Map
 visuals/player.rb: Player
 visuals/event.rb: Event

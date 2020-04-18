@@ -161,25 +161,6 @@ class Game
       end
     end
 
-    # Turns the event to face the player.
-    def turn_to_player
-      diffx = @x - $game.player.x
-      diffy = @y - $game.player.y
-      down = diffy < 0
-      left = diffx > 0
-      right = diffx < 0
-      up = diffy > 0
-      if down
-        @direction = 2
-      elsif up
-        @direction = 8
-      elsif left
-        @direction = 4
-      elsif right
-        @direction = 6
-      end
-    end
-
     # Executes the next move command in the moveroute, if present.
     # @param automoveroute [Boolean] whether or not the previous move command was from an autonomous move route.
     def moveroute_next(automoveroute = false)

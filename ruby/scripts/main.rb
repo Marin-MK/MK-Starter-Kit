@@ -69,13 +69,14 @@ def main_function
   $game.update
   $visuals.update
   if Input.trigger?(Input::CTRL)
-    abort
+    return false
   end
+  return true
 end
 
 main_function
 loop do
   Input.update
   Graphics.update
-  main_function
+  break if !main_function
 end

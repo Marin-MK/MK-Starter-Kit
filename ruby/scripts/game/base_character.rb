@@ -36,6 +36,25 @@ class Game
       self.setup_visuals
     end
 
+    # Turns the event to face the player.
+    def turn_to_player
+      diffx = @x - $game.player.x
+      diffy = @y - $game.player.y
+      down = diffy < 0
+      left = diffx > 0
+      right = diffx < 0
+      up = diffy > 0
+      if down
+        @direction = 2
+      elsif up
+        @direction = 8
+      elsif left
+        @direction = 4
+      elsif right
+        @direction = 6
+      end
+    end
+
     # Performs a move route.
     # @param commands [Symbol, Array] list of move commands.
     def move(*commands)

@@ -1,6 +1,6 @@
 class Visuals
   # The visual component of Game::Player objects.
-  class Player
+  class Player < BaseCharacter
     # Creates a new player sprite linked to the player object.
     # @param game_player [Game::Player] the player object.
     def self.create(game_player)
@@ -9,29 +9,18 @@ class Visuals
 
     # Creates a new Player object.
     def initialize(game_player)
+      super(game_player)
       @game_player = game_player
-      @sprite = Sprite.new($visuals.viewport)
-      @sprite.set_bitmap("gfx/characters/" + game_player.graphic_name)
+      @sprite.set_bitmap("gfx/characters/" + @game_player.graphic_name)
       @sprite.src_rect.width = @sprite.bitmap.width / 4
       @sprite.src_rect.height = @sprite.bitmap.height / 4
       @sprite.src_rect.y = @sprite.src_rect.height * (@game_player.direction / 2 - 1)
       @sprite.ox = @sprite.src_rect.width / 2
-      @sprite.oy = @sprite.src_rect.height
+      @sprite.oy = @sprite.src_rect.height@game_player
       @sprite.x = Graphics.width / 2
       @sprite.y = Graphics.height / 2 + 16
-      @sprite.z = @sprite.y + 31
-      @x_travelled = nil
-      @x_destination = nil
-      @y_travelled = nil
-      @y_destination = nil
-      @animate_count = 0
       @fake_anim = nil
       @stop_fake_anim = false
-    end
-
-    def dispose
-      @sprite.dispose
-      @sprite = nil
     end
 
     # Sets the direction of the sprite.
@@ -47,45 +36,33 @@ class Visuals
       @turncount = 6
     end
 
-    # Sets the direction of the sprite without showing a subtle turn animation.
-    # @param value [Integer, Symbol] the direction value.
-    def set_direction_noanim(value)
-      value = validate_direction(value)
-      @sprite.src_rect.y = @sprite.src_rect.height * (value / 2 - 1)
-    end
-
     def move_down
-      @y_travelled = 0
-      @y_destination = 32
+      super
       @fake_anim = nil
       @stop_fake_anim = false
     end
 
     def move_left
-      @x_travelled = 0
-      @x_destination = -32
+      super
       @fake_anim = nil
       @stop_fake_anim = false
     end
 
     def move_right
-      @x_travelled = 0
-      @x_destination = 32
+      super
       @fake_anim = nil
       @stop_fake_anim = false
     end
 
     def move_up
-      @y_travelled = 0
-      @y_destination = -32
+      super
       @fake_anim = nil
       @stop_fake_anim = false
     end
 
     # Updates the player sprite and performs movement.
     def update
-      old_animate_count = @animate_count
-      moving = moving?
+      super
       # Executes the animation when turning
       if @turncount
         @turncount -= 1
@@ -95,7 +72,6 @@ class Visuals
           @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
         end
       end
-      @sprite.z = @sprite.y + 31
       # Executes the animation when moving against an impassable tile
       if @fake_anim
         @fake_anim -= 1 if @fake_anim > 0
@@ -138,60 +114,10 @@ class Visuals
         @sprite.src_rect.x = frame_x * @sprite.src_rect.width
         @sprite.src_rect.y = frame_y * @sprite.src_rect.height
       end
-      # Executes horizontal movement
-      if @x_travelled && @x_destination && (@x_destination.abs - @x_travelled.abs) >= 0.01
-        # Floating point precision movement
-        pixels = 32.0 / (@game_player.speed * Graphics.frame_rate) * (@x_destination <=> 0)
-        old_x_travelled = @x_travelled
-        @x_travelled += pixels
-        @animate_count += pixels.abs
-        $visuals.map_renderer.move_horizontal(pixels)
-        if (@x_destination.abs - @x_travelled.abs) < 0.01
-          # Account for overshooting the tile, due to rounding errors
-          $visuals.map_renderer.move_horizontal(@x_destination - @x_travelled)
-          @x_travelled = nil
-          @x_destination = nil
-          SystemEvent.trigger(:taken_step, @game_player.x, @game_player.y)
-        end
-      end
-      # Executes vertical movement
-      if @y_travelled && @y_destination && (@y_destination.abs - @y_travelled.abs) >= 0.01
-        # Floating point precision movement
-        pixels = 32.0 / (@game_player.speed * Graphics.frame_rate) * (@y_destination <=> 0)
-        old_y_travelled = @y_travelled
-        @y_travelled += pixels
-        @animate_count += pixels.abs
-        $visuals.map_renderer.move_vertical(pixels)
-        if (@y_destination.abs - @y_travelled.abs) < 0.01
-          # Account for overshooting the tile, due to rounding errors
-          $visuals.map_renderer.move_vertical(@y_destination - @y_travelled)
-          @y_travelled = nil
-          @y_destination = nil
-          SystemEvent.trigger(:taken_step, @game_player.x, @game_player.y)
-        end
-      end
-      # Animates the sprite.
-      if 32.0 / (@game_player.speed * Graphics.frame_rate) > @game_player.frame_update_interval && old_animate_count != @animate_count ||
-         old_animate_count % @game_player.frame_update_interval > @animate_count % @game_player.frame_update_interval
-        next_frame
-      end
+
       # Stores old values for comparison in the next #update call
       @oldgraphic = @game_player.graphic_name
       @oldfake_move = @game_player.fake_move
-      @skip_movement = false if @skip_movement
-    end
-
-    def next_frame
-      @sprite.src_rect.x += @sprite.src_rect.width
-      @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
-    end
-
-    def finish_movement
-      next_frame if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 == 1
-    end
-
-    def skip_movement
-      @skip_movement = true
     end
 
     # Moves the screen without animation.
@@ -208,11 +134,6 @@ class Visuals
         $visuals.map_renderer.move_y(ydiff)
       end
       skip_movement
-    end
-
-    # @return [Boolean] whether or not the player is moving.
-    def moving?
-      return !@x_travelled.nil? || !@x_destination.nil? || !@y_travelled.nil? || !@y_destination.nil?
     end
 
     attr_reader :fake_anim
