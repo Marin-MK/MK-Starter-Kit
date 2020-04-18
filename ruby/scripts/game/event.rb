@@ -283,7 +283,6 @@ class Game
           oldy = r.y
         end
         self.move(commands)
-        p false
         @await_pathfinder = false
       end
     end

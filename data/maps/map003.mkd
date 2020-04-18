@@ -1442,7 +1442,7 @@
         ],
         "@settings": {
           "^c": "MKD::Event::Settings",
-          "@passable": true,
+          "@passable": false,
           "@save_position": true,
           "@speed": 0.25
         }

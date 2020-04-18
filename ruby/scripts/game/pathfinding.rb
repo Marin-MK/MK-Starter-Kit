@@ -8,7 +8,7 @@ class Game
       attr_accessor :f
       # Distance between starting node and this node
       attr_accessor :g
-      # Estimated distance from this node to the destination
+      # Estimated distance from this node to the destination (Pythagoras)
       attr_accessor :h
 
       def initialize(*args)
@@ -56,37 +56,33 @@ class Game
       end
     end
 
-    attr_accessor :open_list
-    attr_accessor :closed_list
-    attr_accessor :begin_node
-    attr_accessor :dest_node
     attr_accessor :result
 
     def initialize(event, startx, starty, destx, desty)
       @event = event
       @begin_node = Node.new(startx, starty)
       @dest_node = Node.new(destx, desty)
-      @open_list = [@begin_node]
-      @closed_list = []
+      @unvisited_list = [@begin_node]
+      @visited_list = []
       @result = nil
     end
 
     def can_run?
-      return !@open_list.empty? && @result.nil?
+      return !@unvisited_list.empty? && @result.nil?
     end
 
     def run
-      current_node = @open_list[0]
+      current_node = @unvisited_list[0]
       current_index = 0
       # Continue with the node with the lowest cost value
-      @open_list.each_with_index do |node, index|
+      @unvisited_list.each_with_index do |node, index|
         if node.f < current_node.f
           current_node = node
           current_index = index
         end
       end
-      @open_list.delete(current_node)
-      @closed_list << current_node
+      @unvisited_list.delete(current_node)
+      @visited_list << current_node
 
       # Reached destination node
       if current_node.position == @dest_node.position
@@ -99,30 +95,28 @@ class Game
         return
       end
 
-      children = []
+      # Register and calculate child node effectiveness
       offsets = [Position.new(0, 1), Position.new(-1, 0), Position.new(1, 0), Position.new(0, -1)]
       dirs = [:down, :left, :right, :up]
       for i in 0...offsets.size
         position_offset = offsets[i]
-        dir = dirs[i]
         node_position = Position.new(current_node.position.x + position_offset.x, current_node.position.y + position_offset.y)
-        next if !$game.maps[@event.map_id].passable?(node_position.x, node_position.y, dir, @event)
-        new_node = Node.new(node_position, current_node)
-        children << new_node
-      end
-
-      children.each do |child_node|
-        next if @closed_list.include?(child_node)
+        next if !$game.maps[@event.map_id].passable?(node_position.x, node_position.y, dirs[i], @event)
+        child_node = Node.new(node_position, current_node)
+        # Skip this node if the position has already been visited
+        next if @visited_list.any? { |n| n.position == child_node.position }
         child_node.g = current_node.g + 1
         child_node.h = (child_node.position.x - @dest_node.position.x) ** 2 + (child_node.position.y - @dest_node.position.y) ** 2
         child_node.f = child_node.g + child_node.h
         append = true
-        @open_list.each do |open_node|
-          if child_node.position == open_node.position && child_node.g > open_node.g
+        @unvisited_list.each do |unvisited_node|
+          # Don't register this child node if there's an existing node at this child's position
+          # that is closer to the starting node (g is lower)
+          if child_node.position == unvisited_node.position && child_node.g > unvisited_node.g
             append = false
           end
         end
-        @open_list << child_node if append
+        @unvisited_list << child_node if append
       end
     end
   end

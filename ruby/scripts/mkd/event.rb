@@ -26,7 +26,7 @@ module MKD
       attr_accessor :speed
 
       def initialize
-        @passable = true
+        @passable = false
         @save_position = true
         @speed = PLAYERWALKSPEED
       end
