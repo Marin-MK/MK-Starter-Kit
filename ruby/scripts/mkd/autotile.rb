@@ -10,6 +10,7 @@ module MKD
 		attr_accessor :priorities
 		attr_accessor :tags
 		attr_accessor :animate_speed
+		attr_accessor :quick_ids
 
 		def initialize(id = 0)
 			@id = id
@@ -20,6 +21,7 @@ module MKD
 			@passabilities = []
 			@tags = []
 			@animate_speed = 10
+			@quick_ids = [nil] * 6
 		end
 
 		# @param id [Integer, NilClass] the ID of the autotile to fetch.

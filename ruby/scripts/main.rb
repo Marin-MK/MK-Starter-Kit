@@ -45,7 +45,7 @@ map.save
 $LOG = {
   WARNING: true,
   SYSTEM: true,
-  OVERWORLD: true,
+  OVERWORLD: false,
   UI: true
 }
 

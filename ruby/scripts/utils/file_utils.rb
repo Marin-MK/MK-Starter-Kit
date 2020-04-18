@@ -21,7 +21,7 @@ module FileUtils
   # @param data [Object] the object to save to the file.
   def save_data(filename, type, data)
     f2 = File.new(filename, 'wb')
-    f2.write JSON.pretty_generate(({type: type, data: data}).dump_data.replace_symbols)
+    f2.write JSON.generate(({type: type, data: data}).dump_data.replace_symbols)
     f2.close
     return nil
   end
