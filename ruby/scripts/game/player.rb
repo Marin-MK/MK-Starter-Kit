@@ -1,37 +1,23 @@
 class Game
   # The logical component of player objects.
-  class Player
-    # @return [Integer] the ID of the map the player is currently on.
-    attr_reader :map_id
-    # @return [Integer] the x position of the player.
-    attr_reader :x
-    # @return [Integer] the y position of the player.
-    attr_reader :y
-    # @return [String] the name of the graphic the player currently has applied.
-    attr_accessor :graphic_name
-    # @return [Integer] the direction the player is currently facing in.
-    attr_accessor :direction
-    # @return [Float] how fast the player can move.
-    attr_accessor :speed
-    # @return [Integer] the interval for updating the player's frame while walking.
-    attr_accessor :frame_update_interval
+  class Player < BaseCharacter
+    # Used to track fake movement (walking into an impassable object animation)
+    attr_reader :fake_move
 
     # Creates a new Player object.
-    def initialize(map_id = 0)
-      @map_id = map_id
-      @x = 0
-      @y = 0
-      @direction = 2
-      @speed = PLAYERWALKSPEED
-      @graphic_name = "boy"
+    def initialize(map_id)
       @running = false
       @runcount = 0
-      @frame_update_interval = 16
       @initialized = false
+      super(map_id, 0, 0, 2, "boy", PLAYERWALKSPEED, 16)
     end
 
     def setup_visuals
       Visuals::Player.create(self)
+    end
+
+    def visual
+      return $visuals.player
     end
 
     # Changes the player's direction with a turn animation.
@@ -50,11 +36,6 @@ class Game
       @direction = value
     end
 
-    # @return [Boolean] whether or not the player is currently moving.
-    def moving?
-      return $visuals.player.moving?
-    end
-
     # @return [Boolean] whether or not the player is currently running.
     def running?
       return @running
@@ -62,21 +43,18 @@ class Game
 
     # Fetches button input to move, trigger events, run, etc.
     def update
+      # Only when standing still
       unless moving?
-        # Only when standing still
-
         # Tile/event interaction
         if Input.confirm?
           newx, newy = facing_coordinates(@x, @y, @direction)
           $game.map.tile_interaction(newx, newy)
         end
-
         # Pause Menu
         if Input.start?
           PauseMenuUI.start
         end
       end
-
       # Movement
       @fake_move = false
       oldrun = @running
@@ -96,7 +74,7 @@ class Game
           @running = moving? && Input.press_cancel?
         else
           @running = false
-          $visuals.player.finish_movement
+          visual.finish_movement
         end
         @lastdir4 = input
       end
@@ -139,7 +117,7 @@ class Game
     end
 
     # Moves the player down one tile.
-    private def move_down
+    def move_down
       if @direction != 2 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :down
         @downcount = 8
@@ -164,7 +142,7 @@ class Game
     end
 
     # Moves the player down left tile.
-    private def move_left
+    def move_left
       if @direction != 4 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :left
         @leftcount = 8
@@ -189,7 +167,7 @@ class Game
     end
 
     # Moves the player down right tile.
-    private def move_right
+    def move_right
       if @direction != 6 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :right
         @rightcount = 8
@@ -214,7 +192,7 @@ class Game
     end
 
     # Moves the player up one tile.
-    private def move_up
+    def move_up
       if @direction != 8 && @lastdir4 == 0 && !$visuals.player.fake_anim
         self.direction = :up
         @upcount = 8
@@ -292,7 +270,5 @@ class Game
         end
       end
     end
-
-    attr_reader :fake_move
   end
 end

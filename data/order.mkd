@@ -22,6 +22,7 @@ visuals/event.rb: Event
 visuals/tilesprite.rb: Tile Sprite
 visuals/map_renderer.rb: Map Renderer
 visuals/visuals.rb: Visuals
+game/base_character.rb: Base Character
 game/map.rb: Map
 game/player.rb: Player
 game/event.rb: Event

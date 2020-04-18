@@ -45,8 +45,8 @@ map.save
 $LOG = {
   WARNING: true,
   SYSTEM: true,
-  OVERWORLD: false,
-  UI: false
+  OVERWORLD: true,
+  UI: true
 }
 
 $temp = TempData.new
@@ -55,7 +55,6 @@ $game = Game.new
 $game.switches = Game::Switches.new
 $game.variables = Game::Variables.new
 $game.player = Game::Player.new(3)
-$game.player.setup_visuals
 $game.load_map(3)
 $trainer = Trainer.new
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 100, gender: 1, item: :REPEL, hp: 37))

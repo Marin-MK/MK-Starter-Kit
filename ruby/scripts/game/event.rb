@@ -1,40 +1,25 @@
 class Game
   # The logical component of event objects.
-  class Event
-    # @return [Integer] the ID of the map this event is on.
-    attr_accessor :map_id
+  class Event < BaseCharacter
     # @return [Integer] the ID of this event.
     attr_accessor :id
-    # @return [Integer] the x position of this event.
-    attr_reader :x
-    # @return [Integer] the y position of this event.
-    attr_reader :y
-    # @return [Array<Symbol, Array>] an array of move commands that are to be executed.
-    attr_accessor :moveroute
-    # @return [Float] how fast the event moves.
-    attr_accessor :speed
-    # @return [Integer] which direction the event is currently facing.
-    attr_accessor :direction
 
     # Creates a new Event object.
     def initialize(map_id, id)
       @map_id = map_id
       @id = id
-      @x = data.x
-      @y = data.y
       @current_page = nil
-      @moveroute = []
-      @speed = settings.speed
-      @direction = 2
-      @moveroute_ignore_impassable = false
       @automoveroute_idx = 0
       @automove_wait = 0
-      @await_pathfinder = false
-      setup_visuals
+      super(map_id, data.x, data.y, 2, "", @speed = settings.speed)
     end
 
     def setup_visuals
       Visuals::Event.create(self)
+    end
+
+    def visual
+      return $visuals.maps[@map_id].events[@id]
     end
 
     def unload
@@ -176,13 +161,6 @@ class Game
       end
     end
 
-    # Performs a move route.
-    # @param commands [Symbol, Array] list of move commands.
-    def move(*commands)
-      commands = [commands] unless commands[0].is_a?(Array)
-      commands.each { |e| @moveroute.concat(e) }
-    end
-
     # Turns the event to face the player.
     def turn_to_player
       diffx = @x - $game.player.x
@@ -202,13 +180,6 @@ class Game
       end
     end
 
-    # @return [Boolean] whether or not the event has an active move route.
-    def moving?
-      return true if @moveroute.size > 0
-      return true if $visuals.maps[@map_id].events[@id].moving?
-      return false
-    end
-
     # Executes the next move command in the moveroute, if present.
     # @param automoveroute [Boolean] whether or not the previous move command was from an autonomous move route.
     def moveroute_next(automoveroute = false)
@@ -220,24 +191,8 @@ class Game
         # Apply a wait until the next auto move command
         @automove_wait = [1, (Graphics.frame_rate * current_page.automoveroute.frequency).round].max
       else # Next move command for a normal moveroute
-        @moveroute.delete_at(0)
-        if @moveroute.size > 0
-          command = @moveroute[0]
-          command, args = command if command.is_a?(Array)
-          command = [:down, :left, :right, :up].sample if command == :move_random
-          command = [:turn_down, :turn_left, :turn_right, :turn_up].sample if command == :turn_random
-          @moveroute[0] = args ? [command, args] : command
-          if !move_command_possible?(@moveroute[0])
-            # Makes sure the event doesn't get stuck on the moving frame.
-            $visuals.maps[@map_id].events[@id].finish_movement
-            if @moveroute_ignore_impassable
-              moveroute_next
-            else
-              @moveroute.clear
-            end
-          end
-        else
-          $visuals.maps[@map_id].events[@id].finish_movement
+        super()
+        if @moveroute.size == 0
           if current_page.automoveroute.commands.size > 0
             moveroute_next(true)
           end
@@ -245,50 +200,6 @@ class Game
       end
     end
 
-    # @param command [Symbol, Array] the move command to test.
-    # @return [Boolean] whether or not the move command is executable.
-    def move_command_possible?(command)
-      validate command => [Symbol, Array]
-      command, *args = command if command.is_a?(Array)
-      case command
-      when :down, :left, :right, :up
-        dir = validate_direction(command)
-        newx, newy = facing_coordinates(@x, @y, dir)
-        return $game.map.passable?(newx, newy, dir, self)
-      end
-      return true
-    end
-
-    def pathfind(x, y, await_pathfinder)
-      @await_pathfinder = await_pathfinder
-      Thread.new do
-        pathfinder = Pathfinder.new(self, @x, @y, x, y)
-        while pathfinder.can_run?
-          pathfinder.run
-        end
-        commands = []
-        oldx = @x
-        oldy = @y
-        pathfinder.result.each do |r|
-          if r.x > oldx
-            commands << :right
-          elsif r.x < oldx
-            commands << :left
-          elsif r.y > oldy
-            commands << :down
-          elsif r.y < oldy
-            commands << :up
-          end
-          oldx = r.x
-          oldy = r.y
-        end
-        self.move(commands)
-        @await_pathfinder = false
-      end
-    end
-
-    attr_accessor :moveroute_ignore_impassable
     attr_accessor :automove_wait
-    attr_accessor :await_pathfinder
   end
 end
