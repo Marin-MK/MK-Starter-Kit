@@ -108,34 +108,11 @@ class Game
               # Wait 1 frame to start the new autonomous move route so the visuals have time to adjust to the new page.
               @automove_wait = 1
             end
+            @frame_update_interval = current_page.graphic.frame_update_interval
           end
           break
         end
       end
-    end
-
-    def move_down
-      $visuals.maps[@map_id].events[@id].move_down
-      @y += 1
-      @direction = 2
-    end
-
-    def move_left
-      $visuals.maps[@map_id].events[@id].move_left
-      @x -= 1
-      @direction = 4
-    end
-
-    def move_right
-      $visuals.maps[@map_id].events[@id].move_right
-      @x += 1
-      @direction = 6
-    end
-
-    def move_up
-      $visuals.maps[@map_id].events[@id].move_up
-      @y -= 1
-      @direction = 8
     end
 
     # @param page_index [Integer] the index of the page to test the conditions of.

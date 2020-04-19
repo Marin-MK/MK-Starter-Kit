@@ -7,6 +7,10 @@ class Visuals
     # @return [Boolean] whether the current move route command is seen as "moving".
     attr_accessor :moveroute_moving_command
 
+    def self.create(game_character)
+      $b = self.new(game_character)
+    end
+
     def initialize(game_character)
       @game_character = game_character
       @sprite = Sprite.new($visuals.viewport)
@@ -18,6 +22,8 @@ class Visuals
       @animate_count = 0
       @moveroute_wait = 0
       @moveroute_moving_command = false
+      @relative_x = 32 * @game_character.x + 16
+      @relative_y = 32 * @game_character.y + 32
       @setdir = true
     end
 
@@ -122,7 +128,15 @@ class Visuals
     end
 
     def update
-      old_animate_count = @animate_count
+      update_graphic if should_update_graphic
+      update_direction if should_update_direction
+      update_position if should_update_position
+      update_moveroute if should_update_moveroute
+      update_movement if should_update_movement
+      update_animation if should_update_animation
+    end
+
+    def update_moveroute
       # Queues movement commands
       if @moveroute_wait > 0
         @moveroute_wait -= 1
@@ -137,6 +151,14 @@ class Visuals
           execute_move_command(name)
         end
       end
+    end
+
+    def should_update_moveroute
+      return true
+    end
+
+    def update_movement
+      @oldanimate_count = @animate_count
       # Executes horizontal movement
       if @x_travelled && @x_destination && (@x_destination.abs - @x_travelled.abs) >= 0.01
         # Floating point precision movement
@@ -187,12 +209,64 @@ class Visuals
           SystemEvent.trigger(:taken_step, @game_character.x, @game_character.y) if self.is_a?(Player)
         end
       end
+    end
+
+    def should_update_movement
+      return true
+    end
+
+    def update_animation
       # Animates the sprite.
-      if 32.0 / (@game_character.speed * Graphics.frame_rate) > @game_character.frame_update_interval && old_animate_count != @animate_count ||
-         old_animate_count % @game_character.frame_update_interval > @animate_count % @game_character.frame_update_interval
+      if 32.0 / (@game_character.speed * Graphics.frame_rate) > @game_character.frame_update_interval && @oldanimate_count != @animate_count ||
+         @oldanimate_count % @game_character.frame_update_interval > @animate_count % @game_character.frame_update_interval
         next_frame
       end
+    end
+
+    def should_update_animation
+      return true
+    end
+
+    def update_graphic
+      # Changes the sprite's bitmap if the player's graphic changed
+      frame_x = @sprite.bitmap ? (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4).round : 0
+      frame_y = @sprite.bitmap ? (@sprite.src_rect.y.to_f / @sprite.bitmap.height * 4).round : @game_character.direction / 2 - 1
+      @sprite.set_bitmap("gfx/characters/" + @game_character.graphic_name)
+      @sprite.src_rect.width = @sprite.bitmap.width / 4
+      @sprite.src_rect.height = @sprite.bitmap.height / 4
+      @sprite.ox = @sprite.src_rect.width / 2
+      @sprite.oy = @sprite.src_rect.height
+      @sprite.src_rect.x = frame_x * @sprite.src_rect.width
+      @sprite.src_rect.y = frame_y * @sprite.src_rect.height
+    end
+
+    def should_update_graphic
+      ret = @oldgraphic != @game_character.graphic_name
+      @oldgraphic = @game_character.graphic_name
+      return ret
+    end
+
+    def update_direction
+      # Refreshes if the direction changed
+      @sprite.src_rect.y = (@game_character.direction / 2 - 1) * @sprite.src_rect.height
+    end
+
+    def should_update_direction
+      ret = @olddirection != @game_character.direction && @setdir
+      @olddirection = @game_character.direction
+      return ret
+    end
+
+    def update_position
+      # Sets the sprite's on-screen location based on the map's offset and the coordinates of the sprite relative to the map.
+      map = $visuals.maps[@game_character.map_id]
+      @sprite.x = (map.real_x + @relative_x).round
+      @sprite.y = (map.real_y + @relative_y).round
       @sprite.z = @sprite.y + 31
+    end
+
+    def should_update_position
+      return true
     end
   end
 end

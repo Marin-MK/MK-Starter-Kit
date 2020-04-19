@@ -76,24 +76,24 @@ class Game
     # @param direction [Integer, Symbol, NilClass] the direction at which the event would step on the tile.
     # @param checking_event [Game::Event, NilClass] the event object that is performing the test.
     # @return [Boolean] whether the tile is passable.
-    def passable?(x, y, direction = nil, checking_event = nil)
+    def passable?(x, y, direction = nil, checking_character = nil)
       validate \
           x => Integer,
           y => Integer,
           direction => [Integer, Symbol, NilClass],
-          checking_event => [Game::Player, Game::Event, NilClass]
-      map_id = checking_event.map_id
+          checking_character => [Game::BaseCharacter, NilClass]
+      map_id = checking_character.map_id
       # If the coordinate goes off the map
       if x < 0 || x >= width || y < 0 || y >= height
         # If an event is checking
-        if checking_event.is_a?(Game::Event)
+        if checking_character.is_a?(Game::Event)
           # Return false - Events can't cross maps
           return false
-        elsif checking_event.is_a?(Game::Player) && !connections.empty?
+        elsif checking_character.is_a?(Game::Player) && !connections.empty?
           # Return passability check run by the facing map.
           map_id, mapx, mapy = $game.get_map_from_connection(self, x, y)
           if map_id
-            return $game.maps[map_id].passable?(mapx, mapy, direction, checking_event)
+            return $game.maps[map_id].passable?(mapx, mapy, direction, checking_character)
           end
         end
         return false
@@ -103,7 +103,7 @@ class Game
       # Invert direction: if player is facing left, they're coming from the right, etc.
       direction = 10 - direction if direction.is_a?(Integer)
 
-      return false if checking_event != $game.player && x == $game.player.x && y == $game.player.y && map_id == $game.player.map_id
+      return false if checking_character != $game.player && x == $game.player.x && y == $game.player.y && map_id == $game.player.map_id
       return false if @events.values.any? { |e| e.x == x && e.y == y && e.current_page && !e.settings.passable }
       for layer in 0...tiles.size
         tile_type, index, id = tiles[layer][x + y * width]

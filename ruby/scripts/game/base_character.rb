@@ -33,6 +33,14 @@ class Game
       self.setup_visuals
     end
 
+    def setup_visuals
+      Visuals::BaseCharacter.create(self)
+    end
+
+    def visual
+      return $b
+    end
+
     # Turns the event to face the player.
     def turn_to_player
       diffx = @x - $game.player.x
@@ -50,6 +58,30 @@ class Game
       elsif right
         @direction = 6
       end
+    end
+
+    def move_down
+      self.visual.move_down
+      @y += 1
+      @direction = 2
+    end
+
+    def move_left
+      self.visual.move_left
+      @x -= 1
+      @direction = 4
+    end
+
+    def move_right
+      self.visual.move_right
+      @x += 1
+      @direction = 6
+    end
+
+    def move_up
+      self.visual.move_up
+      @y -= 1
+      @direction = 8
     end
 
     # Performs a move route.
@@ -109,7 +141,6 @@ class Game
         oldx = r.x
         oldy = r.y
       end
-      p commands
       self.move(commands)
     end
 
@@ -125,6 +156,9 @@ class Game
         return $game.map.passable?(newx, newy, dir, self)
       end
       return true
+    end
+
+    def update
     end
   end
 end

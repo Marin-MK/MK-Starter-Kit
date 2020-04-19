@@ -101,7 +101,6 @@ class Game
       for i in 0...offsets.size
         position_offset = offsets[i]
         node_position = Position.new(current_node.position.x + position_offset.x, current_node.position.y + position_offset.y)
-        p "pass: #{[node_position.x, node_position.y, $game.maps[@character.map_id].passable?(node_position.x, node_position.y, dirs[i], @character)]}"
         next if !$game.maps[@character.map_id].passable?(node_position.x, node_position.y, dirs[i], @character)
         child_node = Node.new(node_position, current_node)
         # Skip this node if the position has already been visited
