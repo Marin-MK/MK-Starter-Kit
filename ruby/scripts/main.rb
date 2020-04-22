@@ -29,15 +29,13 @@ map.save
 map = MKD::Map.fetch(3)
 map.events = {}
 map.events[1] = MKD::Event.new(1)
-map.events[1].x = 1
-map.events[1].y = 4
+map.events[1].x = 0
+map.events[1].y = 1
 map.events[1].name = "Lil Boy"
 map.events[1].pages[0] = MKD::Event::Page.new
 map.events[1].pages[0].graphic.param = "gfx/characters/boy"
 map.events[1].pages[0].commands = [
-  [0, :message, {text: "I'm pathfinding now!"}],
-  [0, :pathfind, {player: true, x: 8, y: 8}],
-  [0, :message, {text: "done!"}]
+  [0, :script, {code: "Battle.new($trainer, Pokemon.new(:BULBASAUR, 2))"}]
 ]
 map.save
 

@@ -99,6 +99,12 @@ class MessageWindow < BaseWindow
     @letter_by_letter = value
   end
 
+  def ending_arrow=(value)
+    test_disposed
+    validate value => Boolean
+    @ending_arrow = value
+  end
+
   def text=(value)
     test_disposed
     @text = value.gsub(/{PLAYER}/, $trainer.name)
@@ -111,7 +117,6 @@ class MessageWindow < BaseWindow
     @arrow.dispose if @arrow
     @arrow = nil
     @formatted_text = MessageWindow.get_formatted_text(@text_bitmap.bitmap, @text_width, @text).split("\n")
-    self.update if !@letter_by_letter
   end
 
   def cmdwin=(value)
@@ -175,6 +180,7 @@ class MessageWindow < BaseWindow
                 else
                   text = @formatted_text[i]
                 end
+                @max_y = i - @current_line * @line_y_space + 6
                 @text_bitmap.draw_text(
                     y: (i - @current_line) * @line_y_space + 6,
                     text: text,
@@ -265,7 +271,7 @@ class MessageWindow < BaseWindow
     unless @arrow
       @arrow = Sprite.new(@viewport)
       @arrow.set_bitmap("gfx/misc/message_window_arrow")
-      @arrow.y = self.y + @line_y_start + @line_y_space + @arrow.bitmap.height - 10
+      @arrow.y = self.y + @line_y_start + @max_y
       @arrow.z = self.z + 1
       @arrow_counter = 0
     end

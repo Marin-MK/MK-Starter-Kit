@@ -60,5 +60,31 @@ class Trainer
       @owned[species] ||= []
       @owned[species] << form unless @owned[species].include?(form)
     end
+
+    def seen?(species, form = nil)
+      validate species => [Symbol, Integer, Species, Pokemon], form => [Integer, NilClass]
+      if species.is_a?(Pokemon)
+        pokemon = species
+        species = pokemon.species.intname
+        form = pokemon.form
+      elsif species.is_a?(Symbol, Integer, Species)
+        species = Species.get(species).intname
+        form = form || 0
+      end
+      return @seen[species] && @seen[species].size > 0
+    end
+
+    def owned?(species, form = nil)
+      validate species => [Symbol, Integer, Species, Pokemon], form => [Integer, NilClass]
+      if species.is_a?(Pokemon)
+        pokemon = species
+        species = pokemon.species.intname
+        form = pokemon.form
+      elsif species.is_a?(Symbol, Integer, Species)
+        species = Species.get(species).intname
+        form = form || 0
+      end
+      return @owned[species] && @owned[species].size > 0
+    end
   end
 end

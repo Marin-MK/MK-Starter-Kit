@@ -135,7 +135,7 @@ class PartyUI < BaseUI
         viewport: @viewport
       )
       @sprites["window"].width = 288
-      @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
+      @sprites["window"].text = "Do what with this " + symbol(:pkmn) + "?"
       loop do
         case cmdwin.get_choice { update_sprites }
         when "SUMMARY"
@@ -171,7 +171,7 @@ class PartyUI < BaseUI
             cmdwin.visible = true
             cmdwin.set_index(0, false)
             @sprites["window"].width = 288
-            @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
+            @sprites["window"].text = "Do what with this " + symbol(:pkmn) + "?"
           elsif itemchoice == "TAKE"
             break
           end
@@ -193,7 +193,7 @@ class PartyUI < BaseUI
     itemwin.dispose if itemwin && !itemwin.disposed?
     if ret.nil?
       @sprites["window"].width = 288
-      @sprites["window"].text = "Do what with this " + symbol(:PKMN) + "?"
+      @sprites["window"].text = "Do what with this " + symbol(:pkmn) + "?"
       cmdwin.visible = true
       cmdwin.set_index(0, false)
     else
@@ -359,7 +359,7 @@ class PartyUI < BaseUI
       end
       if !@pokemon.status && !@pokemon.fainted?
         @sprites["text"].draw_text(
-          x: 76, y: 58, text: symbol(:Lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248), shadow_color: Color.new(112, 112, 112),
+          x: 76, y: 58, text: symbol(:lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248), shadow_color: Color.new(112, 112, 112),
           small: true
         )
       end
@@ -506,7 +506,7 @@ class PartyUI < BaseUI
       end
       if !@pokemon.status && !@pokemon.fainted?
         @sprites["text"].draw_text(
-          x: 80, y: 28, text: symbol(:Lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248),
+          x: 80, y: 28, text: symbol(:lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248),
           shadow_color: Color.new(112, 112, 112), small: true
         )
       end

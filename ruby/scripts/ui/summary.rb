@@ -124,7 +124,7 @@ class SummaryUI < BaseUI
     @sprites["text"].draw_text(
       {x: 8, y: 8, text: "POKéMON INFO", color: Color::LIGHTBASE,
        shadow_color: Color::LIGHTSHADOW},
-      {x: 8, y: 42, text: symbol(:Lv) + @pokemon.level.to_s, color: Color::LIGHTBASE,
+      {x: 8, y: 42, text: symbol(:lv) + @pokemon.level.to_s, color: Color::LIGHTBASE,
        shadow_color: Color::LIGHTSHADOW},
       {x: 80, y: 42, text: @pokemon.name, color: Color::LIGHTBASE,
        shadow_color: Color::LIGHTSHADOW}
@@ -187,7 +187,7 @@ class SummaryUI < BaseUI
     )
     obtaintext = nil
     if @pokemon.obtain_type == :MET
-      obtaintext = "Met in " + MKD::Map.fetch(@pokemon.obtain_map).name + " at " + symbol(:Lv) + " " + @pokemon.obtain_level.to_s + "."
+      obtaintext = "Met in " + MKD::Map.fetch(@pokemon.obtain_map).name + " at " + symbol(:lv) + " " + @pokemon.obtain_level.to_s + "."
     end
     if obtaintext
       @sprites["vartext"].draw_text(
@@ -250,7 +250,7 @@ class SummaryUI < BaseUI
     @sprites["text"].draw_text(
       {x: 8, y: 8, text: "POKéMON SKILLS", color: Color.new(248, 248, 248),
        shadow_color: Color.new(96, 96, 96)},
-      {x: 8, y: 42, text: symbol(:Lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248),
+      {x: 8, y: 42, text: symbol(:lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248),
        shadow_color: Color.new(96, 96, 96)},
       {x: 80, y: 42, text: @pokemon.name, color: Color.new(248, 248, 248),
        shadow_color: Color.new(96, 96, 96)}
@@ -361,7 +361,7 @@ class SummaryUI < BaseUI
     @sprites["text"].draw_text(
       {x: 8, y: 8, text: "KNOWN MOVES", color: Color.new(248, 248, 248),
        shadow_color: Color.new(96, 96, 96)},
-      {x: 8, y: 42, text: symbol(:Lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248),
+      {x: 8, y: 42, text: symbol(:lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248),
        shadow_color: Color.new(96, 96, 96)},
       {x: 80, y: 42, text: @pokemon.name, color: Color.new(248, 248, 248),
        shadow_color: Color.new(96, 96, 96)}

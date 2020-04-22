@@ -20,8 +20,8 @@ end
 # Translates symbols to actual special characters in the font
 def symbol(n)
   characters = {
-    PKMN: "²³",
-    Lv: "¤",
+    pkmn: "²³",
+    lv: "¤",
     female: "¬",
     male: "£"
   }

@@ -51,6 +51,7 @@ pokemon/pokedex.rb: Pokedex
 pokemon/options.rb: Options
 pokemon/trainer.rb: Trainer
 sprites/disposable.rb: Disposable
+sprites/cellsprite.rb: Cell Sprite
 sprites/selectable_sprite.rb: Selectable Sprite
 sprites/splitsprite.rb: Split Sprite
 sprites/arrow_sprite.rb: Arrow Sprite
@@ -61,7 +62,6 @@ sprites/numeric_choice_window.rb: Numeric Choice Window
 sprites/status_condition_icon.rb: Status Condition Icon
 sprites/type_icon.rb: Type Icon
 sprites/pokemon_icon.rb: Pokemon Icon
-sprites/pokemon_battler_sprite.rb: Pokemon Battler Sprite
 particles/basicparticle.rb: Basic Particle
 intro/introscene.rb: Intro Scene
 ui/base.rb: Base UI
@@ -73,6 +73,18 @@ ui/summary.rb: Summary UI
 ui/save_menu.rb: Save UI
 ui/options_menu.rb: Options UI
 battle/encounter.rb: Encounters
+battle/battle.rb: Battle
+battle/side.rb: Side
+battle/trainer.rb: Trainer
+battle/battler.rb: Battler
+battle/ai.rb: AI
+battle_ui/constants.rb: Constants
+battle_ui/transition.rb: Transition
+battle_ui/ui.rb: UI
+battle_ui/battle_base.rb: Battle Base
+battle_ui/battler_sprite.rb: Battler Sprite
+battle_ui/trainer_sprite.rb: Trainer Sprite
+battle_ui/databox.rb: Databox
 routines/give_item_routine.rb: GiveItem Routine
 temp.rb: Temporary Data
 main.rb: Main

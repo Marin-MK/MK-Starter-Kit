@@ -22,6 +22,7 @@ module Encounter
       if !enc.nil?
         poke = Encounter.generate_wild_pokemon(enc)
         log(:OVERWORLD, "Wild encounter (#{poke.species.intname}, level #{poke.level})")
+        battle = Battle.new($trainer, poke)
       end
     end
   end

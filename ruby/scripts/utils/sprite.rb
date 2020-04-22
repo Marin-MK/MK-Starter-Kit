@@ -12,7 +12,7 @@ class Sprite
       color = arg[:color] || Color::WHITE
       shadow_color = arg[:shadow_color]
       outline_color = arg[:outline_color]
-      alignment = arg[:alignment] || :left
+      alignment = arg[:alignment] || arg[:align] || :left
       small = arg[:small] || false
       validate \
           x => Integer,
@@ -37,7 +37,7 @@ class Sprite
       end
       text_size = self.bitmap.text_size(text)
       x -= text_size.width if [:RIGHT, :right, "right", "RIGHT"].include?(alignment)
-      x -= text_size.width / 2 if [:CENTER, :center, "center", "CENTER"].include?(alignment)
+      x -= text_size.width / 2 if [:CENTER, :center, "center", "CENTER", :MID, :mid, "mid", "MID", :MIDDLE, :middle, "middle", "MIDDLE"].include?(alignment)
       if shadow_color
         self.bitmap.font.color = shadow_color
         self.bitmap.draw_text(x + 2, y, text_size.width, text_size.height, text)

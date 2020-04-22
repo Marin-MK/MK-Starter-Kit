@@ -232,3 +232,14 @@ Windowskin.new do
   @filename = "frame_10"
   @center = Rect.new(14, 14, 16, 16)
 end
+
+Windowskin.new do
+  @intname = :battle
+  @id = 13
+  @line_x_start = 20
+  @line_x_end = 20
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "battle"
+  @center = Rect.new(16, 14, 16, 20)
+end
