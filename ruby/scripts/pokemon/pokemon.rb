@@ -29,6 +29,8 @@ class Pokemon
   attr_accessor :happiness
   # @return [Symbol, NilClass] the status condition of this Pokemon.
   attr_accessor :status
+  # @return [Integer] the number of egg cycles left on this Pokemon.
+  attr_accessor :egg_cycles
   # @return [Symbol] the internal name of the ball used to catch this Pokemon.
   attr_accessor :ball_used
   # @return [Symbol] how this Pokemon was obtained.
@@ -109,6 +111,7 @@ class Pokemon
       @item = hash[:item]
       @status = hash[:status]
       @hp = hash[:hp]
+      @egg_cycles = hash[:egg_cycles]
     end
     raise ArgumentError, "must specify a species to create a Pokemon." if species.nil?
     raise ArgumentError, "must specify a level to create a Pokemon." if level.nil?
@@ -132,7 +135,8 @@ class Pokemon
         @moves => [NilClass, Array],
         @item => [NilClass, Symbol, Integer],
         @status => [NilClass, Symbol],
-        @hp => [NilClass, Integer]
+        @hp => [NilClass, Integer],
+        @egg_cycles => [NilClass, Integer]
 
     # Extra validation for properties passes through via a hash.
     if @genderflag.is_a?(Integer) && (@genderflag < 0 || @genderflag > 2)
@@ -172,6 +176,9 @@ class Pokemon
     end
     if !@hp.nil? && @hp < 0
       raise ArgumentError, "the hp stat cannot be negative."
+    end
+    if !@egg_cycles.nil? && @egg_cycles < 0
+      raise ArgumentError, "the egg cycle count cannot be negative."
     end
 
     # Ensure the species exists and set some initial values
@@ -221,6 +228,7 @@ class Pokemon
     @moves ||= get_moveset_for_level
     calc_stats
     @hp ||= @totalhp
+    @egg_cycles ||= 0
   end
 
 
@@ -609,6 +617,10 @@ class Pokemon
   # @return [Boolean] whether or not the Pokemon is genderless.
   def genderless?
     return self.is_gender?(2)
+  end
+
+  def egg?
+    return @egg_cycles > 0
   end
 
   # Restores the Pokemon's HP.

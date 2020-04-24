@@ -42,8 +42,8 @@ class MessageWindow < BaseWindow
         cmdwin => [NilClass, ChoiceWindow],
         update => [NilClass, Proc]
     @ending_arrow = ending_arrow
-    @text_bitmap = Sprite.new(viewport)
-    @text_bitmap.z = 99999
+    @text_sprite = Sprite.new(viewport)
+    @text_sprite.z = 99999
     @letter_by_letter = letter_by_letter
     @cmdwin = cmdwin
     @update = update
@@ -64,32 +64,32 @@ class MessageWindow < BaseWindow
   def width=(value)
     super(value)
     @text_width = @windowskin.get_text_width(@width)
-    @text_bitmap.set_bitmap(@text_width + 2, 96)
+    @text_sprite.set_bitmap(@text_width + 2, 96)
   end
 
   def height=(value)
     super(value)
-    @text_bitmap.set_bitmap(@text_width + 2, 96)
+    @text_sprite.set_bitmap(@text_width + 2, 96)
   end
 
   def x=(value)
     super(value)
-    @text_bitmap.x = value + @line_x_start
+    @text_sprite.x = value + @line_x_start
   end
 
   def y=(value)
     super(value)
-    @text_bitmap.y = value + @line_y_start - 6
+    @text_sprite.y = value + @line_y_start - 6
   end
 
   def z=(value)
     super(value)
-    @text_bitmap.z = value
+    @text_sprite.z = value
   end
 
   def visible=(value)
     super(value)
-    @text_bitmap.visible = value
+    @text_sprite.visible = value
     @arrow.visible = value if @arrow
   end
 
@@ -116,7 +116,8 @@ class MessageWindow < BaseWindow
     @running = true
     @arrow.dispose if @arrow
     @arrow = nil
-    @formatted_text = MessageWindow.get_formatted_text(@text_bitmap.bitmap, @text_width, @text).split("\n")
+    @formatted_text = MessageWindow.get_formatted_text(@text_sprite.bitmap, @text_width, @text).split("\n")
+    @text_sprite.bitmap.clear
   end
 
   def cmdwin=(value)
@@ -146,15 +147,15 @@ class MessageWindow < BaseWindow
     if @move_up_counter > 0
       hide_arrow if @arrow && @arrow.visible
       @move_up_counter -= 1
-      @text_bitmap.src_rect.y += @line_y_space / 6.0
-      @text_bitmap.src_rect.height -= @line_y_space / 6.0
+      @text_sprite.src_rect.y += @line_y_space / 6.0
+      @text_sprite.src_rect.height -= @line_y_space / 6.0
       @move_up_counter = -1 if @move_up_counter == 0
     elsif @move_up_counter == -1
       @current_line += 1
       @text_index = -1
       @draw_counter = -1
-      @text_bitmap.src_rect.y = 0
-      @text_bitmap.src_rect.height = @text_bitmap.bitmap.height
+      @text_sprite.src_rect.y = 0
+      @text_sprite.src_rect.height = @text_sprite.bitmap.height
       @move_up_counter = 0
     end
     if @formatted_text[@line_index]
@@ -173,7 +174,8 @@ class MessageWindow < BaseWindow
               @line_index += 1
             end
             if @line_index - @current_line < 2 && @formatted_text[@line_index]
-              @text_bitmap.bitmap.clear
+              @text_sprite.bitmap.clear
+              @drawing = true
               for i in @current_line..@line_index
                 if i == @line_index
                   text = @formatted_text[i][0..@text_index]
@@ -181,20 +183,23 @@ class MessageWindow < BaseWindow
                   text = @formatted_text[i]
                 end
                 @max_y = i - @current_line * @line_y_space + 6
-                @text_bitmap.draw_text(
+                @text_sprite.draw_text(
                     y: (i - @current_line) * @line_y_space + 6,
                     text: text,
                     color: @color,
                     shadow_color: @shadow_color
                 )
               end
+            else
+              @drawing = false
             end
           end
         else # Not letter by letter
+          @drawing = false
           @line_index = @current_line + 1
-          @text_bitmap.bitmap.clear
+          @text_sprite.bitmap.clear
           for i in @current_line..@line_index
-            @text_bitmap.draw_text(
+            @text_sprite.draw_text(
               y: (i - @current_line) * @line_y_space + 6,
               text: @formatted_text[i],
               color: @color,
@@ -203,13 +208,17 @@ class MessageWindow < BaseWindow
           end
           @line_index = @current_line + 2
         end
-      elsif @move_up_counter == 0
-        show_arrow if !@arrow || !@arrow.visible
-        if Input.confirm? || Input.cancel?
-          @move_up_counter = 6
+      else
+        @drawing = false
+        if @move_up_counter == 0
+          show_arrow if !@arrow || !@arrow.visible
+          if Input.confirm? || Input.cancel?
+            @move_up_counter = 6
+          end
         end
       end
     else
+      @drawing = false
       show_arrow if @ending_arrow && (!@arrow || !@arrow.visible)
       if @cmdwin
         @cmdwin.visible = true if !@cmdwin.visible
@@ -276,7 +285,7 @@ class MessageWindow < BaseWindow
       @arrow_counter = 0
     end
     @arrow.visible = true
-    @arrow.x = self.x + @text_bitmap.bitmap.text_size(@formatted_text[@line_index - 1]).width + @line_x_start
+    @arrow.x = self.x + @text_sprite.bitmap.text_size(@formatted_text[@line_index - 1]).width + @line_x_start
   end
 
   def hide_arrow
@@ -286,7 +295,7 @@ class MessageWindow < BaseWindow
 
   def dispose
     super
-    @text_bitmap.dispose
+    @text_sprite.dispose
     @arrow.dispose if @arrow
     @cmdwin.dispose if @cmdwin && !@cmdwin.disposed?
     @running = false

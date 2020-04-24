@@ -149,6 +149,30 @@ class Species < Serializable
     return @evolutions
   end
 
+  # @return [Integer] x offset for the battler front sprite.
+  def battler_front_x(form = 0)
+    return @forms[form][:battler_front_x] || @battler_front_x if @forms[form] && form != 0
+    return @battler_front_x
+  end
+
+  # @return [Integer] y offset for the battler front sprite.
+  def battler_front_y(form = 0)
+    return @forms[form][:battler_front_y] || @battler_front_y if @forms[form] && form != 0
+    return @battler_front_y
+  end
+
+  # @return [Integer] x offset for the battler back sprite.
+  def battler_back_x(form = 0)
+    return @forms[form][:battler_back_x] || @battler_back_x if @forms[form] && form != 0
+    return @battler_back_x
+  end
+
+  # @return [Integer] y offset for the battler back sprite.
+  def battler_back_y(form = 0)
+    return @forms[form][:battler_back_y] || @battler_back_y if @forms[form] && form != 0
+    return @battler_back_y
+  end
+
   # Creates a new Species object.
   def initialize(&block)
     #validate block => Proc
@@ -164,6 +188,10 @@ class Species < Serializable
     @moveset.evolution = []
     @moveset.egg = []
     @forms = {}
+    @battler_front_x = 0
+    @battler_front_y = 0
+    @battler_back_x = 0
+    @battler_back_y = 0
     instance_eval(&block)
     #validate_species
     Cache[@intname] = self
@@ -330,6 +358,7 @@ Species.new do
       leveling_rate: :SLOW
     }
   }
+  @battler_back_y = 30
 end
 
 FileUtils.save_data("data/species.mkd", :species, Species::Cache)

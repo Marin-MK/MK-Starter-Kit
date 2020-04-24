@@ -5,6 +5,8 @@ class BaseWindow
   attr_reader :height
   attr_reader :windowskin
   attr_reader :viewport
+  attr_accessor :running
+  attr_accessor :drawing
 
   def initialize(width, height, windowskin, viewport = nil)
     validate \
@@ -20,6 +22,7 @@ class BaseWindow
     self.height = height
     @window.set("gfx/windowskins/" + @windowskin.filename, @windowskin.center) if @windowskin.filename.size > 0
     @running = true
+    @drawing = false
   end
 
   def width=(value)
@@ -47,6 +50,10 @@ class BaseWindow
 
   def running?
     return @running
+  end
+
+  def drawing?
+    return @drawing
   end
 
   def viewport

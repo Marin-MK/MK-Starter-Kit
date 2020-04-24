@@ -11,27 +11,39 @@ class Battle
       @sprites["box"].bitmap = bmp
       @sprites["text"] = Sprite.new(@viewport)
       @sprites["text"].bitmap = Bitmap.new(bmp.width, bmp.height)
+      if !opponent?
+        @sprites["hp_text"] = Sprite.new(@viewport)
+        @sprites["hp_text"].bitmap = Bitmap.new(bmp.width, bmp.height)
+      end
       draw_name_and_gender
       draw_level
-      draw_owned_ball if $trainer.pokedex.owned?(@battler.pokemon)
+      draw_owned_ball if $trainer.pokedex.owned?(@battler.pokemon) && is_opponent
       draw_hp_bar
       draw_hp
     end
 
+    def opponent?
+      return @is_opponent
+    end
+
     def draw_name_and_gender
-      @sprites["text"].draw_text(x: NAME_X, y: NAME_Y, text: @battler.name, color: NAME_BASE_COLOR, shadow_color: NAME_SHADOW_COLOR, small: true)
+      name_x = opponent? ? OPPONENT_NAME_X : PLAYER_NAME_X
+      name_y = opponent? ? OPPONENT_NAME_Y : PLAYER_NAME_Y
+      @sprites["text"].draw_text(x: name_x, y: name_y, text: @battler.name, color: BASE_COLOR, shadow_color: SHADOW_COLOR, small: true)
       fontname = @sprites["text"].bitmap.font.name
       @sprites["text"].bitmap.font.name += " Small"
       width = @sprites["text"].bitmap.text_size(@battler.name).width
       @sprites["text"].bitmap.font.name = fontname
       if !@battler.genderless?
         color = @battler.male? ? GENDER_COLOR_MALE : GENDER_COLOR_FEMALE
-        @sprites["text"].draw_text(x: NAME_X + width, y: NAME_Y, text: symbol(@battler.male? ? :male : :female), color: color, shadow_color: Color.new(216, 208, 176), small: true)
+        @sprites["text"].draw_text(x: name_x + width, y: name_y, text: symbol(@battler.male? ? :male : :female), color: color, shadow_color: SHADOW_COLOR, small: true)
       end
     end
 
     def draw_level
-      @sprites["text"].draw_text(x: LEVEL_X, y: LEVEL_Y, text: symbol(:lv) + @battler.level.to_s, color: Color.new(64, 64, 64), shadow_color: Color.new(216, 208, 176), small: true, align: :right)
+      level_x = opponent? ? OPPONENT_LEVEL_X : PLAYER_LEVEL_X
+      level_y = opponent? ? OPPONENT_LEVEL_Y : PLAYER_LEVEL_Y
+      @sprites["text"].draw_text(x: level_x, y: level_y, text: symbol(:lv) + @battler.level.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, small: true, align: :right)
     end
 
     def draw_owned_ball
@@ -44,8 +56,8 @@ class Battle
     def draw_hp_bar
       @sprites["hp_bar"] = Sprite.new(@viewport)
       @sprites["hp_bar"].bitmap = Bitmap.new(HP_BAR_PATH)
-      @sprites["hp_bar"].x = HP_BAR_X
-      @sprites["hp_bar"].y = HP_BAR_Y
+      @sprites["hp_bar"].x = opponent? ? OPPONENT_HP_BAR_X : PLAYER_HP_BAR_X
+      @sprites["hp_bar"].y = opponent? ? OPPONENT_HP_BAR_Y : PLAYER_HP_BAR_Y
     end
 
     def draw_hp(hp = @battler.hp)
@@ -53,8 +65,8 @@ class Battle
         @sprites["hp"] = Sprite.new(@viewport)
         @sprites["hp"].bitmap = Bitmap.new(HP_PATH)
         @sprites["hp"].src_rect.height = @sprites["hp"].bitmap.height / 3
-        @sprites["hp"].x = HP_X
-        @sprites["hp"].y = HP_Y
+        @sprites["hp"].x = opponent? ? OPPONENT_HP_X : PLAYER_HP_X
+        @sprites["hp"].y = opponent? ? OPPONENT_HP_Y : PLAYER_HP_Y
       end
       fraction = hp / @battler.totalhp.to_f
       arg = 0
@@ -62,6 +74,12 @@ class Battle
       arg = 2 if fraction < 0.25
       @sprites["hp"].src_rect.y = arg * @sprites["hp"].src_rect.height
       @sprites["hp"].src_rect.width = fraction * @sprites["hp"].bitmap.width
+      if !opponent?
+        @sprites["hp_text"].bitmap.clear
+        @sprites["hp_text"].draw_text(x: 188, y: 44, text: @battler.totalhp.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, align: :right, small: true)
+        @sprites["hp_text"].draw_text(x: 150, y: 44, text: "/", color: BASE_COLOR, shadow_color: SHADOW_COLOR)
+        @sprites["hp_text"].draw_text(x: 148, y: 44, text: hp.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, align: :right, small: true)
+      end
     end
 
     def width

@@ -7,8 +7,8 @@ class Battle
     attr_accessor :wild_pokemon
 
     def initialize(party = [])
+      party = party.party if party.is_a?(Object::Trainer)
       @party = party.map { |e| Battler.new(e) }
-      @wild_pokemon = true
     end
   end
 end

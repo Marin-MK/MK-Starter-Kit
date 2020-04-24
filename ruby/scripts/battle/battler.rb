@@ -24,6 +24,10 @@ class Battle
       return @pokemon.hp
     end
 
+    def ball_used
+      return @ball_used
+    end
+
     def totalhp
       return @pokemon.totalhp
     end
@@ -42,6 +46,14 @@ class Battle
 
     def shiny?
       return @pokemon.shiny?
+    end
+
+    def fainted?
+      return @pokemon.fainted?
+    end
+
+    def egg?
+      return @pokemon.egg?
     end
   end
 end

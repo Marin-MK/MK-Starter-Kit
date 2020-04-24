@@ -7,9 +7,9 @@ class CellSprite < Sprite
   end
 
   def frame=(frame)
-    @frame = @frame_count % frame
-    self.src_rect.x = @frame % @horizontal_frames
-    self.src_rect.y = (@frame.to_f / @horizontal_frames).floor
+    @frame = frame % @frame_count
+    self.src_rect.x = self.src_rect.width * (@frame % @horizontal_frames)
+    self.src_rect.y = self.src_rect.height * (@frame.to_f / @horizontal_frames).floor
   end
 
   def set_cell(width, height)
