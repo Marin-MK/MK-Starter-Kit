@@ -7,11 +7,13 @@ class Windowskin < Serializable
   attr_accessor :id
   # @return [Integer] the left-most X position where text can be drawn.
   attr_accessor :line_x_start
+  # @return [Integer] the number of pixels in between horizontal list entries.
+  attr_accessor :line_x_space
   # @return [Integer] the right-most X position where text can be drawn.
   attr_accessor :line_x_end
   # @return [Integer] the top-most Y position where text can be drawn.
   attr_accessor :line_y_start
-  # @return [Integer] the number of pixels in between lines.
+  # @return [Integer] the number of pixels in between vertical list entries.
   attr_accessor :line_y_space
   # @return [String] the filename associated with this windowskin.
   attr_accessor :filename
@@ -22,6 +24,7 @@ class Windowskin < Serializable
   def initialize(&block)
     validate block => Proc
     @id = 0
+    @line_x_space = 96
     instance_eval(&block)
     validate_windowskin
     Cache[@id] = self
@@ -33,6 +36,7 @@ class Windowskin < Serializable
         @intname => Symbol,
         @id => Integer,
         @line_x_start => Integer,
+        @line_x_space => Integer,
         @line_x_end => Integer,
         @line_y_start => Integer,
         @line_y_space => Integer,
@@ -226,6 +230,7 @@ Windowskin.new do
   @intname = :choice
   @id = 12
   @line_x_start = 32
+  @line_x_space = 96
   @line_x_end = 16
   @line_y_start = 26
   @line_y_space = 32
@@ -242,4 +247,16 @@ Windowskin.new do
   @line_y_space = 32
   @filename = "battle"
   @center = Rect.new(16, 14, 16, 20)
+end
+
+Windowskin.new do
+  @intname = :battle_choice
+  @id = 14
+  @line_x_start = 32
+  @line_x_space = 112
+  @line_x_end = 16
+  @line_y_start = 26
+  @line_y_space = 32
+  @filename = "battle_choice"
+  @center = Rect.new(14, 14, 16, 16)
 end

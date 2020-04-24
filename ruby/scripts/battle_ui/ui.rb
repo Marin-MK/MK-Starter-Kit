@@ -182,5 +182,32 @@ class Battle
         @sprites["databox1"].x = Graphics.width - diffx * i
       end
     end
+
+    def choose_command(battler)
+      @msgwin.text = "What will\n#{battler.name} do?"
+      @msgwin.letter_by_letter = false
+      @cmdwin = MultiChoiceWindow.new(
+        x: 240,
+        y: 224,
+        z: 4,
+        width: 240,
+        height: 96,
+        viewport: @viewport,
+        choices: [["FIGHT", "BAG"], ["POKéMON", "RUN"]],
+        cancel_choice: nil,
+        arrow_path: "gfx/ui/battle/choice_arrow",
+        arrow_states: 1,
+        can_loop: false,
+        color: Color.new(72, 72, 72),
+        windowskin: :battle_choice
+      )
+      loop do
+        update
+        cmd = @cmdwin.update
+        if !cmd.nil?
+          return CommandChoice.new(cmd)
+        end
+      end
+    end
   end
 end

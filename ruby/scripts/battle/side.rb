@@ -1,6 +1,7 @@
 class Battle
   class Side
     attr_accessor :trainers
+    attr_accessor :battlers
     attr_accessor :effects
 
     def initialize(args)
@@ -18,6 +19,7 @@ class Battle
         @trainers = [Trainer.new([args])]
       end
       @effects = {}
+      @battlers = []
     end
   end
 end

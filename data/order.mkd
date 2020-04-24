@@ -58,6 +58,7 @@ sprites/arrow_sprite.rb: Arrow Sprite
 sprites/base_window.rb: Base Window
 sprites/message_window.rb: Message Window
 sprites/choice_window.rb: Choice Window
+sprites/multi_choice_window: Multi Choice Window
 sprites/numeric_choice_window.rb: Numeric Choice Window
 sprites/status_condition_icon.rb: Status Condition Icon
 sprites/type_icon.rb: Type Icon
@@ -78,6 +79,7 @@ battle/side.rb: Side
 battle/trainer.rb: Trainer
 battle/battler.rb: Battler
 battle/ai.rb: AI
+battle/command_choice: Command Choice
 battle_ui/constants.rb: Constants
 battle_ui/transition.rb: Transition
 battle_ui/ui.rb: UI

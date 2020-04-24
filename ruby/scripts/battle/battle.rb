@@ -25,9 +25,30 @@ class Battle
     return @wild_battle
   end
 
+  def update
+    @ui.update
+  end
+
   def main
     loop do
-      @ui.update
+      for side in @sides
+        for battler in side.battlers
+          if side == 0 # Player side
+            choice = @ui.choose_command(battler)
+            if choice.fight?
+
+            elsif choice.bag?
+
+            elsif choice.pokemon?
+
+            elsif choice.run?
+              
+            end
+          else # Opposing side
+
+          end
+        end
+      end
     end
   end
 end
