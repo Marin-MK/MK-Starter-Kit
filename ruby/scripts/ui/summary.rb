@@ -90,7 +90,7 @@ class SummaryUI < BaseUI
     @sprites["status"].x = 12
     @sprites["status"].y = 68
     @sprites["pokemon"].dispose if @sprites["pokemon"]
-    @sprites["pokemon"] = PokemonBattlerSprite.new(@pokemon, @viewport)
+    @sprites["pokemon"] = Battle::BattlerSprite.new(@pokemon, true, @viewport)
     @sprites["pokemon"].mirror = true
     @sprites["pokemon"].x = 56
     @sprites["pokemon"].y = 66

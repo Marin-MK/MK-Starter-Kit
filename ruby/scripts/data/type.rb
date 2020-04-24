@@ -104,14 +104,14 @@ end
 Type.new do
   @intname = :NORMAL
   @id = 1
-  @name = "Normal"
+  @name = "NORMAL"
   @immune_to = [:GHOST]
 end
 
 Type.new do
   @intname = :FIGHTING
   @id = 2
-  @name = "Fighting"
+  @name = "FIGHTING"
   @strong_against = [:NORMAL, :ICE, :DARK, :ROCK, :STEEL]
   @resistant_to = [:BUG, :DARK, :ROCK]
 end
@@ -119,7 +119,7 @@ end
 Type.new do
   @intname = :FLYING
   @id = 3
-  @name = "Flying"
+  @name = "FLYING"
   @strong_against = [:BUG, :FIGHTING, :GRASS]
   @resistant_to = [:BUG, :FIGHTING, :GRASS]
   @immune_to = [:GROUND]
@@ -128,7 +128,7 @@ end
 Type.new do
   @intname = :POISON
   @id = 4
-  @name = "Poison"
+  @name = "POISON"
   @strong_against = [:GRASS]
   @resistant_to = [:FIGHTING, :POISON, :BUG, :GRASS]
 end
@@ -136,7 +136,7 @@ end
 Type.new do
   @intname = :GROUND
   @id = 5
-  @name = "Ground"
+  @name = "GROUND"
   @strong_against = [:ELECTRIC, :FIRE, :POISON, :ROCK, :STEEL]
   @resistant_to = [:POISON, :ROCK]
   @immune_to = [:ELECTRIC]
@@ -145,7 +145,7 @@ end
 Type.new do
   @intname = :ROCK
   @id = 6
-  @name = "Rock"
+  @name = "ROCK"
   @strong_against = [:BUG, :FIRE, :FLYING, :ICE]
   @resistant_to = [:FIRE, :FLYING, :NORMAL, :POISON]
 end
@@ -153,7 +153,7 @@ end
 Type.new do
   @intname = :BUG
   @id = 7
-  @name = "Bug"
+  @name = "BUG"
   @strong_against = [:DARK, :GRASS, :PSYCHIC]
   @resistant_to = [:FIGHTING, :GRASS, :GROUND]
 end
@@ -161,7 +161,7 @@ end
 Type.new do
   @intname = :GHOST
   @id = 8
-  @name = "Ghost"
+  @name = "GHOST"
   @strong_against = [:GHOST, :PSYCHIC]
   @resistant_to = [:BUG, :POISON]
   @immune_to = [:NORMAL, :FIGHTING]
@@ -170,7 +170,7 @@ end
 Type.new do
   @intname = :STEEL
   @id = 9
-  @name = "Steel"
+  @name = "STEEL"
   @strong_against = [:ICE, :ROCK]
   @resistant_to = [:BUG, :DARK, :DRAGON, :FLYING, :GHOST, :GRASS, :ICE, :NORMAL, :PSYCHIC, :ROCK, :STEEL]
   @immune_to = [:POISON]
@@ -185,7 +185,7 @@ end
 Type.new do
   @intname = :FIRE
   @id = 11
-  @name = "Fire"
+  @name = "FIRE"
   @strong_against = [:BUG, :GRASS, :ICE, :STEEL]
   @resistant_to = [:BUG, :FIRE, :GRASS, :ICE, :STEEL]
 end
@@ -193,7 +193,7 @@ end
 Type.new do
   @intname = :WATER
   @id = 12
-  @name = "Water"
+  @name = "WATER"
   @strong_against = [:FIRE, :GROUND, :ROCK]
   @resistant_to = [:FIRE, :ICE, :STEEL, :WATER]
 end
@@ -201,7 +201,7 @@ end
 Type.new do
   @intname = :GRASS
   @id = 13
-  @name = "Grass"
+  @name = "GRASS"
   @strong_against = [:GROUND, :ROCK, :WATER]
   @resistant_to = [:ELECTRIC, :GRASS, :GROUND, :WATER]
 end
@@ -209,7 +209,7 @@ end
 Type.new do
   @intname = :ELECTRIC
   @id = 14
-  @name = "Electric"
+  @name = "ELECTRIC"
   @strong_against = [:FLYING, :WATER]
   @resistant_to = [:ELECTRIC, :FLYING, :STEEL]
 end
@@ -217,7 +217,7 @@ end
 Type.new do
   @intname = :PSYCHIC
   @id = 15
-  @name = "Psychic"
+  @name = "PSYCHIC"
   @strong_against = [:FIGHTING, :POISON]
   @resistant_to = [:FIGHTING, :PSYCHIC]
 end
@@ -225,7 +225,7 @@ end
 Type.new do
   @intname = :ICE
   @id = 16
-  @name = "Ice"
+  @name = "ICE"
   @strong_against = [:DRAGON, :FLYING, :GRASS, :GROUND]
   @resistant_to = [:ICE]
 end
@@ -233,7 +233,7 @@ end
 Type.new do
   @intname = :DRAGON
   @id = 17
-  @name = "Dragon"
+  @name = "DRAGON"
   @strong_against = [:DRAGON]
   @resistant_to = [:ELECTRIC, :FIRE, :GRASS, :WATER]
 end
@@ -241,7 +241,7 @@ end
 Type.new do
   @intname = :DARK
   @id = 18
-  @name = "Dark"
+  @name = "DARK"
   @strong_against = [:GHOST, :PSYCHIC]
   @resistant_to = [:DARK, :GHOST]
   @immune_to = [:PSYCHIC]

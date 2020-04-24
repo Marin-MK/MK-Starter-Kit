@@ -23,9 +23,10 @@ class MultiChoiceWindow < BaseWindow
         line_y_start: 0, # offset for this specific instance of the choicewindow
         line_y_space: 0, # offset for this specific instance of the choicewindow
         line_x_start: 0, # offset for this specific instance of the choicewindow
-        line_x_space: 0, # offset for this specific instance of the choicewindow
+        line_x_space:, # the space between two horizontal options
         arrow_path: "gfx/misc/choice_arrow",
         arrow_states: 2,
+        small: false,
         viewport: nil)
     validate_array choices => Array
     validate \
@@ -48,23 +49,24 @@ class MultiChoiceWindow < BaseWindow
         line_x_space => Integer,
         arrow_path => String,
         arrow_states => Integer,
+        small => Boolean,
         viewport => [NilClass, Viewport]
     @choices = choices
     @initial_choice = initial_choice
     @cancel_choice = cancel_choice
     @can_loop = can_loop
-    @text_bitmap = Sprite.new(viewport)
-    @text_bitmap.z = z + 1
     @windowskin = Windowskin.get(windowskin)
     @line_y_start = @windowskin.line_y_start + line_y_start
     @line_y_space = @windowskin.line_y_space + line_y_space
     @line_x_start = @windowskin.line_x_start + line_x_start
-    @line_x_space = @windowskin.line_x_space + line_x_space
+    @line_x_space = line_x_space
     @arrow_path = arrow_path
     @arrow_states = arrow_states
-    @text_width = @windowskin.get_text_width(width)
-    @text_bitmap.set_bitmap(width, height)
+    @small = small
     super(width, height, @windowskin, viewport)
+    @text_width = @windowskin.get_text_width(width)
+    @text_sprite.set_bitmap(width, height)
+    @text_sprite.z = z + 1
     self.color = color
     self.shadow_color = shadow_color
     self.x = x
@@ -86,7 +88,7 @@ class MultiChoiceWindow < BaseWindow
 
   def x=(value)
     super(value)
-    @text_bitmap.x = value + @line_x_start
+    @text_sprite.x = value + @line_x_start
     if @selector
       @selector.x = self.x + @line_x_start - 2 + @line_x_space * (@index % 2) - @selector.bitmap.width
     end
@@ -94,15 +96,15 @@ class MultiChoiceWindow < BaseWindow
 
   def y=(value)
     super(value)
-    @text_bitmap.y = value + @line_y_start
+    @text_sprite.y = value + @line_y_start
     if @selector
-      @selector.y = self.y + @line_y_start - 2 + @line_y_space * (@index / 2.0).floor
+      @selector.y = self.y + @line_y_start - (@small ? 0 : 2) + @line_y_space * (@index / 2.0).floor
     end
   end
 
   def visible=(value)
     super(value)
-    @text_bitmap.visible = value
+    @text_sprite.visible = value
     if @selector
       @selector.visible = value
     end
@@ -112,12 +114,13 @@ class MultiChoiceWindow < BaseWindow
     test_disposed
     for y in 0...@choices.size
       for x in 0...@choices[y].size
-        @text_bitmap.draw_text(
+        @text_sprite.draw_text(
           x: @line_x_space * x,
           y: @line_y_space * y,
           text: @choices[y][x],
           color: @color,
-          shadow_color: @shadow_color
+          shadow_color: @shadow_color,
+          small: @small
         )
       end
     end
@@ -125,7 +128,7 @@ class MultiChoiceWindow < BaseWindow
       @selector = SelectableSprite.new(@viewport)
       @selector.set_bitmap(@arrow_path, @arrow_states)
       @selector.x = self.x + @line_x_start - 2 + @line_x_space * (@index % 2) - @selector.bitmap.width
-      @selector.y = self.y + @line_y_start - 2 + @line_y_space * (@index / 2.0).floor
+      @selector.y = self.y + @line_y_start - (@small ? 0 : 2) + @line_y_space * (@index / 2.0).floor
       @selector.z = self.z + 1
     end
   end
@@ -190,7 +193,7 @@ class MultiChoiceWindow < BaseWindow
   def set_index(value, audio = true)
     @index = value
     @selector.x = self.x + @line_x_start - 2 + @line_x_space * (@index % 2) - @selector.bitmap.width
-    @selector.y = self.y + @line_y_start - 2 + @line_y_space * (@index / 2.0).floor
+    @selector.y = self.y + @line_y_start - (@small ? 0 : 2) + @line_y_space * (@index / 2.0).floor
     Audio.se_play("audio/se/menu_select") if audio
   end
 
@@ -201,7 +204,7 @@ class MultiChoiceWindow < BaseWindow
 
   def dispose
     super
-    @text_bitmap.dispose
+    @text_sprite.dispose
     @selector.dispose if @selector
   end
 end

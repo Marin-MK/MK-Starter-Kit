@@ -35,8 +35,8 @@ class NumericChoiceWindow < BaseWindow
     super(width, height, windowskin, viewport)
     @up = ArrowSprite.new(:up, @viewport)
     @down = ArrowSprite.new(:down, @viewport)
-    @text_bitmap = Sprite.new(@viewport)
-    @text_bitmap.set_bitmap(self.width, self.height)
+    @text_sprite = Sprite.new(@viewport)
+    @text_sprite.set_bitmap(self.width, self.height)
     self.x = x
     self.y = y
     self.z = z
@@ -48,29 +48,29 @@ class NumericChoiceWindow < BaseWindow
     super(value)
     @up.x = value + 42
     @down.x = value + 42
-    @text_bitmap.x = value
+    @text_sprite.x = value
   end
 
   def y=(value)
     super(value)
     @up.y = value - 2
     @down.y = value + self.height - @down.bitmap.height + 2
-    @text_bitmap.y = value
+    @text_sprite.y = value
   end
 
   def z=(value)
     super(value)
     @up.z = value + 1
     @down.z = value + 1
-    @text_bitmap.z = value + 1
+    @text_sprite.z = value + 1
   end
 
   def draw_value
     text = @value.to_s
     (@digits - text.length).times { text.prepend("0") }
-    x = (self.width - @text_bitmap.text_size(text, true).width - 2) / 2 - 2
-    @text_bitmap.bitmap.clear
-    @text_bitmap.draw_text(
+    x = (self.width - @text_sprite.text_size(text, true).width - 2) / 2 - 2
+    @text_sprite.bitmap.clear
+    @text_sprite.draw_text(
       {x: x,
        y: self.height / 2 - 6,
        text: text,
@@ -140,6 +140,6 @@ class NumericChoiceWindow < BaseWindow
     super
     @up.dispose
     @down.dispose
-    @text_bitmap.dispose
+    @text_sprite.dispose
   end
 end

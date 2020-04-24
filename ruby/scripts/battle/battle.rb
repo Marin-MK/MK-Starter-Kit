@@ -9,6 +9,7 @@ class Battle
     @wild_battle = false
     if side2.is_a?(Pokemon)
       @sides[1].trainers[0].wild_pokemon = true
+      @sides[1].battlers = [@sides[1].trainers[0].party[0]]
       @wild_battle = true
     end
     @wild_pokemon = @sides[1].trainers[0].party[0] if @wild_battle
@@ -16,8 +17,9 @@ class Battle
     @ui.begin_start
     @ui.shiny_sparkle if @wild_pokemon.shiny?
     @ui.finish_start("Wild #{@wild_pokemon.pokemon.species.name} appeared!")
-    pokemon = @sides[0].trainers[0].party.find { |e| !e.egg? && !e.fainted? }
-    @ui.send_out_initial_pokemon("Go! #{pokemon.name}!", pokemon)
+    battler = @sides[0].trainers[0].party.find { |e| !e.egg? && !e.fainted? }
+    @sides[0].battlers << battler
+    @ui.send_out_initial_pokemon("Go! #{battler.name}!", battler)
     main
   end
 
@@ -31,18 +33,24 @@ class Battle
 
   def main
     loop do
-      for side in @sides
-        for battler in side.battlers
+      for side in 0...@sides.size
+        for battler in @sides[side].battlers
           if side == 0 # Player side
-            choice = @ui.choose_command(battler)
-            if choice.fight?
+            loop do
+              choice = @ui.choose_command(battler)
+              if choice.fight?
+                movechoice = @ui.choose_move(battler)
+                next if movechoice.cancel?
+                move = battler.moves[movechoice.value]
+                p "#{battler.name} used #{move.name}!"
+              elsif choice.bag?
 
-            elsif choice.bag?
+              elsif choice.pokemon?
 
-            elsif choice.pokemon?
+              elsif choice.run?
 
-            elsif choice.run?
-              
+              end
+              break
             end
           else # Opposing side
 

@@ -100,7 +100,7 @@ class SplitSprite
     frac_bottom = (space_bottom / center.width.to_f) % 1
     bmp.blt(blw + (i + 1) * center.width, @height - blh, src, Rect.new(center.x, center.y + center.height, (center.width * frac_bottom).round, src.height - center.y - center.height))
 
-    # Space in the middle. Has to be drawn first since this may overlap with the sides or corners.
+    # Space in the middle.
     space_middle_height = @height - tlh - blh
     space_middle_width = @width - tlw - trw
     y = nil

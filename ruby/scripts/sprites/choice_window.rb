@@ -22,6 +22,7 @@ class ChoiceWindow < BaseWindow
         line_y_start: 0, # offset for this specific instance of the choicewindow
         line_y_space: 0, # offset for this specific instance of the choicewindow
         line_x_start: 0, # offset for this specific instance of the choicewindow
+        small: false,
         viewport: nil)
     validate_array choices => String
     validate \
@@ -41,23 +42,24 @@ class ChoiceWindow < BaseWindow
         line_y_start => Integer,
         line_y_space => Integer,
         line_x_start => Integer,
+        small => Boolean,
         viewport => [NilClass, Viewport]
     @choices = choices
     @initial_choice = initial_choice
     @cancel_choice = cancel_choice
     @visible_choices = visible_choices || @choices.size
     @can_loop = can_loop
-    @text_bitmap = Sprite.new(viewport)
-    @text_bitmap.z = z + 1
     @windowskin = Windowskin.get(windowskin)
     @line_y_start = @windowskin.line_y_start + line_y_start
     @line_y_space = @windowskin.line_y_space + line_y_space
     @line_x_start = @windowskin.line_x_start + line_x_start
+    @small = small
     c = [@choices.size, @visible_choices].min
     height = [@line_y_space * (c + 1), 96].max
-    @text_width = @windowskin.get_text_width(width)
-    @text_bitmap.set_bitmap(@text_width, 18 + @line_y_space * c)
     super(width, height, @windowskin, viewport)
+    @text_width = @windowskin.get_text_width(width)
+    @text_sprite.set_bitmap(@text_width, 18 + @line_y_space * c)
+    @text_sprite.z = z + 1
     self.color = color
     self.shadow_color = shadow_color
     self.x = x
@@ -79,7 +81,7 @@ class ChoiceWindow < BaseWindow
 
   def x=(value)
     super(value)
-    @text_bitmap.x = value + @line_x_start
+    @text_sprite.x = value + @line_x_start
     if @selector
       @selector.x = self.x + @line_x_start - @selector.src_rect.width - 2
     end
@@ -87,15 +89,15 @@ class ChoiceWindow < BaseWindow
 
   def y=(value)
     super(value)
-    @text_bitmap.y = value + @line_y_start
+    @text_sprite.y = value + @line_y_start
     if @selector
-      @selector.y = self.y + @line_y_start - 2 + @line_y_space * @index
+      @selector.y = self.y + @line_y_start - (@small ? 0 : 2) + @line_y_space * @index
     end
   end
 
   def visible=(value)
     super(value)
-    @text_bitmap.visible = value
+    @text_sprite.visible = value
     if @selector
       @selector.visible = value
     end
@@ -104,18 +106,19 @@ class ChoiceWindow < BaseWindow
   def draw_choices
     test_disposed
     for i in 0...@visible_choices
-      @text_bitmap.draw_text(
+      @text_sprite.draw_text(
         y: @line_y_space * i,
         text: @choices[i],
         color: @color,
-        shadow_color: @shadow_color
+        shadow_color: @shadow_color,
+        small: @small
       )
     end
     unless @selector
       @selector = SelectableSprite.new(@viewport)
       @selector.set_bitmap("gfx/misc/choice_arrow")
-      @selector.x = self.x + @line_x_start - @selector.src_rect.width - 2
-      @selector.y = self.y + @line_y_start - 2 + @line_y_space * @index
+      @selector.x = self.x + @line_x_start - 2 - @selector.src_rect.width
+      @selector.y = self.y + @line_y_start - (@small ? 0 : 2) + @line_y_space * @index
       @selector.z = self.z + 1
     end
   end
@@ -165,7 +168,7 @@ class ChoiceWindow < BaseWindow
 
   def set_index(value, audio = true)
     @index = value
-    @selector.y = self.y + @line_y_start - 2 + @line_y_space * @index
+    @selector.y = self.y + @line_y_start - (@small ? 0 : 2) + @line_y_space * @index
     Audio.se_play("audio/se/menu_select") if audio
   end
 
@@ -176,7 +179,7 @@ class ChoiceWindow < BaseWindow
 
   def dispose
     super
-    @text_bitmap.dispose
+    @text_sprite.dispose
     @selector.dispose if @selector
   end
 end

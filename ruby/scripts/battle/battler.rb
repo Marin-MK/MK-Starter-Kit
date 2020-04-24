@@ -16,6 +16,10 @@ class Battle
       return @pokemon.species
     end
 
+    def moves
+      return @pokemon.moves
+    end
+
     def name
       return @pokemon.name
     end

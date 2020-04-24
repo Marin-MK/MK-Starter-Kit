@@ -18,6 +18,7 @@ class BaseWindow
     @windowskin = Windowskin.get(windowskin || :speech)
     @viewport = viewport
     @window = SplitSprite.new(@viewport)
+    @text_sprite = Sprite.new(@viewport)
     self.width = width
     self.height = height
     @window.set("gfx/windowskins/" + @windowskin.filename, @windowskin.center) if @windowskin.filename.size > 0
@@ -63,6 +64,7 @@ class BaseWindow
   def viewport=(value)
     test_disposed
     @window.viewport = value
+    @text_sprite.viewport = value
   end
 
   def x
@@ -72,6 +74,7 @@ class BaseWindow
   def x=(value)
     test_disposed
     @window.x = value
+    @text_sprite.x = value
   end
 
   def y
@@ -81,6 +84,7 @@ class BaseWindow
   def y=(value)
     test_disposed
     @window.y = value
+    @text_sprite.y = value
   end
 
   def z
@@ -90,6 +94,7 @@ class BaseWindow
   def z=(value)
     test_disposed
     @window.z = value
+    @text_sprite.z = value
   end
 
   def visible
@@ -99,6 +104,18 @@ class BaseWindow
   def visible=(value)
     test_disposed
     @window.visible = value
+    @text_sprite.visible = value
+  end
+
+  def clear
+    @text_sprite.bitmap.clear if @text_sprite.bitmap
+  end
+
+  def draw_text(*args)
+    if @text_sprite.bitmap.nil?
+      @text_sprite.bitmap = Bitmap.new(@window.width, @window.height)
+    end
+    @text_sprite.draw_text(*args)
   end
 
   def update
@@ -110,5 +127,6 @@ class BaseWindow
   def dispose
     super
     @window.dispose
+    @text_sprite.dispose
   end
 end

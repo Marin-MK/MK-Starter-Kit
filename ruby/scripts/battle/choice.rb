@@ -1,5 +1,5 @@
 class Battle
-  class CommandChoice
+  class Choice
     attr_accessor :value
 
     def initialize(value = nil)
@@ -20,6 +20,10 @@ class Battle
 
     def run?
       return @value == 3
+    end
+
+    def cancel?
+      return @value == -1
     end
   end
 end

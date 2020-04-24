@@ -79,7 +79,7 @@ battle/side.rb: Side
 battle/trainer.rb: Trainer
 battle/battler.rb: Battler
 battle/ai.rb: AI
-battle/command_choice: Command Choice
+battle/choice: Choice
 battle_ui/constants.rb: Constants
 battle_ui/transition.rb: Transition
 battle_ui/ui.rb: UI

@@ -24,7 +24,6 @@ class Windowskin < Serializable
   def initialize(&block)
     validate block => Proc
     @id = 0
-    @line_x_space = 96
     instance_eval(&block)
     validate_windowskin
     Cache[@id] = self
@@ -36,7 +35,6 @@ class Windowskin < Serializable
         @intname => Symbol,
         @id => Integer,
         @line_x_start => Integer,
-        @line_x_space => Integer,
         @line_x_end => Integer,
         @line_y_start => Integer,
         @line_y_space => Integer,
@@ -230,7 +228,6 @@ Windowskin.new do
   @intname = :choice
   @id = 12
   @line_x_start = 32
-  @line_x_space = 96
   @line_x_end = 16
   @line_y_start = 26
   @line_y_space = 32
@@ -253,7 +250,6 @@ Windowskin.new do
   @intname = :battle_choice
   @id = 14
   @line_x_start = 32
-  @line_x_space = 112
   @line_x_end = 16
   @line_y_start = 26
   @line_y_space = 32

@@ -42,8 +42,6 @@ class MessageWindow < BaseWindow
         cmdwin => [NilClass, ChoiceWindow],
         update => [NilClass, Proc]
     @ending_arrow = ending_arrow
-    @text_sprite = Sprite.new(viewport)
-    @text_sprite.z = 99999
     @letter_by_letter = letter_by_letter
     @cmdwin = cmdwin
     @update = update
@@ -80,11 +78,6 @@ class MessageWindow < BaseWindow
   def y=(value)
     super(value)
     @text_sprite.y = value + @line_y_start - 6
-  end
-
-  def z=(value)
-    super(value)
-    @text_sprite.z = value
   end
 
   def visible=(value)

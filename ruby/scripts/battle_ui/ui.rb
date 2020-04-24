@@ -192,6 +192,7 @@ class Battle
         z: 4,
         width: 240,
         height: 96,
+        line_x_space: 112,
         viewport: @viewport,
         choices: [["FIGHT", "BAG"], ["POKéMON", "RUN"]],
         cancel_choice: nil,
@@ -201,13 +202,122 @@ class Battle
         color: Color.new(72, 72, 72),
         windowskin: :battle_choice
       )
+      cmd = nil
       loop do
         update
         cmd = @cmdwin.update
         if !cmd.nil?
-          return CommandChoice.new(cmd)
+          cmd = Choice.new(cmd)
+          break
         end
       end
+      @cmdwin.dispose
+      return cmd
+    end
+
+    def choose_move(battler)
+      choices = [["-", "-"], ["-", "-"]]
+      for i in 0...battler.moves.size
+        choices[(i / 2.0).floor][i % 2] = battler.moves[i].name
+      end
+      @cmdwin = MultiChoiceWindow.new(
+        x: 0,
+        y: 224,
+        z: 4,
+        width: 320,
+        height: 96,
+        line_x_space: 144,
+        viewport: @viewport,
+        choices: choices,
+        arrow_path: "gfx/ui/battle/choice_arrow",
+        arrow_states: 1,
+        can_loop: false,
+        color: Color.new(72, 72, 72),
+        windowskin: :battle_choice,
+        line_y_start: -2,
+        small: true
+      )
+      @ppwin = BaseWindow.new(160, 96, :battle_choice, @viewport)
+      @ppwin.x = 320
+      @ppwin.y = 224
+      @ppwin.z = 4
+      battler.moves[0].pp = 0
+      draw_move_info(battler, 0)
+      cmd = nil
+      loop do
+        update
+        oldidx = @cmdwin.index
+        cmd = @cmdwin.update
+        if choices[@cmdwin.index] == "-"
+          @cmdwin.index = oldidx
+        end
+        if oldidx != @cmdwin.index
+          draw_move_info(battler, @cmdwin.index)
+        end
+        if !cmd.nil?
+          cmd = Choice.new(cmd)
+          break
+        end
+      end
+      @cmdwin.dispose
+      @ppwin.dispose
+      return cmd
+    end
+
+    def draw_move_info(battler, move_index)
+      pp_base = Color.new(32, 32, 32)
+      pp_shadow = Color.new(208, 208, 200)
+      fraction = battler.moves[move_index].pp / battler.moves[move_index].totalpp.to_f
+      if fraction == 0
+        pp_base = Color.new(232, 0, 0)
+        pp_shadow = Color.new(240, 216, 152)
+      elsif fraction < 0.25
+        pp_base = Color.new(248, 144, 0)
+        pp_shadow = Color.new(248, 232, 112)
+      elsif fraction < 0.5
+        pp_base = Color.new(232, 216, 0)
+        pp_shadow = Color.new(248, 240, 136)
+      end
+      @ppwin.clear
+      @ppwin.draw_text(
+        x: 16,
+        y: 22,
+        text: "PP",
+        color: pp_base,
+        shadow_color: pp_shadow,
+        small: true
+      )
+      @ppwin.draw_text(
+        x: 120,
+        y: 26,
+        text: battler.moves[move_index].pp.to_s + "/",
+        align: :right,
+        color: pp_base,
+        shadow_color: pp_shadow
+      )
+      @ppwin.draw_text(
+        x: 144,
+        y: 26,
+        text: battler.moves[move_index].totalpp.to_s,
+        align: :right,
+        color: pp_base,
+        shadow_color: pp_shadow
+      )
+      @ppwin.draw_text(
+        x: 16,
+        y: 58,
+        text: "TYPE",
+        color: Color.new(72, 72, 72),
+        shadow_color: Color::GREYSHADOW,
+        small: true
+      )
+      @ppwin.draw_text(
+        x: 52,
+        y: 58,
+        text: "/" + Type.get(battler.moves[move_index].type).name,
+        color: Color.new(72, 72, 72),
+        shadow_color: Color::GREYSHADOW
+      )
     end
   end
 end
