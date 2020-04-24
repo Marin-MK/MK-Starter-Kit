@@ -530,18 +530,18 @@ class Pokemon
     if @hp && @totalhp
       factor = @hp / @totalhp.to_f
     end
-    @totalhp = (((2.0 * species.stats(self.form).hp + @ivs.hp + (@evs.hp / 4.0)) * level.to_f) / 100.0).floor + level + 10
+    @totalhp = (((2.0 * species.stats(self.form).hp + @ivs.hp + (@evs.hp / 4.0).floor) * level.to_f) / 100.0).floor + level + 10
     @hp = (@totalhp * factor).round if factor
     mod = (buff == :attack ? 1.1 : debuff == :attack ? 0.9 : 1.0)
-    @attack = (((((2.0 * species.stats(self.form).attack + @ivs.attack + (@evs.attack / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    @attack = (((((2.0 * species.stats(self.form).attack + @ivs.attack + (@evs.attack / 4.0).floor) * level.to_f) / 100.0).floor + 5) * mod).floor
     mod = (buff == :defense ? 1.1 : debuff == :defense ? 0.9 : 1.0)
-    @defense = (((((2.0 * species.stats(self.form).defense + @ivs.defense + (@evs.defense / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    @defense = (((((2.0 * species.stats(self.form).defense + @ivs.defense + (@evs.defense / 4.0).floor) * level.to_f) / 100.0).floor + 5) * mod).floor
     mod = (buff == :spatk ? 1.1 : debuff == :spatk ? 0.9 : 1.0)
-    @spatk = (((((2.0 * species.stats(self.form).spatk + @ivs.spatk + (@evs.spatk / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    @spatk = (((((2.0 * species.stats(self.form).spatk + @ivs.spatk + (@evs.spatk / 4.0).floor) * level.to_f) / 100.0).floor + 5) * mod).floor
     mod = (buff == :spdef ? 1.1 : debuff == :spdef ? 0.9 : 1.0)
-    @spdef = (((((2.0 * species.stats(self.form).spdef + @ivs.spdef + (@evs.spdef / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    @spdef = (((((2.0 * species.stats(self.form).spdef + @ivs.spdef + (@evs.spdef / 4.0).floor) * level.to_f) / 100.0).floor + 5) * mod).floor
     mod = (buff == :speed ? 1.1 : debuff == :speed ? 0.9 : 1.0)
-    @speed = (((((2.0 * species.stats(self.form).speed + @ivs.speed + (@evs.speed / 4.0)) * level.to_f) / 100.0).floor + 5) * mod).floor
+    @speed = (((((2.0 * species.stats(self.form).speed + @ivs.speed + (@evs.speed / 4.0).floor) * level.to_f) / 100.0).floor + 5) * mod).floor
   end
 
   alias atk attack

@@ -248,7 +248,7 @@ class Battle
       return cmd
     end
 
-    def choose_move(battler)
+    def choose_move(battler, initial_index = 0)
       choices = [["-", "-"], ["-", "-"]]
       for i in 0...battler.moves.size
         choices[(i / 2.0).floor][i % 2] = battler.moves[i].name
@@ -261,6 +261,7 @@ class Battle
         height: 96,
         line_x_space: 144,
         viewport: @viewport,
+        initial_choice: initial_index,
         choices: choices,
         arrow_path: "gfx/ui/battle/choice_arrow",
         arrow_states: 1,
@@ -274,8 +275,7 @@ class Battle
       @ppwin.x = 320
       @ppwin.y = 224
       @ppwin.z = 4
-      battler.moves[0].pp = 0
-      draw_move_info(battler, 0)
+      draw_move_info(battler, initial_index)
       cmd = nil
       loop do
         update
@@ -358,6 +358,7 @@ class Battle
       @msgwin.ending_arrow = true
       @msgwin.letter_by_letter = true
       update while @msgwin.running?
+      @msgwin.text = ""
       @msgwin.ending_arrow = false
     end
   end

@@ -11,6 +11,8 @@ class Move < Serializable
   attr_reader :type
   # @return [Integer] the base power of the move.
   attr_reader :power
+  # @return [Integer] the priority of the move.
+  attr_reader :priority
   # @return [Integer] the total PP of the move.
   attr_reader :totalpp
   # @return [Integer] the base accuracy of the move.
@@ -27,6 +29,7 @@ class Move < Serializable
     validate block => Proc
     @id = 0
     @target_mode = :opponent
+    @priority = 0
     @description = ""
     instance_eval(&block)
     validate_move
@@ -42,6 +45,7 @@ class Move < Serializable
         @name => String,
         @type => Symbol,
         @power => Integer,
+        @priority => Integer,
         @category => Symbol,
         @target_mode => Symbol,
         @description => String

@@ -27,6 +27,10 @@ class UsableMove
     return self.move.power
   end
 
+  def priority
+    return self.move.priority
+  end
+
   def totalpp
     return self.move.totalpp
   end
