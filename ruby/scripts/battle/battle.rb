@@ -2,10 +2,11 @@ class Battle
   attr_accessor :sides
   attr_accessor :effects
   attr_accessor :wild_pokemon
+  attr_accessor :run_attempts
 
   def initialize(side1, side2)
     @effects = {}
-    @sides = [Side.new(side1), Side.new(side2)]
+    @sides = [Side.new(self, side1), Side.new(self, side2)]
     @wild_battle = false
     if side2.is_a?(Pokemon)
       @sides[1].trainers[0].wild_pokemon = true
@@ -13,6 +14,7 @@ class Battle
       @wild_battle = true
     end
     @wild_pokemon = @sides[1].trainers[0].party[0] if @wild_battle
+    @run_attempts = 1
     @ui = UI.new(self)
     @ui.begin_start
     @ui.shiny_sparkle if @wild_pokemon.shiny?
@@ -29,6 +31,10 @@ class Battle
 
   def update
     @ui.update
+  end
+
+  def message(text)
+    @ui.message(text)
   end
 
   def main
@@ -48,7 +54,15 @@ class Battle
               elsif choice.pokemon?
 
               elsif choice.run?
-
+                if wild_battle?
+                  escaped = battler.attempt_to_escape(@sides[1].battlers[0])
+                  if escaped
+                    @ui.fade_out
+                    return
+                  end
+                else
+                  message("No! There's no running\nfrom a TRAINER battle!")
+                end
               end
               break
             end

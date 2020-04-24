@@ -54,6 +54,12 @@ class Battle
       )
     end
 
+    def dispose
+      @sprites.each_value { |e| e.dispose if !e.disposed? }
+      @msgwin.dispose
+      @viewport.dispose
+    end
+
     def wait(seconds)
       for i in 1..framecount(seconds)
         update
@@ -181,6 +187,33 @@ class Battle
         @sprites["white"].opacity = 255.0 - 255.0 / frames * i
         @sprites["databox1"].x = Graphics.width - diffx * i
       end
+    end
+
+    def fade_out
+      vp = Viewport.new(0, 0, Graphics.width, Graphics.height)
+      vp.z = 999999
+      blackbg = Sprite.new(vp)
+      blackbg.bitmap = Bitmap.new(Graphics.width, Graphics.height)
+      blackbg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0))
+      blackbg.opacity = 0
+      blackbg.z = 999999
+      frames = framecount(0.6)
+      for i in 1..frames
+        update
+        blackbg.opacity = 255.0 / frames * i
+      end
+      dispose
+      for i in 1..framecount(0.2)
+        Graphics.update
+        Input.update
+      end
+      for i in 1..frames
+        Graphics.update
+        Input.update
+        blackbg.opacity = 255.0 / frames * (frames - i)
+      end
+      blackbg.dispose
+      vp.dispose
     end
 
     def choose_command(battler)
@@ -318,6 +351,14 @@ class Battle
         color: Color.new(72, 72, 72),
         shadow_color: Color::GREYSHADOW
       )
+    end
+
+    def message(text)
+      @msgwin.text = text
+      @msgwin.ending_arrow = true
+      @msgwin.letter_by_letter = true
+      update while @msgwin.running?
+      @msgwin.ending_arrow = false
     end
   end
 end

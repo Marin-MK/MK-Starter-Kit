@@ -175,7 +175,7 @@ class MessageWindow < BaseWindow
                 else
                   text = @formatted_text[i]
                 end
-                @max_y = i - @current_line * @line_y_space + 6
+                @max_y = (i - @current_line) * @line_y_space + 2
                 @text_sprite.draw_text(
                     y: (i - @current_line) * @line_y_space + 6,
                     text: text,
@@ -192,6 +192,7 @@ class MessageWindow < BaseWindow
           @line_index = @current_line + 1
           @text_sprite.bitmap.clear
           for i in @current_line..@line_index
+            @max_y = (i - @current_line) * @line_y_space + 2
             @text_sprite.draw_text(
               y: (i - @current_line) * @line_y_space + 6,
               text: @formatted_text[i],
@@ -278,7 +279,7 @@ class MessageWindow < BaseWindow
       @arrow_counter = 0
     end
     @arrow.visible = true
-    @arrow.x = self.x + @text_sprite.bitmap.text_size(@formatted_text[@line_index - 1]).width + @line_x_start
+    @arrow.x = self.x + @text_sprite.bitmap.text_size(@formatted_text[@line_index - 1]).width + 2 + @line_x_start
   end
 
   def hide_arrow

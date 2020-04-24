@@ -5,6 +5,7 @@ class Battle
     attr_accessor :items
     attr_accessor :skill
     attr_accessor :wild_pokemon
+    attr_accessor :battle
 
     def initialize(party = [])
       party = party.party if party.is_a?(Object::Trainer)

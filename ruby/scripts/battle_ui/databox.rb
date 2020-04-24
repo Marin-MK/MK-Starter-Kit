@@ -113,5 +113,14 @@ class Battle
     def z=(value)
       @viewport.z = value
     end
+
+    def dispose
+      @sprites.each_value { |e| e.dispose if !e.disposed? }
+      @viewport.dispose
+    end
+
+    def disposed?
+      return @viewport.disposed?
+    end
   end
 end

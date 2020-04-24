@@ -4,21 +4,26 @@ class Battle
     attr_accessor :battlers
     attr_accessor :effects
 
-    def initialize(args)
-      if args.is_a?(Array)
-        @trainers = args.map do |e|
+    def initialize(battle, arg)
+      @battle = battle
+      if arg.is_a?(Array)
+        @trainers = arg.map do |e|
           next Trainer.new([e]) if e.is_a?(Pokemon)
           next Trainer.new(e) if e.is_a?(Object::Trainer)
           next e
         end
-      elsif args.is_a?(Trainer)
-        @trainers = [args]
-      elsif args.is_a?(Object::Trainer)
-        @trainers = [Trainer.new(args)]
-      elsif args.is_a?(Pokemon)
-        @trainers = [Trainer.new([args])]
+      elsif arg.is_a?(Trainer)
+        @trainers = [arg]
+      elsif arg.is_a?(Object::Trainer)
+        @trainers = [Trainer.new(arg)]
+      elsif arg.is_a?(Pokemon)
+        @trainers = [Trainer.new([arg])]
       end
       @effects = {}
+      @trainers.each do |t|
+        t.battle = @battle
+        t.party.each { |b| b.battle = @battle }
+      end
       @battlers = []
     end
   end
