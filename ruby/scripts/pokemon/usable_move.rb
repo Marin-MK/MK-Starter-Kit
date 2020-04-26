@@ -35,6 +35,10 @@ class UsableMove
     return self.move.priority
   end
 
+  def critical_hit_ratio
+    return self.move.critical_hit_ratio
+  end
+
   def totalpp
     return self.move.totalpp
   end

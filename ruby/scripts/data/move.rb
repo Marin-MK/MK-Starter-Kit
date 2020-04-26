@@ -15,6 +15,8 @@ class Move < Serializable
   attr_reader :target
   # @return [Integer] the priority of the move.
   attr_reader :priority
+  # @return [Integer] the critical hit stage increase of the move.
+  attr_reader :critical_hit_ratio
   # @return [Integer] the total PP of the move.
   attr_reader :totalpp
   # @return [Integer] the base accuracy of the move.
@@ -30,6 +32,7 @@ class Move < Serializable
     @id = 0
     @priority = 0
     @description = ""
+    @critical_hit_ratio = 0
     instance_eval(&block)
     validate_move
     Cache[@intname] = self
@@ -46,6 +49,7 @@ class Move < Serializable
         @power => Integer,
         @target => Symbol,
         @priority => Integer,
+        @critical_hit_ratio => Integer,
         @category => Symbol,
         @description => String
     raise "Type #{@type.inspect} doesn't exist for new Move object" unless Type.exists?(@type)

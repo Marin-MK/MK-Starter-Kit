@@ -41,7 +41,19 @@ class Battle
       end
     end
 
-    def critical_hit?
+    def can_critical_hit?(user, target)
+      return true
+    end
+
+    def critical_hit?(user)
+      stage = @move.critical_hit_ratio
+      if stage > 2
+        return true
+      else
+        # 1 in 24, 8, 2, etc.
+        odds = [24, 8, 2]
+        return rand(odds[stage]) == 0
+      end
       return false
     end
 
@@ -89,9 +101,14 @@ class Battle
     end
 
     def calculate_damage(user, target, multiple_targets, critical_hit)
+      # Gets the user's attack or special attack depending on the move/type,
+      # and applies various modifiers.
       attack = get_user_attack(user, target, multiple_targets, critical_hit)
+      # Gets the target's defense or special defense depending on the move/type,
+      # and applies various modifiers.
       defense = get_target_defense(user, target, multiple_targets, critical_hit)
       dmg = (2 * user.level / 5 + 2) * @move.power * attack / defense / 50 + 2
+      # Applies various multipliers to the final damage result.
       dmg *= get_damage_multiplier(user, target, multiple_targets, critical_hit)
       dmg = 1 if dmg < 1
       return dmg.floor
@@ -100,10 +117,21 @@ class Battle
     def execute(user)
       targets = get_target(user)
       targets = [targets] if targets.is_a?(Battler)
-      crit = critical_hit?
+      # Determines if a critical hit for this user is possible
+      # by checking each target.
+      can_crit = true
       for target in targets
+        if !can_critical_hit?(user, target)
+          can_crit = false
+          break
+        end
+      end
+      # Calculates if this move is a critical hit if it's possible
+      # to receive a critical hit in the first place.
+      crit = critical_hit?(user) if can_crit
+      for target in targets
+        # Calculates the damage this move does if it's not a status move.
         damage = status? ? nil : calculate_damage(user, target, targets.size > 1, crit)
-        
       end
     end
   end

@@ -35,17 +35,8 @@ map.events[1].name = "Lil Boy"
 map.events[1].pages[0] = MKD::Event::Page.new
 map.events[1].pages[0].graphic.param = "gfx/characters/boy"
 map.events[1].pages[0].commands = [
-  [0, :script, {code: "Battle.new($trainer, $b)"}]
+  [0, :script, {code: "Battle.new($trainer, Pokemon.new(:BULBASAUR, 2))"}]
 ]
-$b = Pokemon.new(:BULBASAUR, 40)
-$b.ivs.hp = 15
-$b.ivs.attack = 15
-$b.ivs.defense = 15
-$b.ivs.spatk = 15
-$b.ivs.spdef = 15
-$b.ivs.speed = 15
-$b.nature = :TIMID
-$b.calc_stats
 map.save
 
 # Initialize important game variables
@@ -71,14 +62,6 @@ $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 4, item: :REPEL))
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 5, hp: 6, status: :poisoned))
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 6, gender: 1, hp: 0))
 $trainer.add_item(:MAXREPEL, 5)
-$trainer.party[0].ivs.hp = 15
-$trainer.party[0].ivs.attack = 15
-$trainer.party[0].ivs.defense = 15
-$trainer.party[0].ivs.spatk = 15
-$trainer.party[0].ivs.spdef = 15
-$trainer.party[0].ivs.speed = 15
-$trainer.party[0].nature = :BOLD
-$trainer.party[0].calc_stats
 
 def main_function
   $game.update

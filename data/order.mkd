@@ -73,6 +73,7 @@ ui/party.rb: Party UI
 ui/summary.rb: Summary UI
 ui/save_menu.rb: Save UI
 ui/options_menu.rb: Options UI
+battle/constants.rb: Constants
 battle/encounter.rb: Encounters
 battle/battle.rb: Battle
 battle/side.rb: Side
