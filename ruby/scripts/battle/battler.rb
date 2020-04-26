@@ -6,6 +6,8 @@ class Battle
     attr_accessor :effects
     attr_accessor :battle
     attr_accessor :stages
+    attr_accessor :index
+    attr_accessor :side
 
     def initialize(pokemon)
       @pokemon = pokemon
@@ -36,9 +38,15 @@ class Battle
       return @pokemon.name
     end
 
+    def types
+      return [@pokemon.type1] if @pokemon.type2.nil?
+      return [@pokemon.type1, @pokemon.type2]
+    end
+
     def hp
       return @pokemon.hp
     end
+
 
     def base_attack
       return @pokemon.attack
@@ -81,7 +89,7 @@ class Battle
       if @stages.spdef < -6 || @stages.spdef > 6
         raise "Invalid spdef stage: #{@stages.spdef}"
       end
-      return (base_attack * GENERIC_STAGE_MULTIPLIER[@stages.spdef + 6]).floor
+      return (base_spdef * GENERIC_STAGE_MULTIPLIER[@stages.spdef + 6]).floor
     end
 
     def base_speed
@@ -139,6 +147,30 @@ class Battle
 
     def egg?
       return @pokemon.egg?
+    end
+
+    def has_type?(type)
+      return @pokemon.has_type?(type)
+    end
+
+    def burned?
+      return @pokemon.status == :burned
+    end
+
+    def frozen?
+      return @pokemon.status == :frozen
+    end
+
+    def paralyzed?
+      return @pokemon.status == :paralyzed
+    end
+
+    def poisoned?
+      return @pokemon.status == :poisoned
+    end
+
+    def asleep?
+      return @pokemon.status == :asleep
     end
 
     def message(msg)

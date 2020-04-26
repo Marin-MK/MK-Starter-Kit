@@ -3,6 +3,7 @@ class Battle
     attr_accessor :trainers
     attr_accessor :battlers
     attr_accessor :effects
+    attr_accessor :index
 
     def initialize(battle, arg)
       @battle = battle
@@ -25,6 +26,12 @@ class Battle
         t.party.each { |b| b.battle = @battle }
       end
       @battlers = []
+    end
+
+    def register_battler(battler)
+      @battlers << battler
+      battler.side = @index
+      battler.index = @battlers.index(battler)
     end
   end
 end

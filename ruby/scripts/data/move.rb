@@ -11,6 +11,8 @@ class Move < Serializable
   attr_reader :type
   # @return [Integer] the base power of the move.
   attr_reader :power
+  # @return [Symbol] the target of the move.
+  attr_reader :target
   # @return [Integer] the priority of the move.
   attr_reader :priority
   # @return [Integer] the total PP of the move.
@@ -19,8 +21,6 @@ class Move < Serializable
   attr_reader :accuracy
   # @return [Symbol] the category of the move.
   attr_reader :category
-  # @return [Symbol] the target mode of the move.
-  attr_reader :target_mode
   # @return [String] the description of the move.
   attr_reader :description
 
@@ -28,7 +28,6 @@ class Move < Serializable
   def initialize(&block)
     validate block => Proc
     @id = 0
-    @target_mode = :opponent
     @priority = 0
     @description = ""
     instance_eval(&block)
@@ -45,9 +44,9 @@ class Move < Serializable
         @name => String,
         @type => Symbol,
         @power => Integer,
+        @target => Symbol,
         @priority => Integer,
         @category => Symbol,
-        @target_mode => Symbol,
         @description => String
     raise "Type #{@type.inspect} doesn't exist for new Move object" unless Type.exists?(@type)
     unless [:physical, :special, :status].include?(@category)
@@ -94,6 +93,18 @@ class Move < Serializable
   def self.count
     return Cache.size
   end
+
+  def status?
+    return @category == :status
+  end
+
+  def physical?
+    return PHYSICAL_SPECIAL_SPLIT ? @category == :physical : Type.get(@type).physical?
+  end
+
+  def special?
+    return PHYSICAL_SPECIAL_SPLIT ? @category == Pspecial : Type.get(@type).special?
+  end
 end
 
 # Target modes:
@@ -110,6 +121,7 @@ Move.new do
   @name = "POUND"
   @type = :NORMAL
   @power = 40
+  @target = :single_opponent
   @totalpp = 35
   @accuracy = 100
   @category = :physical
@@ -122,6 +134,7 @@ Move.new do
   @name = "VINE WHIP"
   @type = :GRASS
   @power = 35
+  @target = :single_opponent
   @totalpp = 10
   @accuracy = 100
   @category = :physical
@@ -134,6 +147,7 @@ Move.new do
   @name = "TACKLE"
   @type = :NORMAL
   @power = 35
+  @target = :single_opponent
   @totalpp = 35
   @accuracy = 95
   @category = :physical
@@ -146,10 +160,10 @@ Move.new do
   @name = "GROWL"
   @type = :NORMAL
   @power = 0
+  @target = :adjacent_opponents
   @totalpp = 40
   @accuracy = 100
   @category = :status
-  @target_mode = :all_opponents
   @description = "The user growls in a cute way, making the foe lower its Attack stat."
 end
 
@@ -159,6 +173,7 @@ Move.new do
   @name = "LEECH SEED"
   @type = :GRASS
   @power = 0
+  @target = :single_opponent
   @totalpp = 10
   @accuracy = 100
   @category = :status
@@ -171,10 +186,10 @@ Move.new do
   @name = "GROWTH"
   @type = :NORMAL
   @power = 0
+  @target = :self
   @totalpp = 40
   @accuracy = 0
   @category = :status
-  @target_mode = :self
   @description = "The user's body is forced to grow, raising the Sp. Atk stat."
 end
 
@@ -184,10 +199,10 @@ Move.new do
   @name = "RAZOR LEAF"
   @type = :GRASS
   @power = 55
+  @target = :adjacent_opponents
   @totalpp = 25
   @accuracy = 95
   @category = :physical
-  @target_mode = :all_opponents
   @description = "The foe is hit with a cutting leaf. It has a high critical-hit ratio."
 end
 
@@ -197,6 +212,7 @@ Move.new do
   @name = "SOLARBEAM"
   @type = :GRASS
   @power = 120
+  @target = :single_opponent
   @totalpp = 10
   @accuracy = 100
   @category = :special
@@ -209,6 +225,7 @@ Move.new do
   @name = "POISONPOWDER"
   @type = :POISON
   @power = 0
+  @target = :single_opponent
   @totalpp = 35
   @accuracy = 75
   @category = :status
@@ -221,6 +238,7 @@ Move.new do
   @name = "SLEEP POWDER"
   @type = :GRASS
   @power = 0
+  @target = :single_opponent
   @totalpp = 15
   @accuracy = 75
   @category = :status
@@ -233,10 +251,10 @@ Move.new do
   @name = "SWEET SCENT"
   @type = :NORMAL
   @power = 0
+  @target = :single_opponent
   @totalpp = 20
   @accuracy = 100
   @category = :status
-  @target_mode = :all_opponents
   @description = "Allures the foe to reduce evasiveness. It also attracts wild Pokémon."
 end
 
@@ -246,9 +264,9 @@ Move.new do
   @name = "SYNTHESIS"
   @type = :GRASS
   @power = 0
+  @target = :self
   @totalpp = 5
   @accuracy = 0
   @category = :status
-  @target_mode = :self
   @description = "Restores the user's HP. The amount of HP regained varies with the weather."
 end

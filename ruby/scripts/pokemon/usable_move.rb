@@ -27,6 +27,10 @@ class UsableMove
     return self.move.power
   end
 
+  def target
+    return self.move.target
+  end
+
   def priority
     return self.move.priority
   end
@@ -49,6 +53,18 @@ class UsableMove
 
   def description
     return self.move.description
+  end
+
+  def physical?
+    return self.move.physical?
+  end
+
+  def special?
+    return self.move.special?
+  end
+
+  def status?
+    return self.move.status?
   end
 
   def heal_pp

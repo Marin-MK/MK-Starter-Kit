@@ -104,7 +104,7 @@ class Game
       direction = 10 - direction if direction.is_a?(Integer)
 
       return false if checking_character != $game.player && x == $game.player.x && y == $game.player.y && map_id == $game.player.map_id
-      return false if @events.values.any? { |e| e.x == x && e.y == y && e.current_page && !e.settings.passable }
+      return false if @events.values.any? { |e| e.x == x && e.y == y && e.current_page && !e.current_page.settings.passable }
       for layer in 0...tiles.size
         tile_type, index, id = tiles[layer][x + y * width]
         next if tile_type.nil?

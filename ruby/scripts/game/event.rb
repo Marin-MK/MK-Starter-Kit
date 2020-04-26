@@ -11,7 +11,7 @@ class Game
       @current_page = nil
       @automoveroute_idx = 0
       @automove_wait = 0
-      super(map_id, data.x, data.y, 2, "", @speed = settings.speed)
+      super(map_id, data.x, data.y, 2, "")
     end
 
     def setup_visuals
@@ -38,11 +38,6 @@ class Game
     # @return [Game::Event::Page, NilClass] the currently active page.
     def current_page
       return @current_page ? pages[@current_page] : nil
-    end
-
-    # @return [Game::Event::Settings] configurable settings that change this event's behaviour.
-    def settings
-      return data.settings
     end
 
     # Updates the event, but is only called once per frame.
@@ -108,6 +103,7 @@ class Game
               # Wait 1 frame to start the new autonomous move route so the visuals have time to adjust to the new page.
               @automove_wait = 1
             end
+            @speed = current_page.settings.speed
             @frame_update_interval = current_page.graphic.frame_update_interval
           end
           break

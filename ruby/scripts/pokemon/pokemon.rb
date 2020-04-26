@@ -171,7 +171,7 @@ class Pokemon
     if !@item.nil? && !Item.exists?(@item)
       raise ArgumentError, "the held item must be an existing item."
     end
-    if !@status.nil? && ![:BURN,:FROZEN,:PARALYSIS,:POISON,:SLEEP].include?(@status)
+    if !@status.nil? && ![:burned,:frozen,:paralyzed,:poisoned,:asleep].include?(@status)
       raise ArgumentError, "the status must be a given status condition."
     end
     if !@hp.nil? && @hp < 0
@@ -434,9 +434,9 @@ class Pokemon
   # Forces a value for the Pokemon's nature.
   # @param value [Symbol, NilClass] the nature value.
   def nature=(value)
-    validate value => [Symbol, NilClass]
+    validate value => [Symbol, Nature, NilClass]
     if value.nil? || Nature.exists?(value)
-      @natureflag = value
+      @natureflag = value.nil? ? value : Nature.get(value).intname
     else
       raise "Invalid nature for #{value.inspect}"
     end

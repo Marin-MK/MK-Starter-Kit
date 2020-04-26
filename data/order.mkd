@@ -81,6 +81,8 @@ battle/battler.rb: Battler
 battle/ai.rb: AI
 battle/choice.rb: Choice
 battle/command.rb: Command
+battle/base_move.rb: Base Move
+battle/moves.rb: Moves
 battle_ui/constants.rb: Constants
 battle_ui/transition.rb: Transition
 battle_ui/ui.rb: UI

@@ -4,16 +4,18 @@ module MKD
     attr_accessor :name
     attr_accessor :x
     attr_accessor :y
+    attr_accessor :width
+    attr_accessor :height
     attr_accessor :pages
-    attr_accessor :settings
 
     def initialize(id = 0)
       @id = id
       @name = ""
       @x = 0
       @y = 0
+      @width = 1
+      @height = 1
       @pages = []
-      @settings = MKD::Event::Settings.new
     end
   end
 end
@@ -21,11 +23,17 @@ end
 module MKD
   class Event
     class Settings < Serializable
+      attr_accessor :move_animation
+      attr_accessor :idle_animation
+      attr_accessor :direction_lock
       attr_accessor :passable
       attr_accessor :save_position
       attr_accessor :speed
 
       def initialize
+        @move_animation = true
+        @idle_animation = false
+        @direction_lock = false
         @passable = false
         @save_position = true
         @speed = PLAYERWALKSPEED
@@ -37,20 +45,24 @@ end
 module MKD
   class Event
     class Page < Serializable
+      attr_accessor :name
       attr_accessor :commands
       attr_accessor :conditions
       attr_accessor :graphic
       attr_accessor :trigger_mode
       attr_accessor :trigger_param
       attr_accessor :automoveroute
+      attr_accessor :settings
 
       def initialize
+        @name = ""
         @commands = []
         @conditions = []
         @graphic = Graphic.new
         @trigger_mode = :action
         @trigger_param = nil
         @automoveroute = AutoMoveRoute.new
+        @settings = MKD::Event::Settings.new
       end
     end
   end

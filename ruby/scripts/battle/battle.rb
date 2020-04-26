@@ -7,10 +7,12 @@ class Battle
   def initialize(side1, side2)
     @effects = {}
     @sides = [Side.new(self, side1), Side.new(self, side2)]
+    @sides[0].index = 0
+    @sides[1].index = 1
     @wild_battle = false
     if side2.is_a?(Pokemon)
       @sides[1].trainers[0].wild_pokemon = true
-      @sides[1].battlers = [@sides[1].trainers[0].party[0]]
+      @sides[1].register_battler(@sides[1].trainers[0].party[0])
       @wild_battle = true
     end
     @wild_pokemon = @sides[1].trainers[0].party[0] if @wild_battle
@@ -21,7 +23,7 @@ class Battle
     @ui.shiny_sparkle if @wild_pokemon.shiny?
     @ui.finish_start("Wild #{@wild_pokemon.pokemon.species.name} appeared!")
     battler = @sides[0].trainers[0].party.find { |e| !e.egg? && !e.fainted? }
-    @sides[0].battlers << battler
+    @sides[0].register_battler(battler)
     @ui.send_out_initial_pokemon("Go! #{battler.name}!", battler)
     main
   end
@@ -52,11 +54,9 @@ class Battle
           end
         end
       end
-
       sort_commands
-
       until @commands.empty?
-        p @commands[0]
+        process_command(@commands[0])
         @commands.delete_at(0)
       end
     end
@@ -141,5 +141,14 @@ class Battle
 
   def get_opponent_command(battler)
     @commands << Command.new(:use_move, battler, battler.moves.sample)
+  end
+
+  def process_command(command)
+    if command.use_move?
+      move = BaseMove.new(self, command.move)
+      move.execute(command.battler)
+    else
+      raise "not yet implemented"
+    end
   end
 end

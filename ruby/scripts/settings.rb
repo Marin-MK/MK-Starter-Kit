@@ -4,6 +4,9 @@ PLAYERWALKSPEED = 0.25
 # How fast the player runs. The higher, the faster.
 PLAYERRUNSPEED = 0.125
 
+# Whether to base a move's category on the type (false), or the move itself (true).
+PHYSICAL_SPECIAL_SPLIT = true
+
 # Chance for a newly generated Pokemon to be shiny out of 65536.
 # For example, a value of 8 means 1 / 8192 (8 / 65536).
 SHINYCHANCE = 8
