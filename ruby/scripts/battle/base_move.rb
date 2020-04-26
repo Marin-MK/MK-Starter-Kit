@@ -171,7 +171,9 @@ class Battle
     end
 
     def before_use_effect(user, target, damage, critical_hit)
-
+      anim = BaseMoveAnimation.new(@battle, user, target, damage, critical_hit)
+      anim.main
+      anim.dispose
     end
 
     def after_use_effect(user, target, damage, critical_hit)

@@ -93,6 +93,7 @@ battle_ui/battle_base.rb: Battle Base
 battle_ui/battler_sprite.rb: Battler Sprite
 battle_ui/trainer_sprite.rb: Trainer Sprite
 battle_ui/databox.rb: Databox
+battle_ui/base_move_animation.rb: base Move Animation
 routines/give_item_routine.rb: GiveItem Routine
 temp.rb: Temporary Data
 main.rb: Main

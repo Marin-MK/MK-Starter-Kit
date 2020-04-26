@@ -1,5 +1,8 @@
 class Battle
   class UI
+    attr_accessor :viewport
+    attr_accessor :sprites
+
     def initialize(battle)
       @battle = battle
       transition = Transition.new
@@ -365,8 +368,16 @@ class Battle
       end
     end
 
+    def get_battler_sprite(battler)
+      return battler.side == 0 ? @sprites["pokemon1"] : @sprites["pokemon2"]
+    end
+
+    def get_battler_databox(battler)
+      return battler.side == 0 ? @sprites["databox1"] : @sprites["databox2"]
+    end
+
     def lower_hp(battler, damage)
-      databox = battler.side == 0 ? @sprites["databox1"] : @sprites["databox2"]
+      databox = get_battler_databox(battler)
       frames = framecount(0.3)
       damage = battler.hp if damage > battler.hp
       diff = damage / frames.to_f
