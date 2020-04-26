@@ -17,8 +17,8 @@ class Battle
       return @move.status?
     end
 
-    def message(msg)
-      @battle.message(msg)
+    def message(msg, await_input = false, ending_arrow = false)
+      @battle.message(msg, await_input, ending_arrow)
     end
 
     def get_target(user)
@@ -114,6 +114,17 @@ class Battle
       return dmg.floor
     end
 
+    def get_accuracy_multiplier(user, target)
+      mod = 1.0
+      return mod
+    end
+
+    def hit?(user, target)
+      t = @move.accuracy * user.accuracy * target.evasion
+      t *= get_accuracy_multiplier(user, target)
+      return rand(1..100) <= t
+    end
+
     def execute(user)
       targets = get_target(user)
       targets = [targets] if targets.is_a?(Battler)
@@ -131,8 +142,44 @@ class Battle
       crit = critical_hit?(user) if can_crit
       for target in targets
         # Calculates the damage this move does if it's not a status move.
-        damage = status? ? nil : calculate_damage(user, target, targets.size > 1, crit)
+        hit = hit?(user, target)
+        if hit
+          damage = status? ? nil : calculate_damage(user, target, targets.size > 1, crit)
+          use_move(user, target, damage, crit)
+        else
+
+        end
       end
+    end
+
+    def use_move_message(user, target, damage, critical_hit)
+      message("#{user.name} used #{@move.name}!")
+    end
+
+    def critical_hit_message(user, target, damage, critical_hit)
+      message("A critical hit!")
+    end
+
+    def use_move(user, target, damage, critical_hit)
+      use_move_message(user, target, damage, critical_hit)
+      before_use_effect(user, target, damage, critical_hit)
+      if damage
+        deal_damage(user, target, damage, critical_hit)
+        critical_hit_message(user, target, damage, critical_hit) if critical_hit
+      end
+      after_use_effect(user, target, damage, critical_hit)
+    end
+
+    def before_use_effect(user, target, damage, critical_hit)
+
+    end
+
+    def after_use_effect(user, target, damage, critical_hit)
+
+    end
+
+    def deal_damage(user, target, damage, critical_hit)
+      target.damage(damage)
     end
   end
 end

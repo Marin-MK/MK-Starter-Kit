@@ -29,10 +29,10 @@ class Battle
     def draw_name_and_gender
       name_x = opponent? ? OPPONENT_NAME_X : PLAYER_NAME_X
       name_y = opponent? ? OPPONENT_NAME_Y : PLAYER_NAME_Y
-      @sprites["text"].draw_text(x: name_x, y: name_y, text: @battler.name, color: BASE_COLOR, shadow_color: SHADOW_COLOR, small: true)
+      @sprites["text"].draw_text(x: name_x, y: name_y, text: @battler.pokemon.name, color: BASE_COLOR, shadow_color: SHADOW_COLOR, small: true)
       fontname = @sprites["text"].bitmap.font.name
       @sprites["text"].bitmap.font.name += " Small"
-      width = @sprites["text"].bitmap.text_size(@battler.name).width
+      width = @sprites["text"].bitmap.text_size(@battler.pokemon.name).width
       @sprites["text"].bitmap.font.name = fontname
       if !@battler.genderless?
         color = @battler.male? ? GENDER_COLOR_MALE : GENDER_COLOR_FEMALE
@@ -78,7 +78,7 @@ class Battle
         @sprites["hp_text"].bitmap.clear
         @sprites["hp_text"].draw_text(x: 188, y: 44, text: @battler.totalhp.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, align: :right, small: true)
         @sprites["hp_text"].draw_text(x: 150, y: 44, text: "/", color: BASE_COLOR, shadow_color: SHADOW_COLOR)
-        @sprites["hp_text"].draw_text(x: 148, y: 44, text: hp.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, align: :right, small: true)
+        @sprites["hp_text"].draw_text(x: 148, y: 44, text: hp.round.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, align: :right, small: true)
       end
     end
 

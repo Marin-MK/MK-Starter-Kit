@@ -3,6 +3,7 @@ class Battle
   attr_accessor :effects
   attr_accessor :wild_pokemon
   attr_accessor :run_attempts
+  attr_accessor :ui
 
   def initialize(side1, side2)
     @effects = {}
@@ -21,7 +22,7 @@ class Battle
     @ui = UI.new(self)
     @ui.begin_start
     @ui.shiny_sparkle if @wild_pokemon.shiny?
-    @ui.finish_start("Wild #{@wild_pokemon.pokemon.species.name} appeared!")
+    @ui.finish_start("#{@wild_pokemon.name} appeared!")
     battler = @sides[0].trainers[0].party.find { |e| !e.egg? && !e.fainted? }
     @sides[0].register_battler(battler)
     @ui.send_out_initial_pokemon("Go! #{battler.name}!", battler)
@@ -36,8 +37,8 @@ class Battle
     @ui.update
   end
 
-  def message(text)
-    @ui.message(text)
+  def message(text, await_input = false, ending_arrow = false)
+    @ui.message(text, await_input, ending_arrow)
   end
 
   def main
@@ -112,7 +113,7 @@ class Battle
             return
           end
         else
-          message("No! There's no running\nfrom a TRAINER battle!")
+          message("No! There's no running\nfrom a TRAINER battle!", true, true)
         end
       end
       break
@@ -128,7 +129,7 @@ class Battle
       break if movechoice.cancel? # Break out of move choosing loop
       move = battler.moves[movechoice.value]
       if move.pp <= 0
-        message("There's no PP left for\nthis move!")
+        message("There's no PP left for\nthis move!", true, true)
         index = movechoice.value
         next # Go back to @ui.choose_move
       end
@@ -150,5 +151,10 @@ class Battle
     else
       raise "not yet implemented"
     end
+    @ui.wait(0.3)
+  end
+
+  def lower_hp(battler, damage)
+    @ui.lower_hp(battler, damage)
   end
 end

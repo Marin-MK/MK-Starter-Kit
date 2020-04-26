@@ -35,7 +35,7 @@ map.events[1].name = "Lil Boy"
 map.events[1].pages[0] = MKD::Event::Page.new
 map.events[1].pages[0].graphic.param = "gfx/characters/boy"
 map.events[1].pages[0].commands = [
-  [0, :script, {code: "Battle.new($trainer, Pokemon.new(:BULBASAUR, 2))"}]
+  [0, :script, {code: "Battle.new($trainer, Pokemon.new(:BULBASAUR, 5))"}]
 ]
 map.save
 
@@ -55,7 +55,7 @@ $game.variables = Game::Variables.new
 $game.player = Game::Player.new(3)
 $game.load_map(3)
 $trainer = Trainer.new
-$trainer.add_pokemon(Pokemon.new(:BULBASAUR, 100, item: :REPEL, hp: 37, moves: [UsableMove.new(:RAZORLEAF)]))
+$trainer.add_pokemon(Pokemon.new(:BULBASAUR, 5, item: :REPEL))
 $trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 32);p.exp+=2000;p))
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 3, gender: 1, status: :paralyzed, hp: 13))
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 4, item: :REPEL))

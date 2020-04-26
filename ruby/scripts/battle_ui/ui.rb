@@ -135,9 +135,7 @@ class Battle
     end
 
     def send_out_initial_pokemon(message, battler)
-      @msgwin.text = message
-      @msgwin.drawing = true
-      update while @msgwin.drawing?
+      message(message, false)
       frames = framecount(0.5)
       diffx = (@sprites["trainer1"].src_rect.width + 108) / frames.to_f
       @sprites["trainer1"].frame = 1
@@ -353,13 +351,29 @@ class Battle
       )
     end
 
-    def message(text)
+    def message(text, await_input = false, ending_arrow = false)
       @msgwin.text = text
-      @msgwin.ending_arrow = true
+      @msgwin.ending_arrow = ending_arrow
       @msgwin.letter_by_letter = true
-      update while @msgwin.running?
-      @msgwin.text = ""
-      @msgwin.ending_arrow = false
+      if await_input
+        update while @msgwin.running?
+        @msgwin.text = ""
+        @msgwin.ending_arrow = false
+      else
+        @msgwin.drawing = true
+        update while @msgwin.drawing?
+      end
+    end
+
+    def lower_hp(battler, damage)
+      databox = battler.side == 0 ? @sprites["databox1"] : @sprites["databox2"]
+      frames = framecount(0.3)
+      damage = battler.hp if damage > battler.hp
+      diff = damage / frames.to_f
+      for i in 1..frames
+        update
+        databox.draw_hp(battler.hp - diff * i)
+      end
     end
   end
 end

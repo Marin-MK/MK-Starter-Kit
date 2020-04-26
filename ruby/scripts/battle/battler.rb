@@ -2,15 +2,19 @@ class Battle
   BattleStats = Struct.new(:attack, :defense, :spatk, :spdef, :speed, :accuracy, :evasion)
 
   class Battler
+    attr_accessor :battle
     attr_accessor :pokemon
     attr_accessor :effects
     attr_accessor :battle
     attr_accessor :stages
     attr_accessor :index
     attr_accessor :side
+    attr_accessor :wild_pokemon
 
-    def initialize(pokemon)
+    def initialize(battle, pokemon)
+      @battle = battle
       @pokemon = pokemon
+      @wild_pokemon = false
       @effects = {}
       @stages = BattleStats.new
       @stages.attack = 0
@@ -20,6 +24,10 @@ class Battle
       @stages.speed = 0
       @stages.accuracy = 0
       @stages.evasion = 0
+    end
+
+    def name
+      return @wild_pokemon ? "Wild " + @pokemon.name : @pokemon.name
     end
 
     def level
@@ -32,10 +40,6 @@ class Battle
 
     def moves
       return @pokemon.moves
-    end
-
-    def name
-      return @pokemon.name
     end
 
     def types
@@ -173,8 +177,8 @@ class Battle
       return @pokemon.status == :asleep
     end
 
-    def message(msg)
-      @battle.message(msg)
+    def message(msg, await_input = false, ending_arrow = false)
+      @battle.message(msg, await_input, ending_arrow)
     end
 
     def attempt_to_escape(opponent)
@@ -184,12 +188,18 @@ class Battle
       chance = (a * 28.0) / b + 30 * c
       @battle.run_attempts += 1
       if rand(0..255) < chance
-        message("Got away safely!")
+        message("Got away safely!", true, true)
         return true
       else
-        message("Can't escape!")
+        message("Can't escape!", true, true)
         return false
       end
+    end
+
+    def damage(damage)
+      damage = damage.floor
+      @battle.lower_hp(self, damage)
+      @pokemon.hp -= damage
     end
   end
 end

@@ -9,16 +9,19 @@ class Battle
       @battle = battle
       if arg.is_a?(Array)
         @trainers = arg.map do |e|
-          next Trainer.new([e]) if e.is_a?(Pokemon)
-          next Trainer.new(e) if e.is_a?(Object::Trainer)
+          next Trainer.new(battle, [e]) if e.is_a?(Pokemon)
+          next Trainer.new(battle, e) if e.is_a?(Object::Trainer)
+          e.battle = @battle if e.respond_to?(:battle=)
           next e
         end
       elsif arg.is_a?(Trainer)
+        arg.battle = @battle
         @trainers = [arg]
       elsif arg.is_a?(Object::Trainer)
-        @trainers = [Trainer.new(arg)]
+        @trainers = [Trainer.new(battle, arg)]
       elsif arg.is_a?(Pokemon)
-        @trainers = [Trainer.new([arg])]
+        @trainers = [Trainer.new(battle, [arg])]
+        @trainers[0].party[0].wild_pokemon = true
       end
       @effects = {}
       @trainers.each do |t|
