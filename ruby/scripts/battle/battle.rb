@@ -43,15 +43,21 @@ class Battle
 
   def main
     @commands = []
+    @turncount = 0
     loop do
+      @turncount += 1
       for side in 0...@sides.size
         for battler in @sides[side].battlers
           if side == 0 # Player side
-            get_player_command(battler)
+            cmd = get_player_command(battler)
+            raise "Player command is nil" if cmd.nil?
+            @commands << cmd
             break if @break
           else # Opposing side
             # Uses random move from moveset.
-            get_opponent_command(battler)
+            cmd = get_opponent_command(battler)
+            raise "Opponent command is nil" if cmd.nil?
+            @commands << cmd
           end
         end
       end
@@ -60,6 +66,8 @@ class Battle
         process_command(@commands[0])
         @commands.delete_at(0)
       end
+
+      end_of_turn
     end
   end
 
@@ -98,8 +106,9 @@ class Battle
     loop do
       choice = @ui.choose_command(battler)
       if choice.fight?
-        success = get_move_command(battler)
-        next if !success
+        cmd = get_move_command(battler)
+        next if cmd.nil?
+        return cmd
       elsif choice.bag?
 
       elsif choice.pokemon?
@@ -135,13 +144,12 @@ class Battle
       end
       break
     end
-    return false if movechoice.cancel? # Go back to @ui.choose_command
-    @commands << Command.new(:use_move, battler, move)
-    return true
+    return if movechoice.cancel? # Go back to @ui.choose_command
+    return Command.new(:use_move, battler, move)
   end
 
   def get_opponent_command(battler)
-    @commands << Command.new(:use_move, battler, battler.moves.sample)
+    return Command.new(:use_move, battler, battler.moves.sample)
   end
 
   def process_command(command)
@@ -151,10 +159,13 @@ class Battle
     else
       raise "not yet implemented"
     end
-    @ui.wait(0.3)
   end
 
-  def lower_hp(battler, damage)
-    @ui.lower_hp(battler, damage)
+  def end_of_turn
+    for side in 0...@sides.size
+      for battler in @sides[side].battlers
+        battler.end_of_turn
+      end
+    end
   end
 end

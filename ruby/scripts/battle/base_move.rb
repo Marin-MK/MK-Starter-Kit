@@ -42,11 +42,17 @@ class Battle
     end
 
     def can_critical_hit?(user, target)
+      return false if status?
       return true
     end
 
-    def critical_hit?(user)
+    def get_critical_hit_stage(user)
       stage = @move.critical_hit_ratio
+      return stage
+    end
+
+    def critical_hit?(user)
+      stage = get_critical_hit_stage
       if stage > 2
         return true
       else
@@ -60,6 +66,7 @@ class Battle
     def self.get_type_effectiveness_modifier(move_type, target_types)
       mod = 1.0
       target_types.each do |target_type|
+        next if target_type.nil?
         mod *= 2.0 if Type.get(move_type).strong_against?(target_type)
         mod /= 2.0 if Type.get(target_type).resistant_to?(move_type)
       end
@@ -147,7 +154,8 @@ class Battle
           damage = status? ? nil : calculate_damage(user, target, targets.size > 1, crit)
           use_move(user, target, damage, crit)
         else
-
+          use_move_message(user, target, damage, critical_hit)
+          message("#{user.name}'s\nattack missed!'")
         end
       end
     end
@@ -160,6 +168,10 @@ class Battle
       message("A critical hit!")
     end
 
+    def fail_message(user, target, damage, critical_hit)
+      message("But it failed!")
+    end
+
     def use_move(user, target, damage, critical_hit)
       use_move_message(user, target, damage, critical_hit)
       before_use_effect(user, target, damage, critical_hit)
@@ -170,18 +182,22 @@ class Battle
       after_use_effect(user, target, damage, critical_hit)
     end
 
-    def before_use_effect(user, target, damage, critical_hit)
+    def execute_animation(user, target, damage, critical_hit)
       anim = BaseMoveAnimation.new(@battle, user, target, damage, critical_hit)
       anim.main
       anim.dispose
     end
 
-    def after_use_effect(user, target, damage, critical_hit)
+    def before_use_effect(user, target, damage, critical_hit)
+      execute_animation(user, target, damage, critical_hit)
+    end
 
+    def after_use_effect(user, target, damage, critical_hit)
+      target.lower_stat(:attack, 3, true, false)
     end
 
     def deal_damage(user, target, damage, critical_hit)
-      target.damage(damage)
+      target.lower_hp(damage)
     end
   end
 end

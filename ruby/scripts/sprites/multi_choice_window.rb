@@ -133,42 +133,42 @@ class MultiChoiceWindow < BaseWindow
     end
   end
 
-  def update
-    return unless super
+  def update(audio = true)
+    return unless super()
     if Input.down?
       if @index < 2
-        self.index += 2
+        self.set_index(@index + 2, audio)
       elsif @can_loop
-        self.index %= 2
+        self.set_index(@index % 2, audio)
       end
     end
     if Input.up?
       if @index > 1
-        self.index -= 2
+        self.set_index(@index - 2, audio)
       elsif @can_loop
-        self.index = @choices.size - self.index % 2
+        self.set_index(@choices.size - self.index % 2, audio)
       end
     end
     if Input.right?
       if @index % 2 == 0
-        self.index += 1
+        self.set_index(@index + 1, audio)
       elsif @can_loop
-        self.index -= 1
+        self.set_index(@index - 1, audio)
       end
     end
     if Input.left?
       if @index % 2 == 1
-        self.index -= 1
+        self.set_index(@index - 1, audio)
       elsif @can_loop
-        self.index += 1
+        self.set_index(@index + 1, audio)
       end
     end
     if Input.cancel? && !@cancel_choice.nil?
-      Audio.se_play("audio/se/menu_select")
+      Audio.se_play("audio/se/menu_select") if audio
       return @cancel_choice
     end
     if Input.confirm?
-      Audio.se_play("audio/se/menu_select")
+      Audio.se_play("audio/se/menu_select") if audio
       return @index
     end
   end

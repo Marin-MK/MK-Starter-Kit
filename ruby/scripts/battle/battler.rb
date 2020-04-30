@@ -196,10 +196,61 @@ class Battle
       end
     end
 
-    def damage(damage)
+    def end_of_turn
+      
+    end
+
+    def lower_hp(damage)
       damage = damage.floor
-      @battle.lower_hp(self, damage)
+      @battle.ui.lower_hp(self, damage)
       @pokemon.hp -= damage
+    end
+
+    def get_stage(stat)
+      if ![:attack, :defense, :spatk, :spdef, :speed, :accuracy, :evasion].include?(stat)
+        raise "Invalid stat '#{stat}': must be one of [:attack, :defense, :spatk, :spdef, :speed, :accuracy, :evasion]"
+      end
+      return @stages.method(stat).call
+    end
+
+    def set_stage(stat, value)
+      if ![:attack, :defense, :spatk, :spdef, :speed, :accuracy, :evasion].include?(stat)
+        raise "Invalid stat '#{stat}': must be one of [:attack, :defense, :spatk, :spdef, :speed, :accuracy, :evasion]"
+      end
+      return @stages.method(stat.to_s + "=").call(value)
+    end
+
+    def lower_stat(stat, stages, animation = true, fail_message = true, success_message = true)
+      current_stage = get_stage(stat)
+      statname = {
+        attack: "ATTACK",
+        defense: "DEFENSE",
+        spatk: "SPATK",
+        spdef: "SPDEF",
+        speed: "SPEED",
+        accuracy: "ACCURACY",
+        evasion: "EVASION"
+      }[stat]
+      if current_stage <= -6
+        message("#{self.name}'s #{statname}\nwon't go any lower!") if fail_message
+      else
+        new_stage = current_stage - stages
+        new_stage = -6 if new_stage < -6
+        set_stage(stat, new_stage)
+        diff = current_stage - new_stage
+        if animation
+          @battle.ui.stat_anim(self, :red, :down)
+        end
+        if success_message
+          if diff == 1
+            message("#{self.name}'s #{statname}\nfell!'")
+          elsif diff == 2
+            message("#{self.name}'s #{statname}\nharsly fell!")
+          elsif diff >= 3
+            message("#{self.name}'s #{statname}\nseverely fell!")
+          end
+        end
+      end
     end
   end
 end

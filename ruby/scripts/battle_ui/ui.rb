@@ -69,9 +69,11 @@ class Battle
       end
     end
 
-    def update
-      Graphics.update
-      Input.update
+    def update(update_main = true)
+      if update_main
+        Graphics.update
+        Input.update
+      end
       @sprites["base1"].update
       @sprites["base2"].update
       @sprites["trainer1"].update
@@ -252,7 +254,7 @@ class Battle
     def choose_move(battler, initial_index = 0)
       choices = [["-", "-"], ["-", "-"]]
       for i in 0...battler.moves.size
-        choices[(i / 2.0).floor][i % 2] = battler.moves[i].name
+        choices[i / 2][i % 2] = battler.moves[i].name
       end
       @cmdwin = MultiChoiceWindow.new(
         x: 0,
@@ -281,12 +283,13 @@ class Battle
       loop do
         update
         oldidx = @cmdwin.index
-        cmd = @cmdwin.update
-        if choices[@cmdwin.index] == "-"
-          @cmdwin.index = oldidx
+        cmd = @cmdwin.update(false)
+        if choices[@cmdwin.index / 2][@cmdwin.index % 2] == "-"
+          @cmdwin.set_index(oldidx, false)
         end
         if oldidx != @cmdwin.index
           draw_move_info(battler, @cmdwin.index)
+          Audio.se_play("audio/se/menu_select")
         end
         if !cmd.nil?
           cmd = Choice.new(cmd)
@@ -365,6 +368,7 @@ class Battle
       else
         @msgwin.drawing = true
         update while @msgwin.drawing?
+        wait(0.4)
       end
     end
 
@@ -385,6 +389,21 @@ class Battle
         update
         databox.draw_hp(battler.hp - diff * i)
       end
+    end
+
+    def stat_anim(battler, stat_type, direction)
+      return
+      sprite = get_battler_sprite(battler)
+      stat = StatSprite.new(@viewport, sprite, stat_type, direction)
+      frames = framecount(2.0)
+      Graphics.update
+      for i in 1..frames
+        Graphics.update
+        Input.update
+        stat.update
+      end
+      sprite.visible = true
+      stat.dispose
     end
   end
 end
