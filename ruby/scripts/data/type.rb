@@ -45,7 +45,7 @@ class Type < Serializable
   # Ensures all types contain valid data.
   def self.validate_all_types
     intnames = Cache.keys
-    Cache.values.each do |type|
+    Cache.each_value do |type|
       type.strong_against.each do |k|
         if !intnames.include?(k)
           raise "Type #{k.inspect} could not be found, located in #strong_against in Type #{type.intname.inspect}"

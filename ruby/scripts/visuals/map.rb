@@ -19,13 +19,13 @@ class Visuals
     def real_x=(value)
       @real_x = value
       @overlays.each { |o| o[0].x = @real_x }
-      @events.values.each { |e| e.sprite.x = @real_x + e.relative_x }
+      @events.each_value { |e| e.sprite.x = @real_x + e.relative_x }
     end
 
     def real_y=(value)
       @real_y = value
       @overlays.each { |o| o[0].y = @real_y }
-      @events.values.each { |e| e.sprite.y = @real_y + e.relative_y }
+      @events.each_value { |e| e.sprite.y = @real_y + e.relative_y }
     end
 
     # Creates a new Map object.

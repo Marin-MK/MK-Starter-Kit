@@ -26,6 +26,7 @@ module MKD
       attr_accessor :move_animation
       attr_accessor :idle_animation
       attr_accessor :direction_lock
+      attr_accessor :frame_update_interval
       attr_accessor :passable
       attr_accessor :save_position
       attr_accessor :speed
@@ -34,6 +35,7 @@ module MKD
         @move_animation = true
         @idle_animation = false
         @direction_lock = false
+        @frame_update_interval = 16
         @passable = false
         @save_position = true
         @speed = PLAYERWALKSPEED
@@ -75,12 +77,16 @@ module MKD
       attr_accessor :direction
       attr_accessor :param
       attr_accessor :frame_update_interval
+      attr_accessor :num_directions
+      attr_accessor :num_frames
 
       def initialize
         @type = :file
         @direction = 2
         @param = nil
         @frame_update_interval = 16
+        @num_directions = 4
+        @num_frames = 4
       end
     end
   end

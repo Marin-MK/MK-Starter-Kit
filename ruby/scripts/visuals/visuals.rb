@@ -22,7 +22,7 @@ class Visuals
 
   # Updates the maps and player.
   def update(*args)
-    @maps.values.each { |e| e.update(*args) } unless args.include?(:no_maps)
+    @maps.each_value { |e| e.update(*args) } unless args.include?(:no_maps)
     @player.update
     @map_renderer.create_tiles if @map_renderer.empty?
     @map_renderer.update

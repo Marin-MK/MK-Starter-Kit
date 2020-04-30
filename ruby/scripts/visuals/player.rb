@@ -67,12 +67,12 @@ class Visuals
       raise "$visuals.player.move error"
       if xtilediff != 0
         xdiff *= 32
-        $visuals.maps.values.each { |m| m.real_x -= xtilediff * 32 }
+        $visuals.maps.each_value { |m| m.real_x -= xtilediff * 32 }
         $visuals.map_renderer.move_x(xdiff)
       end
       if ytilediff != 0
         ydiff *= 32
-        $visuals.maps.values.each { |m| m.real_y -= ytilediff * 32 }
+        $visuals.maps.each_value { |m| m.real_y -= ytilediff * 32 }
         $visuals.map_renderer.move_y(ydiff)
       end
     end

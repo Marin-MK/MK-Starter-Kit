@@ -68,7 +68,7 @@ class Game
 
   # Updates the maps and player.
   def update
-    @maps.values.each(&:update)
+    @maps.each_value(&:update)
     @player.update
   end
 

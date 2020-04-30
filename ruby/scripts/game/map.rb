@@ -128,7 +128,7 @@ class Game
 
     # Updates this map's events and interpreters.
     def update
-      @events.values.each(&:update)
+      @events.each_value(&:update)
       @wait_count -= 1 if @wait_count > 0
       if @event_interpreters.size > 0
         if @event_interpreters[0].done?

@@ -97,12 +97,12 @@ class PauseMenuUI < BaseUI
   end
 
   def show_ui
-    @sprites.values.each { |e| e.visible = true }
+    @sprites.each_value { |e| e.visible = true }
     @cmdwin.visible = true
   end
 
   def hide_ui
-    @sprites.values.each { |e| e.visible = false }
+    @sprites.each_value { |e| e.visible = false }
     @cmdwin.visible = false
   end
 
