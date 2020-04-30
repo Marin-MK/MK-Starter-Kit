@@ -31,6 +31,10 @@ class Battle
     PLAYER_HP_X = 96
     PLAYER_HP_Y = 34
 
+    EXP_PATH = "gfx/ui/battle/exp"
+    EXP_X = 64
+    EXP_Y = 66
+
     OWNED_BALL_PATH = "gfx/ui/battle/owned_ball"
     OWNED_BALL_X = 14
     OWNED_BALL_Y = 30

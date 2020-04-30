@@ -78,7 +78,9 @@ class Battle
       @sprites["base2"].update
       @sprites["trainer1"].update
       @sprites["pokemon1"].update if @sprites["pokemon1"]
-      @sprites["pokemon2"].update
+      @sprites["databox1"].update if @sprites["databox1"]
+      @sprites["pokemon2"].update if @sprites["pokemon2"]
+      @sprites["databox2"].update if @sprites["databox2"]
       @sprites["ball"].update if @sprites["ball"] && !@sprites["ball"].disposed?
       @msgwin.update
       @ball_open_animation.update if @ball_open_animation
@@ -357,14 +359,16 @@ class Battle
       )
     end
 
-    def message(text, await_input = false, ending_arrow = false)
+    def message(text, await_input = false, ending_arrow = false, reset = true)
       @msgwin.text = text
       @msgwin.ending_arrow = ending_arrow
       @msgwin.letter_by_letter = true
       if await_input
         update while @msgwin.running?
-        @msgwin.text = ""
-        @msgwin.ending_arrow = false
+        if reset
+          @msgwin.text = ""
+          @msgwin.ending_arrow = false
+        end
       else
         @msgwin.drawing = true
         update while @msgwin.drawing?
@@ -380,6 +384,25 @@ class Battle
       return battler.side == 0 ? @sprites["databox1"] : @sprites["databox2"]
     end
 
+    def faint(battler)
+      sprite = get_battler_sprite(battler)
+      starty = sprite.y
+      for i in 1..framecount(0.2)
+        update
+        sprite.y = starty + 120.0 / framecount(0.4) * i
+      end
+      for i in 1..framecount(0.2)
+        update
+        sprite.y = starty + 120.0 / framecount(0.2) * (framecount(0.2) + i)
+        sprite.opacity = 255.0 * (framecount(0.2) - i)
+      end
+      sprite.dispose
+      @sprites.delete(@sprites.key(sprite))
+      databox = get_battler_databox(battler)
+      databox.dispose
+      @sprites.delete(@sprites.key(databox))
+    end
+
     def lower_hp(battler, damage)
       databox = get_battler_databox(battler)
       frames = framecount(0.3)
@@ -388,6 +411,16 @@ class Battle
       for i in 1..frames
         update
         databox.draw_hp(battler.hp - diff * i)
+      end
+    end
+
+    def gain_exp(battler, exp)
+      databox = get_battler_databox(battler)
+      frames = framecount(0.7)
+      diff = exp / frames.to_f
+      for i in 1..frames
+        update
+        databox.draw_exp(battler.exp + diff * i)
       end
     end
 

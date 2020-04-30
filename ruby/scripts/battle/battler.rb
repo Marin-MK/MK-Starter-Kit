@@ -34,6 +34,10 @@ class Battle
       return @pokemon.level
     end
 
+    def exp
+      return @pokemon.exp
+    end
+
     def species
       return @pokemon.species
     end
@@ -50,7 +54,6 @@ class Battle
     def hp
       return @pokemon.hp
     end
-
 
     def base_attack
       return @pokemon.attack
@@ -177,15 +180,56 @@ class Battle
       return @pokemon.status == :asleep
     end
 
-    def message(msg, await_input = false, ending_arrow = false)
-      @battle.message(msg, await_input, ending_arrow)
+    def message(msg, await_input = false, ending_arrow = false, reset = true)
+      @battle.message(msg, await_input, ending_arrow, reset)
+    end
+
+    def opposing_side
+      return @battle.sides[1 - @side]
+    end
+
+    def gain_exp(exp)
+      # Unsupported for opposing Pokémon
+      if self.side == 1
+        @pokemon.exp += exp
+        return
+      end
+      message("#{self.name} gained\n#{exp} EXP. Points!", true, true, false)
+      startlevel = self.level
+      rate = @pokemon.species.leveling_rate
+      destlevel = EXP.get_level(rate, self.exp + exp)
+      for i in startlevel..destlevel
+        nextexp = EXP.get_exp(rate, i + 1)
+        diffexp = nextexp - self.exp
+        diffexp = exp if diffexp > exp
+        exp -= diffexp
+        if diffexp > 0
+          @battle.ui.gain_exp(self, diffexp)
+          @pokemon.exp += diffexp
+          if i != destlevel
+            @battle.ui.get_battler_databox(self).draw_level
+            message("#{self.name} grew to\nLV. #{i + 1}!", true, false, false)
+          end
+        end
+      end
+    end
+
+    def faint
+      @battle.ui.faint(self)
+      message("#{self.name}\nfainted!", true, true)
+      opposing_side.distribute_xp(self)
     end
 
     def attempt_to_escape(opponent)
       a = @pokemon.speed
       b = [1, opponent.pokemon.speed].max
       c = @battle.run_attempts
-      chance = (a * 28.0) / b + 30 * c
+      if a > b # Faster than opponent
+        chance = 255 # Always suceeds
+      else
+        chance = (a * 128) / b + 30 * c
+        chance %= 256
+      end
       @battle.run_attempts += 1
       if rand(0..255) < chance
         message("Got away safely!", true, true)
@@ -197,11 +241,13 @@ class Battle
     end
 
     def end_of_turn
-      
+
     end
 
     def lower_hp(damage)
       damage = damage.floor
+      damage = @pokemon.hp if damage > @pokemon.hp
+      return if damage <= 0
       @battle.ui.lower_hp(self, damage)
       @pokemon.hp -= damage
     end

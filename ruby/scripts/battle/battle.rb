@@ -18,7 +18,7 @@ class Battle
     end
     @wild_pokemon = @sides[1].trainers[0].party[0] if @wild_battle
     @run_attempts = 1
-    @break = false
+    @stop = false
     @ui = UI.new(self)
     @ui.begin_start
     @ui.shiny_sparkle if @wild_pokemon.shiny?
@@ -37,8 +37,8 @@ class Battle
     @ui.update
   end
 
-  def message(text, await_input = false, ending_arrow = false)
-    @ui.message(text, await_input, ending_arrow)
+  def message(text, await_input = false, ending_arrow = false, reset = true)
+    @ui.message(text, await_input, ending_arrow, reset)
   end
 
   def main
@@ -50,14 +50,12 @@ class Battle
         for battler in @sides[side].battlers
           if side == 0 # Player side
             cmd = get_player_command(battler)
-            raise "Player command is nil" if cmd.nil?
-            @commands << cmd
-            break if @break
+            return if @stop
+            @commands << cmd if !cmd.nil?
           else # Opposing side
             # Uses random move from moveset.
             cmd = get_opponent_command(battler)
-            raise "Opponent command is nil" if cmd.nil?
-            @commands << cmd
+            @commands << cmd if !cmd.nil?
           end
         end
       end
@@ -68,6 +66,21 @@ class Battle
       end
 
       end_of_turn
+
+      for side in 0...@sides.size
+        if !@sides[side].battlers.any? { |b| !b.fainted? }
+          if side == 0 # Black out
+            raise "Black Out"
+          else
+            if @sides[side].trainers[0].wild_pokemon
+              # Defeated a wild Pokémon
+              @ui.fade_out
+              @stop = true
+              return
+            end
+          end
+        end
+      end
     end
   end
 
@@ -118,7 +131,7 @@ class Battle
           escaped = battler.attempt_to_escape(@sides[1].battlers[0])
           if escaped
             @ui.fade_out
-            @break = true
+            @stop = true
             return
           end
         else
@@ -154,6 +167,7 @@ class Battle
 
   def process_command(command)
     if command.use_move?
+      return if command.battler.fainted?
       move = BaseMove.new(self, command.move)
       move.execute(command.battler)
     else

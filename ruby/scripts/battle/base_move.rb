@@ -17,8 +17,8 @@ class Battle
       return @move.status?
     end
 
-    def message(msg, await_input = false, ending_arrow = false)
-      @battle.message(msg, await_input, ending_arrow)
+    def message(msg, await_input = false, ending_arrow = false, reset = true)
+      @battle.message(msg, await_input, ending_arrow, reset)
     end
 
     def get_target(user)
@@ -52,7 +52,7 @@ class Battle
     end
 
     def critical_hit?(user)
-      stage = get_critical_hit_stage
+      stage = get_critical_hit_stage(user)
       if stage > 2
         return true
       else
@@ -154,7 +154,7 @@ class Battle
           damage = status? ? nil : calculate_damage(user, target, targets.size > 1, crit)
           use_move(user, target, damage, crit)
         else
-          use_move_message(user, target, damage, critical_hit)
+          use_move_message(user, target, damage, crit)
           message("#{user.name}'s\nattack missed!'")
         end
       end
@@ -180,6 +180,7 @@ class Battle
         critical_hit_message(user, target, damage, critical_hit) if critical_hit
       end
       after_use_effect(user, target, damage, critical_hit)
+      target.faint if target.fainted?
     end
 
     def execute_animation(user, target, damage, critical_hit)
@@ -193,7 +194,7 @@ class Battle
     end
 
     def after_use_effect(user, target, damage, critical_hit)
-      target.lower_stat(:attack, 3, true, false)
+      #target.lower_stat(:attack, 3, true, false)
     end
 
     def deal_damage(user, target, damage, critical_hit)
