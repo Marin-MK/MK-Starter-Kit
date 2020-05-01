@@ -531,7 +531,11 @@ class Pokemon
       factor = @hp / @totalhp.to_f
     end
     @totalhp = (((2.0 * species.stats(self.form).hp + @ivs.hp + (@evs.hp / 4.0).floor) * level.to_f) / 100.0).floor + level + 10
-    @hp = (@totalhp * factor).round if factor
+    if factor
+      @hp = (@totalhp * factor).round
+      # Ensure 1 HP damage if previously not at full hp
+      @hp = @totalhp - 1 if @hp == @totalhp && factor != 1
+    end
     mod = (buff == :attack ? 1.1 : debuff == :attack ? 0.9 : 1.0)
     @attack = (((((2.0 * species.stats(self.form).attack + @ivs.attack + (@evs.attack / 4.0).floor) * level.to_f) / 100.0).floor + 5) * mod).floor
     mod = (buff == :defense ? 1.1 : debuff == :defense ? 0.9 : 1.0)

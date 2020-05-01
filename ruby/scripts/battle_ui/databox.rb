@@ -2,6 +2,7 @@ class Battle
   class Databox
     def initialize(battler, is_opponent)
       @battler = battler
+      @battle = battler.battle
       @is_opponent = is_opponent
       @sprites = {}
       bmp = Bitmap.new(is_opponent ? OPPONENT_BOX_PATH : PLAYER_BOX_PATH)
@@ -103,6 +104,23 @@ class Battle
       fraction = (exp - startlevel) / (nextlevel - startlevel).to_f
       fraction = 0 if fraction < 0 || fraction >= 1
       @sprites["exp"].src_rect.width = fraction * @sprites["exp"].bitmap.width
+    end
+
+    def level_up
+      @sprites["levelup"] = Sprite.new(@viewport)
+      @sprites["levelup"].bitmap = Bitmap.new(PLAYER_BOX_LEVEL_UP_PATH)
+      @sprites["levelup"].opacity = 0
+      frames = framecount(0.15)
+      for i in 1..frames
+        @battle.ui.update
+        @sprites["levelup"].opacity = 200.0 / frames * i
+      end
+      for i in 1..frames
+        @battle.ui.update
+        @sprites["levelup"].opacity = 200.0 / frames * (frames - i)
+      end
+      @sprites["levelup"].dispose
+      @sprites.delete("levelup")
     end
 
     def width

@@ -205,10 +205,14 @@ class Battle
         exp -= diffexp
         if diffexp > 0
           @battle.ui.gain_exp(self, diffexp)
+          oldstats = [@pokemon.totalhp, @pokemon.attack, @pokemon.defense, @pokemon.spatk, @pokemon.spdef, @pokemon.speed]
           @pokemon.exp += diffexp
           if i != destlevel
-            @battle.ui.get_battler_databox(self).draw_level
-            message("#{self.name} grew to\nLV. #{i + 1}!", true, false, false)
+            @pokemon.calc_stats
+            @battle.ui.level_up(self)
+            message("#{self.name} grew to\nLV. #{i + 1}!", true, true, false)
+            newstats = [@pokemon.totalhp, @pokemon.attack, @pokemon.defense, @pokemon.spatk, @pokemon.spdef, @pokemon.speed]
+            @battle.ui.stats_up_window(self, oldstats, newstats)
           end
         end
       end
@@ -225,7 +229,7 @@ class Battle
       b = [1, opponent.pokemon.speed].max
       c = @battle.run_attempts
       if a > b # Faster than opponent
-        chance = 255 # Always suceeds
+        chance = 256 # Always suceeds
       else
         chance = (a * 128) / b + 30 * c
         chance %= 256

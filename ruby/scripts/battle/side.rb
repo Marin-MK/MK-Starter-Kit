@@ -61,7 +61,7 @@ class Battle
         v = 1
         exp = (a * b * defeatedlevel / (5 * s) * ((2 * defeatedlevel + 10) ** 2.5 / (defeatedlevel + playerlevel + 10) ** 2.5) + 1) * t * e * p
         exp = exp.floor
-        exp = 104
+        exp = 38554
         battler.gain_exp(exp)
       end
     end

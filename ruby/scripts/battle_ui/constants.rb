@@ -1,6 +1,7 @@
 class Battle
   class Databox
     PLAYER_BOX_PATH = "gfx/ui/battle/databox_player"
+    PLAYER_BOX_LEVEL_UP_PATH = "gfx/ui/battle/databox_player_level_up"
     OPPONENT_BOX_PATH = "gfx/ui/battle/databox_opponent"
 
     BASE_COLOR = Color.new(64, 64, 64)

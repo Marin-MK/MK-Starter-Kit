@@ -424,6 +424,70 @@ class Battle
       end
     end
 
+    def level_up(battler)
+      databox = get_battler_databox(battler)
+      databox.level_up
+      databox.draw_level
+      databox.draw_hp
+      const_positions = [90, 110, 130, 144, 164, 184, 198]
+      positions = const_positions.clone
+      particles = []
+      2.times do |i|
+        until positions.empty?
+          p = BasicParticle.new(@viewport)
+          x = positions.sample
+          positions.delete(x)
+          p.load_data({
+            bitmap: "gfx/ui/battle/level_up_particle",
+            start: {
+              x: x,
+              y: 224 + rand(96),
+              z: 1
+            },
+            commands: [
+              {
+                seconds: rand(1..10) / 40.0 + (i == 0 ? 0 : 0.25)
+              },
+              {
+                seconds: 0.25,
+                y: 110 + rand(1..35),
+                stop: true
+              }
+            ]
+          })
+          particles << p
+        end
+        positions = const_positions if positions.empty?
+      end
+      until particles.empty?
+        update
+        particles.each { |p| p.update }
+        particles.delete_if { |p| p.disposed? }
+      end
+    end
+
+    def stats_up_window(battler, oldstats, newstats)
+      diff = newstats.each_with_index.map { |e, i| e - oldstats[i] }
+      viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+      viewport.z = 100001
+      window = LevelUpWindow.new(viewport)
+      window.x = 288
+      window.y = 112
+      window.show_increase(diff)
+      loop do
+        update
+        window.update
+        break if Input.confirm?
+      end
+      window.show_stats(newstats)
+      loop do
+        update
+        window.update
+        break if Input.confirm?
+      end
+      window.dispose
+    end
+
     def stat_anim(battler, stat_type, direction)
       return
       sprite = get_battler_sprite(battler)
