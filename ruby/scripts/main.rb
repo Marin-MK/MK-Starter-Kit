@@ -26,19 +26,6 @@ map.encounter_tables = [
 ]
 map.save
 
-map = MKD::Map.fetch(3)
-map.events = {}
-map.events[1] = MKD::Event.new(1)
-map.events[1].x = 0
-map.events[1].y = 1
-map.events[1].name = "Lil Boy"
-map.events[1].pages[0] = MKD::Event::Page.new
-map.events[1].pages[0].graphic.param = "gfx/characters/boy"
-map.events[1].pages[0].commands = [
-  [0, :message, {text: "Good day sir!"}]
-]
-map.save
-
 # Initialize important game variables
 $LOG = {
   WARNING: true,
@@ -67,7 +54,7 @@ def main_function
   $game.update
   $visuals.update
   if Input.trigger?(Input::CTRL)
-    Battle.new($trainer, Pokemon.new(:BULBASAUR, 1))
+    Battle.new($trainer, Pokemon.new(:BULBASAUR, 5))
     #return false
   end
   return true

@@ -23,22 +23,22 @@ end
 module MKD
   class Event
     class Settings < Serializable
+      attr_accessor :move_speed
+      attr_accessor :idle_speed
       attr_accessor :move_animation
       attr_accessor :idle_animation
       attr_accessor :direction_lock
-      attr_accessor :frame_update_interval
       attr_accessor :passable
       attr_accessor :save_position
-      attr_accessor :speed
 
       def initialize
+        @move_speed = PLAYERWALKSPEED
+        @idle_speed = PLAYERWALKSPEED
         @move_animation = true
         @idle_animation = false
         @direction_lock = false
-        @frame_update_interval = 16
         @passable = false
-        @save_position = true
-        @speed = PLAYERWALKSPEED
+        @save_position = false
       end
     end
   end
@@ -76,7 +76,6 @@ module MKD
       attr_accessor :type
       attr_accessor :direction
       attr_accessor :param
-      attr_accessor :frame_update_interval
       attr_accessor :num_directions
       attr_accessor :num_frames
 
@@ -84,7 +83,6 @@ module MKD
         @type = :file
         @direction = 2
         @param = nil
-        @frame_update_interval = 16
         @num_directions = 4
         @num_frames = 4
       end

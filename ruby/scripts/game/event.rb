@@ -103,8 +103,8 @@ class Game
               # Wait 1 frame to start the new autonomous move route so the visuals have time to adjust to the new page.
               @automove_wait = 1
             end
-            @speed = current_page.settings.speed
-            @frame_update_interval = current_page.graphic.frame_update_interval
+            @speed = current_page.settings.move_speed
+            @frame_update_interval = current_page.settings.idle_speed * 64 # 0.25 * 64 => 16
           end
           break
         end
