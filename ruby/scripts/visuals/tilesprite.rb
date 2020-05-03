@@ -86,7 +86,10 @@ class Visuals
         else
           value = value.floor
         end
-        @sprites.each_value { |s| s.y = value if s }
+        @sprites.each_value do |s|
+          s.y = value if s
+          s.z = s.y + s.hash[:priority] * 32 + 32 if s.hash[:priority]
+        end
         @sprites.each_value { |s| s.z = s.y + s.hash[:priority] * 32 + 32 if s && s.hash[:priority] && !s.hash[:special] }
       end
 

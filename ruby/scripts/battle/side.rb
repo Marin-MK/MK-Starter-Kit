@@ -39,29 +39,7 @@ class Battle
 
     def distribute_xp(defeated_battler)
       @battlers.each do |battler|
-        # Trainer/Wild Pokemon difference
-        a = 1
-        # Defeated's Base EXP
-        b = defeated_battler.pokemon.species.base_exp
-        # Lucky Egg
-        e = 1
-        # Affection
-        f = 1
-        # Defeated's level
-        defeatedlevel = defeated_battler.level
-        # Winner's level
-        playerlevel = battler.level
-        # Pass Power, O-Power, Roto Power, etc.
-        p = 1
-        # Participation in battle or not
-        s = 1
-        # OT
-        t = 1
-        # Past evolution level
-        v = 1
-        exp = (a * b * defeatedlevel / (5 * s) * ((2 * defeatedlevel + 10) ** 2.5 / (defeatedlevel + playerlevel + 10) ** 2.5) + 1) * t * e * p
-        exp = exp.floor
-        exp = 38554
+        exp = battler.calculate_exp_gain(defeated_battler)
         battler.gain_exp(exp)
       end
     end
