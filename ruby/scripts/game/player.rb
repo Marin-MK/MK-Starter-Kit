@@ -82,15 +82,16 @@ class Game
       if oldrun != @running # Walking to running or running to walking
         @speed = @running ? PLAYERRUNSPEED : PLAYERWALKSPEED
         @graphic_name = @running ? "boy_run" : "boy"
-        @frame_update_interval = @running ? 24 : 16
+        @animation_speed = @running ? 24 : 16
+        @idle_animation_speed = 16
       end
       # Only when the player starts moving to a new tile
-      if !@initialized || moving? != @wasmoving && moving?
+      if !@initialized || moving? != was_moving? && moving?
         @initialized = true
         # Load/unload map connections
         update_nearby_maps
       end
-      @wasmoving = moving?
+      super
     end
 
     def update_nearby_maps
@@ -113,7 +114,7 @@ class Game
 
     # @return [Boolean] whether or not player input is possible. Used for pause menu, registered items and movement.
     def input_possible?
-      return !moving? && !@wasmoving && !$game.any_events_running?
+      return !moving? && !was_moving? && !$game.any_events_running?
     end
 
     # Moves the player down one tile.

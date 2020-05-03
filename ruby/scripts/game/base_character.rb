@@ -19,17 +19,26 @@ class Game
     attr_accessor :frame_update_interval
     # @return [Boolean] whether to ignore impassable move commands.
     attr_accessor :moveroute_ignore_impassable
+    # @return [Boolean] whether to animate while idling.
+    attr_reader :idle_animation
+    # @return [Integer] how fast the character animates while idling.
+    attr_accessor :idle_speed
+    # @return [Integer] how fast the character animates while walking
+    attr_accessor :animation_speed
 
-    def initialize(map_id, x = 0, y = 0, direction = 2, graphic_name = "", speed = PLAYERWALKSPEED, frame_update_interval = 16)
+    def initialize(map_id, x = 0, y = 0, direction = 2, graphic_name = "", move_speed = PLAYERWALKSPEED, animation_speed = 16)
       @map_id = map_id
       @x = x
       @y = y
       @graphic_name = graphic_name
       @direction = direction
-      @speed = speed
-      @frame_update_interval = frame_update_interval
+      @speed = move_speed
       @moveroute = []
       @moveroute_ignore_impassable = false
+      @idle_animation = false
+      @idle_speed = move_speed
+      @animation_speed = animation_speed
+      @wasmoving = false
       self.setup_visuals
     end
 
@@ -39,6 +48,12 @@ class Game
 
     def visual
       return $b
+    end
+
+    def idle_animation=(value)
+      @idle_animation = value
+      # Ensure we don't end on a moving frame
+      self.visual.finish_movement if !value && self.visual
     end
 
     # Turns the event to face the player.
@@ -94,8 +109,12 @@ class Game
     # @return [Boolean] whether or not the character has an active move route.
     def moving?
       return true if @moveroute.size > 0
-      return true if self.visual.moving?
+      return true if self.visual.moving? if self.visual
       return false
+    end
+
+    def was_moving?
+      return @wasmoving
     end
 
     def moveroute_next
@@ -159,6 +178,7 @@ class Game
     end
 
     def update
+      @wasmoving = moving?
     end
   end
 end

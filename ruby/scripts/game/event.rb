@@ -42,6 +42,7 @@ class Game
 
     # Updates the event, but is only called once per frame.
     def update
+      super
       test_pages
       if current_page && current_page.automoveroute.commands.size > 0
         run = true
@@ -104,7 +105,10 @@ class Game
               @automove_wait = 1
             end
             @speed = current_page.settings.move_speed
-            @frame_update_interval = current_page.settings.idle_speed * 64 # 0.25 * 64 => 16
+            # Use self.idle_animation= to call the method and ensure we're on a still frame, not a moving frame
+            self.idle_animation = current_page.settings.idle_animation
+            @idle_speed = current_page.settings.idle_speed
+            @animation_speed = current_page.settings.move_speed * 64 # 0.25 * 64 => 16
           end
           break
         end

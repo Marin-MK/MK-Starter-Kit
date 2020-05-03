@@ -105,7 +105,7 @@ class Visuals
 
     def update_fake_movement
       # Executes the animation when moving against an impassable tile
-      if @fake_anim
+      if @fake_anim && !@game_character.idle_animation
         @fake_anim -= 1 if @fake_anim > 0
         if @fake_anim == 0
           @sprite.src_rect.x += @sprite.src_rect.width
@@ -117,8 +117,7 @@ class Visuals
           if @stop_fake_anim
             @fake_anim = nil
             @stop_fake_anim = false
-            @sprite.src_rect.x += @sprite.src_rect.width if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 != 0
-            @sprite.src_rect.x = 0 if @sprite.src_rect.x >= @sprite.bitmap.width
+            next_frame if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 != 0
           else
             @fake_anim = 16
             Audio.se_play("audio/se/wallbump.wav") if play

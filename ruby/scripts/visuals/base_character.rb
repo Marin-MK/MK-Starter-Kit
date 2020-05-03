@@ -25,6 +25,7 @@ class Visuals
       @relative_x = 32 * @game_character.x + 16
       @relative_y = 32 * @game_character.y + 32
       @setdir = true
+      @oldanimate_count = 0
     end
 
     def dispose
@@ -33,6 +34,7 @@ class Visuals
     end
 
     def finish_movement
+      return if @game_character.idle_animation || @sprite.bitmap.nil?
       next_frame if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 == 1
     end
 
@@ -158,7 +160,6 @@ class Visuals
     end
 
     def update_movement
-      @oldanimate_count = @animate_count
       # Executes horizontal movement
       if @x_travelled && @x_destination && (@x_destination.abs - @x_travelled.abs) >= 0.01
         # Floating point precision movement
@@ -217,10 +218,20 @@ class Visuals
 
     def update_animation
       # Animates the sprite.
-      if 32.0 / (@game_character.speed * Graphics.frame_rate) > @game_character.frame_update_interval && @oldanimate_count != @animate_count ||
-         @oldanimate_count % @game_character.frame_update_interval > @animate_count % @game_character.frame_update_interval
+      idle = !@game_character.moving? && !@game_character.was_moving?
+      idle = false if @game_character.is_a?(Game::Player) && !@game_character.input_possible?
+      idle = false if !@game_character.idle_animation
+      speed = @game_character.speed
+      if idle
+        pixels = 32.0 / (@game_character.idle_speed * Graphics.frame_rate)
+        @animate_count += pixels.abs
+        speed = @game_character.idle_speed
+      end
+      if 32.0 / (speed * Graphics.frame_rate) > @game_character.animation_speed && @oldanimate_count != @animate_count ||
+         @oldanimate_count % @game_character.animation_speed > @animate_count % @game_character.animation_speed
         next_frame
       end
+      @oldanimate_count = @animate_count
     end
 
     def should_update_animation
