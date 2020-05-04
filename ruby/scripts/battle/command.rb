@@ -4,14 +4,18 @@ class Battle
     attr_accessor :battler
     attr_accessor :argument
 
-    def initialize(type, battler, argument)
+    def initialize(type, battler, *arguments)
       @type = type
       @battler = battler
-      @argument = argument
+      @arguments = arguments
     end
 
     def move
-      return use_move? ? @argument : nil
+      return use_move? ? @arguments[0] : nil
+    end
+
+    def target
+      return use_move? ? @arguments[1] : nil
     end
 
     def use_move?

@@ -19,6 +19,7 @@ class Battle
     @wild_pokemon = @sides[1].trainers[0].party[0] if @wild_battle
     @run_attempts = 1
     @stop = false
+    @ai = AI.new(self)
     @ui = UI.new(self)
     @ui.begin_start
     @ui.shiny_sparkle if @wild_pokemon.shiny?
@@ -26,6 +27,7 @@ class Battle
     battler = @sides[0].trainers[0].party.find { |e| !e.egg? && !e.fainted? }
     @sides[0].register_battler(battler)
     @ui.send_out_initial_pokemon("Go! #{battler.name}!", battler)
+    @ai.show_battler(battler)
     main
   end
 
@@ -145,7 +147,7 @@ class Battle
   def get_move_command(battler)
     movechoice = nil
     move = nil
-    index = 0
+    index = nil
     loop do
       movechoice = @ui.choose_move(battler, index)
       break if movechoice.cancel? # Break out of move choosing loop
@@ -162,14 +164,16 @@ class Battle
   end
 
   def get_opponent_command(battler)
-    return Command.new(:use_move, battler, battler.moves.sample)
+    move, target = @ai.pick_move_and_target(battler)
+    target = @sides[0].battlers.find { |b| b == target.battler }
+    return Command.new(:use_move, battler, move, target)
   end
 
   def process_command(command)
     if command.use_move?
       return if command.battler.fainted?
       move = BaseMove.new(self, command.move)
-      move.execute(command.battler)
+      move.execute(command.battler, command.target)
     else
       raise "not yet implemented"
     end

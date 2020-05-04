@@ -25,6 +25,10 @@ class Battle
     OPPONENT_HP_BAR_Y = 30
     PLAYER_HP_BAR_X = 64
     PLAYER_HP_BAR_Y = 30
+    # If the opponent has a status condition, the HP bar has a different graphic and positioning.
+    OPPONENT_HP_BAR_STATUS_PATH = "gfx/ui/battle/opponent_hp_bar_status"
+    OPPONENT_HP_BAR_STATUS_X = 74
+    OPPONENT_HP_BAR_STATUS_Y = 30
 
     HP_PATH = "gfx/ui/battle/hp"
     OPPONENT_HP_X = 78
@@ -39,5 +43,10 @@ class Battle
     OWNED_BALL_PATH = "gfx/ui/battle/owned_ball"
     OWNED_BALL_X = 14
     OWNED_BALL_Y = 30
+
+    OPPONENT_STATUS_X = 14
+    OPPONENT_STATUS_Y = 28
+    PLAYER_STATUS_X = 32
+    PLAYER_STATUS_Y = 44
   end
 end

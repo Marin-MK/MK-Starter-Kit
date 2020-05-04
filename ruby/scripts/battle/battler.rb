@@ -15,6 +15,7 @@ class Battle
       @battle = battle
       @pokemon = pokemon
       @wild_pokemon = false
+      @bad_poison_counter = nil
       @effects = {}
       @stages = BattleStats.new
       @stages.attack = 0
@@ -160,6 +161,10 @@ class Battle
       return @pokemon.has_type?(type)
     end
 
+    def status
+      return @pokemon.status
+    end
+
     def burned?
       return @pokemon.status == :burned
     end
@@ -200,7 +205,7 @@ class Battle
       # Defeated's level
       defeatedlevel = defeated_battler.level
       # Winner's level
-      playerlevel = battler.level
+      playerlevel = self.level
       # Pass Power, O-Power, Roto Power, etc.
       p = 1
       # Participation in battle or not
@@ -270,7 +275,18 @@ class Battle
     end
 
     def end_of_turn
+      if poisoned?
+        if @bad_poison_counter.nil? # Regular poison
+          message("#{self.name} is hurt\nby poison!")
+          lower_hp(totalhp / 8)
+        else # Bad poison
 
+        end
+      end
+      if burned?
+        message("#{self.name} is hurt\nby its burn!")
+        lower_hp(totalhp / 8)
+      end
     end
 
     def lower_hp(damage)

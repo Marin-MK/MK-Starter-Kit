@@ -26,6 +26,7 @@ class Battle
       draw_hp_bar
       draw_hp
       draw_exp if !is_opponent
+      draw_status_condition
     end
 
     def opponent?
@@ -55,17 +56,35 @@ class Battle
     end
 
     def draw_owned_ball
-      @sprites["owned_ball"] = Sprite.new(@viewport)
+      if @sprites["owned_ball"].nil?
+        @sprites["owned_ball"] = Sprite.new(@viewport)
+      end
       @sprites["owned_ball"].bitmap = Bitmap.new(OWNED_BALL_PATH)
       @sprites["owned_ball"].x = OWNED_BALL_X
       @sprites["owned_ball"].y = OWNED_BALL_Y
+      @sprites["owned_ball"].visible = false if opponent? && !@battler.status.nil?
     end
 
     def draw_hp_bar
-      @sprites["hp_bar"] = Sprite.new(@viewport)
-      @sprites["hp_bar"].bitmap = Bitmap.new(HP_BAR_PATH)
-      @sprites["hp_bar"].x = opponent? ? OPPONENT_HP_BAR_X : PLAYER_HP_BAR_X
-      @sprites["hp_bar"].y = opponent? ? OPPONENT_HP_BAR_Y : PLAYER_HP_BAR_Y
+      if @sprites["hp_bar"].nil?
+        @sprites["hp_bar"] = Sprite.new(@viewport)
+      end
+      @sprites["hp_bar"].bitmap.dispose if @sprites["hp_bar"].bitmap
+      if opponent?
+        if !@battler.status.nil?
+          @sprites["hp_bar"].bitmap = Bitmap.new(OPPONENT_HP_BAR_STATUS_PATH)
+          @sprites["hp_bar"].x = OPPONENT_HP_BAR_STATUS_X
+          @sprites["hp_bar"].y = OPPONENT_HP_BAR_STATUS_Y
+        else
+          @sprites["hp_bar"].bitmap = Bitmap.new(HP_BAR_PATH)
+          @sprites["hp_bar"].x = OPPONENT_HP_BAR_X
+          @sprites["hp_bar"].y = OPPONENT_HP_BAR_Y
+        end
+      else
+        @sprites["hp_bar"].bitmap = Bitmap.new(HP_BAR_PATH)
+        @sprites["hp_bar"].x = PLAYER_HP_BAR_X
+        @sprites["hp_bar"].y = PLAYER_HP_BAR_Y
+      end
     end
 
     def draw_hp(hp = @battler.hp)
@@ -106,6 +125,16 @@ class Battle
       @sprites["exp"].src_rect.width = fraction * @sprites["exp"].bitmap.width
     end
 
+    def draw_status_condition
+      if @sprites["status"].nil?
+        @sprites["status"] = StatusConditionIcon.new(@battler, @viewport)
+        @sprites["status"].x = opponent? ? OPPONENT_STATUS_X : PLAYER_STATUS_X
+        @sprites["status"].y = opponent? ? OPPONENT_STATUS_Y : PLAYER_STATUS_Y
+      else
+        @sprites["status"].status = @battler.status
+      end
+    end
+
     def level_up
       @sprites["levelup"] = Sprite.new(@viewport)
       @sprites["levelup"].bitmap = Bitmap.new(PLAYER_BOX_LEVEL_UP_PATH)
@@ -121,6 +150,12 @@ class Battle
       end
       @sprites["levelup"].dispose
       @sprites.delete("levelup")
+    end
+
+    def update_status_condition
+      draw_status_condition
+      draw_hp_bar
+      @sprites["owned_ball"].visible = @battler.status.nil? if opponent?
     end
 
     def width

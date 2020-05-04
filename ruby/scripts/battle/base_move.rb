@@ -132,8 +132,8 @@ class Battle
       return rand(1..100) <= t
     end
 
-    def execute(user)
-      targets = get_target(user)
+    def execute(user, target = nil)
+      targets = target || get_target(user)
       targets = [targets] if targets.is_a?(Battler)
       # Determines if a critical hit for this user is possible
       # by checking each target.

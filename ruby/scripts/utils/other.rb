@@ -267,3 +267,23 @@ class Rect
     return [diffx, diffy]
   end
 end
+
+def weighted_rand(weights)
+  num = rand(weights.sum)
+  for i in 0...weights.size
+    if num < weights[i]
+      return i
+    else
+      num -= weights[i]
+    end
+  end
+end
+
+def weighted_factored_rand(factor, weights)
+  avg = weights.sum / weights.size.to_f
+  newweights = weights.map do |e|
+    diff = e - avg
+    next [0, ((e - diff * factor) * 100).round].max
+  end
+  return weighted_rand(newweights)
+end

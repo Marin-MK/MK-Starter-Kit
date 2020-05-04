@@ -55,6 +55,7 @@ class Battle
         shadow_color: Color.new(104, 88, 112),
         windowskin: :battle
       )
+      @last_move_index = 0
     end
 
     def dispose
@@ -253,7 +254,7 @@ class Battle
       return cmd
     end
 
-    def choose_move(battler, initial_index = 0)
+    def choose_move(battler, initial_index = @last_move_index)
       choices = [["-", "-"], ["-", "-"]]
       for i in 0...battler.moves.size
         choices[i / 2][i % 2] = battler.moves[i].name
@@ -300,6 +301,7 @@ class Battle
       end
       @cmdwin.dispose
       @ppwin.dispose
+      @last_move_index = cmd if !cmd.cancel?
       return cmd
     end
 

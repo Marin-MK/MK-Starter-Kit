@@ -42,7 +42,7 @@ $game.variables = Game::Variables.new
 $game.player = Game::Player.new(3)
 $game.load_map(3)
 $trainer = Trainer.new
-$trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 12, item: :REPEL);p.exp+=70;p))
+$trainer.add_pokemon(Pokemon.new(:BULBASAUR, 12, item: :REPEL))
 $trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 32);p.exp+=2000;p))
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 3, gender: 1, status: :paralyzed, hp: 13))
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 4, item: :REPEL))
@@ -54,8 +54,8 @@ def main_function
   $game.update
   $visuals.update
   if Input.trigger?(Input::CTRL)
-    $game.map.events[1].idle_animation = !$game.map.events[1].idle_animation
-    #Battle.new($trainer, Pokemon.new(:BULBASAUR, 5))
+    #$game.map.events[1].idle_animation = !$game.map.events[1].idle_animation
+    Battle.new($trainer, Pokemon.new(:BULBASAUR, 5))
     #return false
   end
   return true
