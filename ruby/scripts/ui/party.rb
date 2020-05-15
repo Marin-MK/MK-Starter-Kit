@@ -3,13 +3,14 @@ class PartyUI < BaseUI
   attr_accessor :index
   attr_reader :switching
 
-  def start(party = $trainer.party)
+  def start(party = $trainer.party, battle = false, &update)
     validate_array party => Pokemon
     @party = party
+    @battle = battle
     if @party.size == 0
       raise "Empty party; cannot show Party UI."
     end
-    super(path: "party")
+    super(path: "party", update: update)
     @sprites["background"] = Sprite.new(@viewport)
     @sprites["background"].set_bitmap(@path + "background")
     @sprites["window"] = MessageWindow.new(
@@ -113,17 +114,17 @@ class PartyUI < BaseUI
     end
   end
 
+  def get_selection_choices
+    return ["SUMMARY", "SWITCH", "ITEM", "CANCEL"]
+  end
+
   def select_pokemon
     if @switching
       switch_pokemon
     else
       Audio.se_play("audio/se/menu_select")
       pokemon = @party[@index]
-      choices = []
-      choices << "SUMMARY"
-      choices << "SWITCH"
-      choices << "ITEM"
-      choices << "CANCEL"
+      choices = get_selection_choices
       cmdwin = ChoiceWindow.new(
         x: Graphics.width,
         ox: :right,
@@ -138,6 +139,9 @@ class PartyUI < BaseUI
       @sprites["window"].text = "Do what with this " + symbol(:pkmn) + "?"
       loop do
         case cmdwin.get_choice { update_sprites }
+        when "SHIFT"
+          @return_value = @index
+          break
         when "SUMMARY"
           SummaryUI.start(self)
         when "SWITCH"
@@ -298,8 +302,6 @@ class PartyUI < BaseUI
     @sprites["window"].text = "Choose a POKéMON."
   end
 
-
-
   class BigPanel
     include Disposable
 
@@ -445,8 +447,6 @@ class PartyUI < BaseUI
       @sprites["icon"].update unless @pokemon.fainted?
     end
   end
-
-
 
   class Panel
     include Disposable

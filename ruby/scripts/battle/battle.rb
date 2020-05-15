@@ -127,7 +127,9 @@ class Battle
       elsif choice.bag?
 
       elsif choice.pokemon?
-
+        newbattler = @ui.switch_battler(battler)
+        next if battler.nil? # Go back to @ui.choose_command
+        return Command.new(:switch, battler, newbattler)
       elsif choice.run?
         if wild_battle?
           escaped = battler.attempt_to_escape(@sides[1].battlers[0])
@@ -174,6 +176,9 @@ class Battle
       return if command.battler.fainted?
       move = BaseMove.new(self, command.move)
       move.execute(command.battler, command.target)
+    elsif command.switch_pokemon?
+      @ui.recall_battler("#{command.battler.name}, that's enough!\nCome back!", command.battler)
+      @ui.send_out_pokemon("Go! #{command.new_battler.name}!", command.new_battler)
     else
       raise "not yet implemented"
     end

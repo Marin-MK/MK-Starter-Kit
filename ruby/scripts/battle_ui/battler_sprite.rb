@@ -49,6 +49,19 @@ class Battle
       @appear_counter = 0
     end
 
+    def disappear_into_ball(duration)
+      x = self.x - self.ox
+      y = self.y - self.oy
+      self.ox = self.src_rect.width / 2
+      self.oy = self.src_rect.height
+      self.x = x + self.ox
+      self.y = y + self.oy
+      self.zoom_x = 1
+      self.zoom_y = 1
+      @disappear_frames = framecount(duration)
+      @disappear_counter = 0
+    end
+
     def update
       super
       if @appear_frames && @appear_counter
@@ -58,6 +71,15 @@ class Battle
         if @appear_counter == @appear_frames
           @appear_counter = nil
           @appear_frames = nil
+        end
+      end
+      if @disappear_frames && @disappear_counter
+        @disappear_counter += 1.0
+        self.zoom_x = 1 - @disappear_counter / @disappear_frames
+        self.zoom_y = 1 - @disappear_counter / @disappear_frames
+        if @disappear_counter == @disappear_frames
+          @disappear_counter = nil
+          @disappear_frames = nil
         end
       end
     end

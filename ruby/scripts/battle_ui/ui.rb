@@ -8,7 +8,7 @@ class Battle
       transition = Transition.new
       transition.main
       @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-      @viewport.z = 9999
+      @viewport.z = 99997
       @sprites = {}
       @sprites["blackbg1"] = Sprite.new(@viewport)
       @sprites["blackbg1"].bitmap = Bitmap.new(Graphics.width, Graphics.height / 2)
@@ -84,7 +84,7 @@ class Battle
       @sprites["databox2"].update if @sprites["databox2"]
       @sprites["ball"].update if @sprites["ball"] && !@sprites["ball"].disposed?
       @msgwin.update
-      @ball_open_animation.update if @ball_open_animation
+      @ball_animation.update if @ball_animation
     end
 
     def begin_start
@@ -155,12 +155,27 @@ class Battle
            i >= framecount(0.3) && @sprites["trainer1"].frame == 3
           @sprites["trainer1"].frame += 1
           if @sprites["trainer1"].frame == 4
-            @sprites["ball"] = BallSprite.new(battler.ball_used, @viewport)
-            @sprites["ball"].update
+            throw_ball(battler)
           end
         end
       end
       update until @sprites["ball"].almost_done?
+      send_out_pokemon(nil, battler, false)
+    end
+
+    def throw_ball(battler)
+      @sprites["ball"] = BallSprite.new(battler.ball_used, @viewport)
+      @sprites["ball"].update
+    end
+
+    def send_out_pokemon(msg, battler, throw = true)
+      if msg
+        message(msg, false)
+      end
+      if throw
+        throw_ball(battler)
+        update until @sprites["ball"].almost_done?
+      end
       @sprites["pokemon1"] = BattlerSprite.new(battler, false, @viewport)
       @sprites["pokemon1"].x = 80 + battler.pokemon.species.battler_back_x
       @sprites["pokemon1"].y = 226 - @sprites["pokemon1"].src_rect.height + battler.pokemon.species.battler_back_y
@@ -176,7 +191,7 @@ class Battle
         update
         @sprites["white"].opacity = 255.0 / framecount(0.25) * i
       end
-      @ball_open_animation = BallOpenAnimation.new(@sprites["pokemon1"], @viewport)
+      @ball_animation = BallOpenAnimation.new(@sprites["pokemon1"], @viewport)
       frames = framecount(0.1)
       for i in 1..frames
         update
@@ -193,6 +208,8 @@ class Battle
         @sprites["white"].opacity = 255.0 - 255.0 / frames * i
         @sprites["databox1"].x = Graphics.width - diffx * i
       end
+      @sprites["white"].dispose
+      @sprites.delete("white")
     end
 
     def fade_out
@@ -378,6 +395,76 @@ class Battle
       end
     end
 
+    def switch_battler(battler)
+      ui = PartyUI.start_choose_battler(@battle.sides[0].trainers[0].party.map { |e| e.pokemon }) { update }
+      msgwin = MessageWindow.new(
+        y: 224,
+        z: 3,
+        width: 480,
+        height: 96,
+        windowskin: :choice,
+        line_x_start: -16,
+        line_y_space: -2,
+        line_y_start: -2,
+        visible: false,
+        viewport: ui.viewport,
+        update: proc { ui.update_sprites }
+      )
+      ret = nil
+      loop do
+        ret = ui.choose_battler
+        if !ret.nil?
+          battler = @battle.sides[0].trainers[0].party[ret]
+          if @battle.sides[0].battlers.include?(battler)
+            msgwin.ending_arrow = false
+            msgwin.visible = true
+            msgwin.show("#{battler.name} is already\nin battle!")
+            msgwin.visible = false
+          else
+            ret = battler
+            break
+          end
+        else
+          ret = nil
+          break
+        end
+      end
+      ui.end_choose_battler
+      return ret
+    end
+
+    def recall_battler(message, battler)
+      message(message, false)
+      @sprites["white"] = Sprite.new(@viewport)
+      @sprites["white"].bitmap = Bitmap.new(Graphics.width, Graphics.height)
+      @sprites["white"].bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(248, 248, 248))
+      @sprites["white"].opacity = 0
+      wait(0.1)
+      @ball_animation = BallCloseAnimation.new(@sprites["pokemon1"], @viewport)
+      frames = framecount(0.15)
+      @sprites["pokemon1"].disappear_into_ball(0.4)
+      for i in 1..frames
+        update
+        @sprites["white"].opacity = 255.0 / framecount(0.25) * i
+      end
+      frames = framecount(0.1)
+      for i in 1..frames
+        update
+        @sprites["white"].opacity = 255.0 / framecount(0.25) * (framecount(0.15) + i)
+        @sprites["pokemon1"].color.alpha = 255.0 / frames * i
+      end
+      for i in 1..framecount(0.3)
+        update
+      end
+      @ball_animation = nil
+      @sprites["white"].dispose
+      @sprites.delete("white")
+      @sprites["pokemon1"].dispose
+      @sprites.delete("pokemon1")
+      @sprites["databox1"].dispose
+      @sprites.delete("databox1")
+    end
+
     def get_battler_sprite(battler)
       return battler.side == 0 ? @sprites["pokemon1"] : @sprites["pokemon2"]
     end
@@ -471,7 +558,7 @@ class Battle
     def stats_up_window(battler, oldstats, newstats)
       diff = newstats.each_with_index.map { |e, i| e - oldstats[i] }
       viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
-      viewport.z = 100001
+      viewport.z = 99999
       window = LevelUpWindow.new(viewport)
       window.x = 288
       window.y = 112

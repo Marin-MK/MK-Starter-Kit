@@ -14,7 +14,7 @@ class BaseUI
   attr_accessor :sprites
   attr_accessor :ret
 
-  def start(path: nil, fade: true, fade_time: 0.3, wait_time: 0.3)
+  def start(update: nil, path: nil, fade: true, fade_time: 0.3, wait_time: 0.3)
     log(:UI, "Starting scene " + self.class.to_s)
     validate \
         path => [NilClass, String],
@@ -33,7 +33,8 @@ class BaseUI
     @stop = false
     @disposed = false
     @ret = true
-    show_black(:opening) if @fade
+    @update = update
+    show_black(:opening) { @update.call if @update } if @fade
   end
 
   def main
@@ -72,7 +73,7 @@ class BaseUI
   def stop
     test_disposed
     return if stopped?
-    show_black { update_sprites } if @fade
+    show_black { update_sprites; @update.call if @update } if @fade
     @stop = true
   end
 

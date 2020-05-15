@@ -6,7 +6,7 @@ class Game
     end
 
     def get(group_id, switch_id)
-      return @groups[group_id][switch_id]
+      return @groups[group_id][switch_id] == true
     end
     alias [] get
 

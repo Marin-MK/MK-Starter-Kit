@@ -7,7 +7,7 @@ class Battle
       @sprites = {}
       bmp = Bitmap.new(is_opponent ? OPPONENT_BOX_PATH : PLAYER_BOX_PATH)
       @viewport = Viewport.new(0, 0, bmp.width, bmp.height)
-      @viewport.z = 100000
+      @viewport.z = 99998
       @sprites["box"] = Sprite.new(@viewport)
       @sprites["box"].bitmap = bmp
       @sprites["text"] = Sprite.new(@viewport)

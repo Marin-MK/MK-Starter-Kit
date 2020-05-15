@@ -64,6 +64,9 @@ end
 main_function
 loop do
   Input.update
-  Graphics.update
+  update = Graphics.update
+  if defined?(APPLICATION) && APPLICATION == "ruby-sdl2"
+    break unless update
+  end
   break if !main_function
 end

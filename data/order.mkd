@@ -89,7 +89,7 @@ battle_ui/constants.rb: Constants
 battle_ui/transition.rb: Transition
 battle_ui/ui.rb: UI
 battle_ui/ball_sprite.rb: Ball Sprite
-battle_ui/ball_open_animation.rb: Ball Open Animation
+battle_ui/ball_animations.rb: Ball Animations
 battle_ui/battle_base.rb: Battle Base
 battle_ui/battler_sprite.rb: Battler Sprite
 battle_ui/trainer_sprite.rb: Trainer Sprite
@@ -98,5 +98,6 @@ battle_ui/base_move_animation.rb: base Move Animation
 battle_ui/stat_sprite.rb: Stat Sprite
 battle_ui/level_up_window.rb: Level Up Window
 routines/give_item_routine.rb: GiveItem Routine
+routines/choose_battler.rb: ChooseBattler Routine
 temp.rb: Temporary Data
 main.rb: Main

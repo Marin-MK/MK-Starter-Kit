@@ -9,7 +9,7 @@ class GiveItemRoutine
     end
     if ui.is_a?(BagUI)
       @bag_ui = ui
-      @party_ui = PartyUI.start_choose_pokemon
+      @party_ui = PartyUI.start_give_item
       @initializer = :bag
     end
     @msgwin = MessageWindow.new(
@@ -43,7 +43,7 @@ class GiveItemRoutine
         @item = @bag_ui.choose_item
       elsif from_bag?
         @item = Item.get(@bag_ui.selected_item[:item])
-        @pokemon = @party_ui.choose_pokemon
+        @pokemon = @party_ui.give_item
       end
       if @item.nil? || @pokemon.nil?
         ret = nil
@@ -91,7 +91,7 @@ class GiveItemRoutine
     end
     if from_bag?
       @bag_ui.draw_pocket(false)
-      @party_ui.end_choose_pokemon
+      @party_ui.end_give_item
     end
     if from_party?
       @itemwin.dispose if !@itemwin.disposed?
@@ -148,7 +148,7 @@ class BagUI
 end
 
 class PartyUI
-  def self.start_choose_pokemon
+  def self.start_give_item
     instance = self.new
     instance.start
     instance.sprites["window"].text = "Give to which POKéMON?"
@@ -156,9 +156,9 @@ class PartyUI
     return instance
   end
 
-  def choose_pokemon
+  def give_item
     test_disposed
-    @choose_pokemon = true
+    @give_item = true
     @ret = nil
     until @stop || @disposed
       Graphics.update
@@ -170,14 +170,14 @@ class PartyUI
     return @ret
   end
 
-  def end_choose_pokemon
-    @choose_pokemon = false
+  def end_give_item
+    @give_item = false
     self.dispose
   end
 
   alias giveitemroutine_stop stop
   def stop
-    if @choose_pokemon
+    if @give_item
       @stop = true
     else
       giveitemroutine_stop
@@ -186,7 +186,7 @@ class PartyUI
 
   alias giveitemroutine_select_pokemon select_pokemon
   def select_pokemon
-    if @choose_pokemon
+    if @give_pokemon
       Audio.se_play("audio/se/menu_select")
       @ret = @party[@index]
       stop
