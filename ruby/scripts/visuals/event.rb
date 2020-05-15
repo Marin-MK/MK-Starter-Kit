@@ -16,6 +16,8 @@ class Visuals
     def initialize(game_event)
       super(game_event)
       @game_event = game_event
+      @relative_x = (@game_event.x + @game_event.width - 1) * 32 + 16
+      @relative_y = (@game_event.y + @game_event.height - 1) * 32 + 32
       @animate = true
       update
     end
@@ -44,9 +46,12 @@ class Visuals
         if graphic.type == :file # Filename with src_rect
           if graphic.param && graphic.param.size > 0
             @sprite.set_bitmap(graphic.param)
-            @sprite.src_rect.width = @sprite.bitmap.width / 4
-            @sprite.src_rect.height = @sprite.bitmap.height / 4
-            @sprite.src_rect.y = (graphic.direction / 2 - 1) * @sprite.src_rect.height
+            @sprite.src_rect.width = @sprite.bitmap.width / graphic.num_frames
+            @sprite.src_rect.height = @sprite.bitmap.height / graphic.num_directions
+            dir = 0
+            dir = graphic.direction / 2 - 1 if graphic.num_directions == 4
+            dir = graphic.direction - 1 if graphic.num_directions == 8
+            @sprite.src_rect.y = dir * @sprite.src_rect.height
           else
             @sprite.bitmap = nil
           end
@@ -72,8 +77,8 @@ class Visuals
         @sprite.bitmap = nil
         @setdir = false
         @animate = false
-        @relative_x = @game_event.x * 32 + 16
-        @relative_y = @game_event.y * 32 + 32
+        @relative_x = (@game_event.x + @game_event.width - 1) * 32 + 16
+        @relative_y = (@game_event.y + @game_event.height - 1) * 32 + 32
       end
       @sprite.ox = @sprite.src_rect.width / 2
       @sprite.oy = @sprite.src_rect.height

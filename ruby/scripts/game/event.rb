@@ -11,7 +11,7 @@ class Game
       @current_page = nil
       @automoveroute_idx = 0
       @automove_wait = 0
-      super(map_id, data.x, data.y, 2, "")
+      super(map_id, data.x, data.y, data.width, data.height, 2, "")
     end
 
     def setup_visuals
@@ -28,6 +28,14 @@ class Game
 
     def data
       return MKD::Map.fetch(@map_id).events[@id]
+    end
+
+    def width
+      return data.width
+    end
+
+    def height
+      return data.height
     end
 
     # @return [Array<Game::Event::Page>] an unchangeable list of possible active event pages.
@@ -80,12 +88,13 @@ class Game
 
     # Re-evaluates the conditions on each page and changes the page if necessary.
     def test_pages
-      oldpage = @current_page
+      oldpageindex = @current_page
       @current_page = nil
       for i in 0...pages.size
-        if all_conditions_true?(i)
-          @current_page = i
-          if oldpage != @current_page
+        if all_conditions_true?(pages.size - i - 1)
+          @current_page = pages.size - i - 1
+          if oldpageindex != @current_page
+            oldpage = self.pages[oldpageindex] if !oldpageindex.nil?
             # Run only if the page actually changed
             @direction = current_page.graphic.direction || 2
             # Delete any interpreters there may be left trying to run the old page
@@ -119,7 +128,7 @@ class Game
     # @return [Boolean] whether all the conditions on the page are true.
     def all_conditions_true?(page_index)
       return !pages[page_index].conditions.any? do |cond, params|
-        !MKD::Event::SymbolToCondition[cond].new(self, params).valid?
+        next !MKD::Event::SymbolToCondition[cond].new(self, params).valid?
       end
     end
 
@@ -132,7 +141,7 @@ class Game
         autorun = Interpreter.new(self, current_page.commands, true, false)
         autorun.update until autorun.done?
       else
-        unless $game.maps[@map_id].event_interpreters.any? { |i| i.event == self }
+        unless $game.maps[@map_id].event_interpreters.any? { |i| i.event == self && !i.done? }
           $game.maps[@map_id].event_interpreters << Interpreter.new(self, current_page.commands, false, false)
         end
       end

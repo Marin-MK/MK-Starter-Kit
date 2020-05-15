@@ -56,6 +56,9 @@ class Game
       return unless can_update?
       if @initial
         @event.turn_to_player
+        @event.visual.finish_movement
+        $game.player.running = false
+        $game.player.visual.finish_movement
         @initial = false
         return
       end

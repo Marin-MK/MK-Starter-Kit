@@ -6,14 +6,13 @@ class Game
     end
 
     def get(group_id, switch_id)
+      return false if @groups[group_id].nil?
       return @groups[group_id][switch_id] == true
     end
     alias [] get
 
     def set(group_id, switch_id, value)
-      if @groups[group_id].nil?
-        raise "No group with id '#{group_id}' found."
-      end
+      @groups[group_id] ||= {}
       @groups[group_id][switch_id] = value
     end
     alias []= set

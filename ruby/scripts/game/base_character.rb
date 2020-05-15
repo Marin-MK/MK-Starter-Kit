@@ -26,10 +26,12 @@ class Game
     # @return [Integer] how fast the character animates while walking
     attr_accessor :animation_speed
 
-    def initialize(map_id, x = 0, y = 0, direction = 2, graphic_name = "", move_speed = PLAYERWALKSPEED, animation_speed = 16)
+    def initialize(map_id, x = 0, y = 0, width = 1, height = 1, direction = 2, graphic_name = "", move_speed = PLAYERWALKSPEED, animation_speed = 16)
       @map_id = map_id
       @x = x
       @y = y
+      @width = width
+      @height = height
       @graphic_name = graphic_name
       @direction = direction
       @speed = move_speed
@@ -47,7 +49,7 @@ class Game
     end
 
     def visual
-      return $b
+      raise "Game::BaseCharacter cannot be used directly: extend the class with your own functionality!"
     end
 
     def idle_animation=(value)
@@ -58,19 +60,13 @@ class Game
 
     # Turns the event to face the player.
     def turn_to_player
-      diffx = @x - $game.player.x
-      diffy = @y - $game.player.y
-      down = diffy < 0
-      left = diffx > 0
-      right = diffx < 0
-      up = diffy > 0
-      if down
-        @direction = 2
-      elsif up
+      if $game.player.y < @y
         @direction = 8
-      elsif left
+      elsif $game.player.x < @x
         @direction = 4
-      elsif right
+      elsif $game.player.y >= @y + @height
+        @direction = 2
+      elsif $game.player.x >= @x + @width
         @direction = 6
       end
     end

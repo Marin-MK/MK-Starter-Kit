@@ -9,7 +9,7 @@ class Game
       @running = false
       @runcount = 0
       @initialized = false
-      super(map_id, 0, 0, 2, "boy", PLAYERWALKSPEED, 16)
+      super(map_id, 0, 0, 1, 1, 2, "boy", PLAYERWALKSPEED, 16)
     end
 
     def setup_visuals
@@ -41,6 +41,17 @@ class Game
       return @running
     end
 
+    def running=(value)
+      if value != @running
+        # Adjusting to run state
+        @running = value
+        @speed = @running ? PLAYERRUNSPEED : PLAYERWALKSPEED
+        @graphic_name = @running ? "boy_run" : "boy"
+        @animation_speed = @running ? 24 : 16
+        @idle_animation_speed = 16
+      end
+    end
+
     # Fetches button input to move, trigger events, run, etc.
     def update
       # Only when standing still
@@ -57,7 +68,6 @@ class Game
       end
       # Movement
       @fake_move = false
-      oldrun = @running
       if input_possible?
         case input = Input.dir4
         when 2
@@ -71,19 +81,12 @@ class Game
         end
         # Running
         if input == 2 || input == 4 || input == 6 || input == 8
-          @running = moving? && Input.press_cancel?
+          self.running = moving? && Input.press_cancel?
         else
-          @running = false
+          self.running = false
           visual.finish_movement
         end
         @lastdir4 = input
-      end
-      # Adjusting to run state
-      if oldrun != @running # Walking to running or running to walking
-        @speed = @running ? PLAYERRUNSPEED : PLAYERWALKSPEED
-        @graphic_name = @running ? "boy_run" : "boy"
-        @animation_speed = @running ? 24 : 16
-        @idle_animation_speed = 16
       end
       # Only when the player starts moving to a new tile
       if !@initialized || moving? != was_moving? && moving?

@@ -104,7 +104,10 @@ class Game
       direction = 10 - direction if direction.is_a?(Integer)
 
       return false if checking_character != $game.player && x == $game.player.x && y == $game.player.y && map_id == $game.player.map_id
-      return false if @events.values.any? { |e| e.x == x && e.y == y && e.current_page && !e.current_page.settings.passable }
+      @events.each_value do |e|
+        next if e.current_page.nil? || e.current_page.settings.passable
+        return false if x >= e.x && x < e.x + e.width && y >= e.y && y < e.y + e.height
+      end
       for layer in 0...tiles.size
         tile_type, index, id = tiles[layer][x + y * width]
         next if tile_type.nil?
@@ -160,7 +163,7 @@ class Game
       validate x => Integer, y => Integer
       return if x < 0 || x >= width || y < 0 || y >= height
       event = @events.values.find do |e|
-        next e.x == x && e.y == y && e.current_page &&
+        next x >= e.x && x < e.x + e.width && y >= e.y && y < e.y + e.height && e.current_page &&
              [:action, :player_touch, :event_touch].include?(e.current_page.trigger_mode)
       end
       event.trigger if event
@@ -172,23 +175,23 @@ class Game
       return if $game.map != self
       # Line of Sight triggers
       events = @events.values.select do |e|
-        next e.current_page && e.current_page.trigger_mode.is_a?(Integer) &&
+        next e.current_page && e.current_page.trigger_mode.is_a?(Integer) && e.current_page.trigger_param > 0 &&
              (e.current_page.trigger_mode == :event_touch || e.current_page.trigger_mode == :player_touch)
       end
       events.select! do |e|
         dir = e.direction
-        maxdiff = e.current_page.trigger_mode
-        if dir == 2 && e.x == $game.player.x
-          diff = $game.player.y - e.y
+        maxdiff = e.current_page.trigger_param
+        if dir == 2 && $game.player.x >= e.x && $game.player.x < e.x + e.width
+          diff = $game.player.y - e.y - e.height + 1
           next diff > 0 && diff <= maxdiff
-        elsif dir == 4 && e.y == $game.player.y
-          diff = e.x - $game.player.x
+        elsif dir == 4 && $game.player.y >= e.y && $game.player.y < e.y + e.height
+          diff = e.x - e.height + 1 - $game.player.x
           next diff > 0 && diff <= maxdiff
-        elsif dir == 6 && e.y == $game.player.y
-          diff = $game.player.x - e.x
+        elsif dir == 6 && $game.player.y >= e.y && $game.player.y < e.y + e.height
+          diff = $game.player.x - e.x - e.width + 1
           next diff > 0 && diff <= maxdiff
-        elsif dir == 8 && e.x == $game.player.x
-          diff = e.y - $game.player.y
+        elsif dir == 8 && $game.player.x >= e.x && $game.player.x < e.x + e.width
+          diff = e.y - e.height + 1 - $game.player.y
           next diff > 0 && diff <= maxdiff
         end
       end
@@ -197,10 +200,9 @@ class Game
       # If the check happens just after moving. This would trigger Player Touch events,
       # where the player touches an event.
       if new_step
-        newx, newy = facing_coordinates($game.player.x, $game.player.y, $game.player.direction)
         events = @events.values.select do |e|
           e.current_page && e.current_page.trigger_mode == :player_touch &&
-          e.x == newx && e.y == newy
+          $game.player.x >= e.x && $game.player.x < e.x + e.width && $game.player.y >= e.y && $game.player.y < e.y + e.height
         end
         events.each { |e| e.trigger }
       end
