@@ -7,6 +7,10 @@ class Game
     attr_reader :x
     # @return [Integer] the y position of the character.
     attr_reader :y
+    # @return [Integer] the width of the character.
+    attr_reader :width
+    # @return [Integer] the height of the character.
+    attr_reader :height
     # @return [Integer] the direction the character is currently facing.
     attr_accessor :direction
     # @return [Float] how fast the character can move.

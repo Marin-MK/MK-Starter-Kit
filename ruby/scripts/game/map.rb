@@ -175,7 +175,7 @@ class Game
       return if $game.map != self
       # Line of Sight triggers
       events = @events.values.select do |e|
-        next e.current_page && e.current_page.trigger_mode.is_a?(Integer) && e.current_page.trigger_param > 0 &&
+        next e.current_page && e.current_page.trigger_param.is_a?(Integer) && e.current_page.trigger_param > 0 &&
              (e.current_page.trigger_mode == :event_touch || e.current_page.trigger_mode == :player_touch)
       end
       events.select! do |e|
@@ -185,13 +185,13 @@ class Game
           diff = $game.player.y - e.y - e.height + 1
           next diff > 0 && diff <= maxdiff
         elsif dir == 4 && $game.player.y >= e.y && $game.player.y < e.y + e.height
-          diff = e.x - e.height + 1 - $game.player.x
+          diff = e.x - $game.player.x
           next diff > 0 && diff <= maxdiff
         elsif dir == 6 && $game.player.y >= e.y && $game.player.y < e.y + e.height
           diff = $game.player.x - e.x - e.width + 1
           next diff > 0 && diff <= maxdiff
         elsif dir == 8 && $game.player.x >= e.x && $game.player.x < e.x + e.width
-          diff = e.y - e.height + 1 - $game.player.y
+          diff = e.y - $game.player.y
           next diff > 0 && diff <= maxdiff
         end
       end
@@ -201,8 +201,8 @@ class Game
       # where the player touches an event.
       if new_step
         events = @events.values.select do |e|
-          e.current_page && e.current_page.trigger_mode == :player_touch &&
-          $game.player.x >= e.x && $game.player.x < e.x + e.width && $game.player.y >= e.y && $game.player.y < e.y + e.height
+          next e.current_page && e.current_page.trigger_mode == :player_touch &&
+               $game.player.x >= e.x && $game.player.x < e.x + e.width && $game.player.y >= e.y && $game.player.y < e.y + e.height
         end
         events.each { |e| e.trigger }
       end

@@ -16,8 +16,6 @@ class Visuals
     def initialize(game_event)
       super(game_event)
       @game_event = game_event
-      @relative_x = (@game_event.x + @game_event.width - 1) * 32 + 16
-      @relative_y = (@game_event.y + @game_event.height - 1) * 32 + 32
       @animate = true
       update
     end

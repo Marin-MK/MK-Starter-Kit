@@ -22,8 +22,8 @@ class Visuals
       @animate_count = 0
       @moveroute_wait = 0
       @moveroute_moving_command = false
-      @relative_x = 32 * @game_character.x + 16
-      @relative_y = 32 * @game_character.y + 32
+      @relative_x = @game_character.x * 32 + @game_character.width * 16
+      @relative_y = (@game_character.y + @game_character.height - 1) * 32 + 32
       @setdir = true
       @oldanimate_count = 0
     end
@@ -38,28 +38,32 @@ class Visuals
       next_frame if (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4) % 2 == 1
     end
 
+    def direction_frame
+      dir = @game_character.direction / 2 - 1
+    end
+
     def move_down
       @y_travelled = 0
       @y_destination = 32
-      @sprite.src_rect.y = (@game_character.direction / 2 - 1) * @sprite.src_rect.height if @setdir
+      @sprite.src_rect.y = direction_frame * @sprite.src_rect.height if @setdir
     end
 
     def move_left
       @x_travelled = 0
       @x_destination = -32
-      @sprite.src_rect.y = (@game_character.direction / 2 - 1) * @sprite.src_rect.height if @setdir
+      @sprite.src_rect.y = direction_frame * @sprite.src_rect.height if @setdir
     end
 
     def move_right
       @x_travelled = 0
       @x_destination = 32
-      @sprite.src_rect.y = (@game_character.direction / 2 - 1) * @sprite.src_rect.height if @setdir
+      @sprite.src_rect.y = direction_frame * @sprite.src_rect.height if @setdir
     end
 
     def move_up
       @y_travelled = 0
       @y_destination = -32
-      @sprite.src_rect.y = (@game_character.direction / 2 - 1) * @sprite.src_rect.height if @setdir
+      @sprite.src_rect.y = direction_frame * @sprite.src_rect.height if @setdir
     end
 
     # @return [Boolean] whether the character is actually moving.
@@ -84,7 +88,7 @@ class Visuals
     def set_direction_noanim(value)
       value = validate_direction(value)
       @game_character.instance_eval { @direction = value }
-      @sprite.src_rect.y = @sprite.src_rect.height * (value / 2 - 1) if @setdir
+      @sprite.src_rect.y = direction_frame * @sprite.src_rect.height if @setdir
     end
 
     # Executes a move command.
