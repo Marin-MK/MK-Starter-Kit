@@ -70,10 +70,17 @@ module MKD
     # Changes the value of a Game Switch.
     class SetSwitchCommand < BasicCommand
       def call
-        if @value == :inverted
-          $game.switches[@group_id, @switch_id] = !$game.switches[@group_id, @switch_id]
-        else
+        # First treat as setting equal to
+        if @value.is_a?(Boolean)
           $game.switches[@group_id, @switch_id] = @value
+        elsif @value.is_a?(String)
+          $game.switches[@group_id, @switch_id] = !!@event.instance_eval(@value)
+        elsif @value.is_a?(Hash)
+          $game.switches[@group_id, @switch_id] = $game.switches[@group_id, @switch_id]
+        end
+        # If it's actually opposite, then just invert the value now
+        if @operator == :opposite
+          $game.switches[@group_id, @switch_id] = !$game.switches[@group_id, @switch_id]
         end
       end
     end

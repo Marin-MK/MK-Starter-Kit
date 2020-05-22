@@ -13,7 +13,7 @@ class Game
 
     def set(group_id, switch_id, value)
       @groups[group_id] ||= {}
-      @groups[group_id][switch_id] = value
+      @groups[group_id][switch_id] = !!value
     end
     alias []= set
   end
