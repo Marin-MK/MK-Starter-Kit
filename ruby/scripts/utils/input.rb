@@ -1,4 +1,4 @@
-# This allows you to do Input::START as an alias for Input::V and Input::SELECT as an alias for Input::Z.
+# This allows you to use Input::START as an alias for Input::V, and Input::SELECT as an alias for Input::Z.
 module Input
   START = V
   SELECT = Z

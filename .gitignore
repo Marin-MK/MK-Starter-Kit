@@ -1,2 +1,3 @@
 lib64/
 *.dll
+line_count.rb

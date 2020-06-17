@@ -1,6 +1,6 @@
 Font.default_outline = false
-Font.default_name = "Fire Red"
-Font.default_size = 36
+Font.default_name = "fire_red"
+Font.default_size = 32
 
 class Sprite
   def draw_text(*args)
@@ -26,7 +26,7 @@ class Sprite
       y -= 8
       fontname = self.bitmap.font.name
       if small
-        self.bitmap.font.name += " Small"
+        self.bitmap.font.name = "fire_red_small"
       end
       if shadow_color && outline_color
         if args.size > 1
@@ -64,7 +64,7 @@ class Sprite
   def text_size(text, small = false)
     fontname = self.bitmap.font.name
     if small
-      self.bitmap.font.name += " Small"
+      self.bitmap.font.name = "fire_red_small"
     end
     size = self.bitmap.text_size(text)
     self.bitmap.font.name = fontname

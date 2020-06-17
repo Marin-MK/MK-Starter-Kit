@@ -165,6 +165,8 @@ class PartyUI < BaseUI
           case itemchoice = itemwin.get_choice { update_sprites }
           when "GIVE"
             ret = give_item(cmdwin, itemwin)
+            cmdwin.dispose
+            itemwin.dispose
             return if ret
           when "TAKE"
             take_item(itemwin)

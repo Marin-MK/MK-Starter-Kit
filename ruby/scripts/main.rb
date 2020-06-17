@@ -1,5 +1,15 @@
 # Starts the main game loop required to keep the game running.
 
+#s = Sprite.new
+#s.bitmap = Bitmap.new("C:/sprite.png")
+#s.color = Color.new(0, 0, 0, 192)
+
+#t = Time.now
+#while Time.now - t < 1
+#  Graphics.update
+#end
+#abort
+
 map = MKD::Map.fetch(1)
 map.encounter_tables = [
   EncounterTable.new do
@@ -54,8 +64,8 @@ def main_function
   $game.update
   $visuals.update
   if Input.trigger?(Input::CTRL)
-    #Battle.new($trainer, Pokemon.new(:BULBASAUR, 5))
-    return false
+    Battle.new($trainer, Pokemon.new(:BULBASAUR, 5))
+    #return false
   end
   return true
 end

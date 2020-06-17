@@ -131,15 +131,8 @@ class Visuals
         tile_type, index, tile_id = tile_data
         tileset_id = $game.maps[map_id].data.tilesets[index]
         tileset = MKD::Tileset.fetch(tileset_id)
-        # Temporary bitmap cache; this way not every tile has to create a new bitmap.
-        $temp_bitmaps ||= {}
-        if $temp_bitmaps[tileset.graphic_name]
-          bmp = $temp_bitmaps[tileset.graphic_name]
-        else
-          bmp = $temp_bitmaps[tileset.graphic_name] = Bitmap.new("gfx/tilesets/" + tileset.graphic_name)
-        end
         priority = tileset.priorities[tile_id] || 0
-        @sprites[layer].bitmap = bmp
+        @sprites[layer].bitmap = tileset.bitmap
         @sprites[layer].src_rect.width = 32
         @sprites[layer].src_rect.height = 32
         @sprites[layer].src_rect.x = tile_id % 8 * 32
@@ -153,13 +146,7 @@ class Visuals
         autotile_id = MKD::Map.fetch(map_id).autotiles[index]
         autotile = MKD::Autotile.fetch(autotile_id)
         frame = (@i / autotile.animate_speed).floor if frame.nil?
-        # Temporary autotile cache; this way not every tile has to create a new bitmap.
-        $temp_autotiles ||= {}
-        if $temp_autotiles[autotile.graphic_name]
-          bmp = $temp_autotiles[autotile.graphic_name]
-        else
-          bmp = $temp_autotiles[autotile.graphic_name] = Bitmap.new("gfx/autotiles/" + autotile.graphic_name)
-        end
+        bmp = autotile.bitmap
         priority = autotile.priorities[tile_id] || 0
         @sprites[layer].bitmap.dispose if @sprites[layer].bitmap
         @sprites[layer].bitmap = Bitmap.new(32, 32)

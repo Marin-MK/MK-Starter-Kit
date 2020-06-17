@@ -32,10 +32,17 @@ module MKD
 			end
 		end
 
+		def bitmap
+			return @bitmap ||= Bitmap.new("gfx/tilesets/" + self.graphic_name)
+		end
+
     #temp
 		def save
 			data = MKD::Tileset.fetch || []
+			bmp = @bitmap
+			@bitmap = nil
 			data[@id] = self
+			@bitmap = bmp
 			FileUtils.save_data("data/tilesets.mkd", :tilesets, data)
 		end
 	end

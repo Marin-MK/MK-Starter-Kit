@@ -192,6 +192,7 @@ class MessageWindow < BaseWindow
           @line_index = @current_line + 1
           @text_sprite.bitmap.clear
           for i in @current_line..@line_index
+            next if @formatted_text[i].nil?
             @max_y = (i - @current_line) * @line_y_space + 2
             @text_sprite.draw_text(
               y: (i - @current_line) * @line_y_space + 6,
@@ -289,7 +290,6 @@ class MessageWindow < BaseWindow
 
   def dispose
     super
-    @text_sprite.dispose
     @arrow.dispose if @arrow
     @cmdwin.dispose if @cmdwin && !@cmdwin.disposed?
     @running = false

@@ -126,7 +126,6 @@ class Visuals
             draw_tile(sprite, sprite.mapx, sprite.mapy)
           end
         end
-        $temp_bitmaps = nil
       elsif ydiff < 0
         ydiff.abs.times do
           move_down do |sprite|
@@ -135,7 +134,6 @@ class Visuals
             draw_tile(sprite, sprite.mapx, sprite.mapy)
           end
         end
-        $temp_bitmaps = nil
       end
       if xdiff > 0
         xdiff.times do
@@ -145,7 +143,6 @@ class Visuals
             draw_tile(sprite, sprite.mapx, sprite.mapy)
           end
         end
-        $temp_bitmaps = nil
       elsif xdiff < 0
         xdiff.abs.times do
           move_right do |sprite|
@@ -154,7 +151,6 @@ class Visuals
             draw_tile(sprite, sprite.mapx, sprite.mapy)
           end
         end
-        temp_bitmaps = nil
       end
     end
 

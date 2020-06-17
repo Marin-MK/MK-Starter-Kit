@@ -39,7 +39,7 @@ class Battle
       name_y = opponent? ? OPPONENT_NAME_Y : PLAYER_NAME_Y
       @sprites["name_gender"].draw_text(x: name_x, y: name_y, text: @battler.pokemon.name, color: BASE_COLOR, shadow_color: SHADOW_COLOR, small: true)
       fontname = @sprites["name_gender"].bitmap.font.name
-      @sprites["name_gender"].bitmap.font.name += " Small"
+      @sprites["name_gender"].bitmap.font.name = "fire_red_small"
       width = @sprites["name_gender"].bitmap.text_size(@battler.pokemon.name).width
       @sprites["name_gender"].bitmap.font.name = fontname
       if !@battler.genderless?

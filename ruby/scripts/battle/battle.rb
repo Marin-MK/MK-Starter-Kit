@@ -149,7 +149,7 @@ class Battle
   def get_move_command(battler)
     movechoice = nil
     move = nil
-    index = nil
+    index = 0
     loop do
       movechoice = @ui.choose_move(battler, index)
       break if movechoice.cancel? # Break out of move choosing loop

@@ -1,0 +1,21 @@
+{
+  "frame_rate": 90,
+  "window_width": 480,
+  "window_height": 320,
+  "window_scale": 1,
+  "window_icon": "D:/Desktop/MK/misc/images/logo",
+  "window_title": "MK Starter Kit",
+  "window_resizable": true,
+  "maintain_aspect_ratio": true,
+  "script": "D:/Desktop/MK/mk/ruby/scripts/requires.rb",
+  "main_directory": "D:/Desktop/MK/mk",
+  "background_color": {
+    "red": 0,
+    "green": 0,
+    "blue": 0
+  },
+  "ruby_load_path": [
+    "D:/Desktop/MK/mk/ruby/extensions/2.7.0",
+    "D:/Desktop/MK/mk/ruby/extensions/2.7.0/x64-mingw32"
+  ]
+}

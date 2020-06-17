@@ -38,10 +38,17 @@ module MKD
 			end
 		end
 
+		def bitmap
+			return @bitmap ||= Bitmap.new("gfx/autotiles/" + autotile.graphic_name)
+		end
+
     #temp
 		def save
 			data = MKD::Autotile.fetch || []
+			bmp = @bitmap
+			@bitmap = nil
 			data[@id] = self
+			@bitmap = bmp
 			FileUtils.save_data("data/autotiles.mkd", :autotiles, data)
 		end
 	end

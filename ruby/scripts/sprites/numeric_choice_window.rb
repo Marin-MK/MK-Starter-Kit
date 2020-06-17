@@ -140,6 +140,5 @@ class NumericChoiceWindow < BaseWindow
     super
     @up.dispose
     @down.dispose
-    @text_sprite.dispose
   end
 end

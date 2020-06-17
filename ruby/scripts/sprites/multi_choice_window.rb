@@ -204,7 +204,6 @@ class MultiChoiceWindow < BaseWindow
 
   def dispose
     super
-    @text_sprite.dispose
     @selector.dispose if @selector
   end
 end

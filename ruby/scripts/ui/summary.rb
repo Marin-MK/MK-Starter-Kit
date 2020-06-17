@@ -35,7 +35,6 @@ class SummaryUI < BaseUI
     @sprites["vartext"].set_bitmap(Graphics.width, Graphics.height)
     @sprites["vartext"].z = 1
     @page = 1
-    change_pokemon(@party_index)
     @i = -framecount(0.25) if !@pokemon.fainted?
     @amplitude = 3
     if @pokemon.hp / @pokemon.totalhp.to_f <= 0.25
@@ -43,7 +42,7 @@ class SummaryUI < BaseUI
     elsif @pokemon.hp / @pokemon.totalhp.to_f <= 0.5
       @amplitude = 2
     end
-    load_page_1
+    change_pokemon(@party_index)
   end
 
   def change_pokemon(new_index)
@@ -52,6 +51,8 @@ class SummaryUI < BaseUI
     @sprites["vartext"].bitmap.clear if @sprites["vartext"]
     @sprites["text"].bitmap.clear if @sprites["text"]
     @sprites["shiny"].dispose if @sprites["shiny"]
+    @sprites["bg_1"].bitmap.dispose if @sprites["bg_1"].bitmap
+    @sprites["bg_2"].bitmap.dispose if @sprites["bg_2"].bitmap
     if @pokemon.shiny?
       @sprites["shiny"] = Sprite.new(@viewport)
       @sprites["shiny"].set_bitmap(@path + "shiny")
@@ -60,7 +61,6 @@ class SummaryUI < BaseUI
       @sprites["bg_1"].set_bitmap(@path + "background_panel_1_shiny")
       @sprites["bg_2"].set_bitmap(@path + "background_panel_2_shiny")
     else
-      @sprites["shiny"].dispose if @sprites["shiny"]
       @sprites["bg_1"].set_bitmap(@path + "background_panel_1")
       @sprites["bg_2"].set_bitmap(@path + "background_panel_2")
     end
@@ -91,7 +91,7 @@ class SummaryUI < BaseUI
     @sprites["status"].y = 68
     @sprites["pokemon"].dispose if @sprites["pokemon"]
     @sprites["pokemon"] = Battle::BattlerSprite.new(@pokemon, true, @viewport)
-    @sprites["pokemon"].mirror = true
+    @sprites["pokemon"].mirror_x = true
     @sprites["pokemon"].x = 56
     @sprites["pokemon"].y = 66
     @sprites["pokemon"].z = -2
@@ -118,6 +118,7 @@ class SummaryUI < BaseUI
   end
 
   def load_page_1(ignore_wait = false)
+    @sprites["header"].bitmap.dispose if @sprites["header"].bitmap
     @sprites["header"].set_bitmap(@path + "page_1_header")
     sprites = preload_page_1
     @sprites["text"].bitmap.clear
@@ -166,6 +167,7 @@ class SummaryUI < BaseUI
       @sprites["vartext"].visible = true
       sprites["panel"].z = 0
     end
+    @sprites["panel"].dispose if @sprites["panel"]
     @sprites["panel"] = sprites["panel"]
     wait(0.1) unless ignore_wait
     @sprites["vartext"].draw_text(
@@ -269,6 +271,7 @@ class SummaryUI < BaseUI
         x: 210, y: 42, text: gender_text, color: gender_color, shadow_color: gender_color_shadow
       )
     end
+    @sprites["header"].bitmap.dispose if @sprites["header"].bitmap
     @sprites["header"].set_bitmap(@path + "page_2_header")
     sprites = preload_page_2
     @sprites["hpbar"].dispose if @sprites["hpbar"]
@@ -380,6 +383,7 @@ class SummaryUI < BaseUI
         x: 210, y: 42, text: gender_text, color: gender_color, shadow_color: gender_color_shadow
       )
     end
+    @sprites["header"].bitmap.dispose if @sprites["header"].bitmap
     @sprites["header"].set_bitmap(@path + "page_3_header")
     newpanel = Sprite.new(@viewport)
     newpanel.set_bitmap(@path + "page_3")
@@ -468,6 +472,7 @@ class SummaryUI < BaseUI
     @sprites["move_panel"].set_bitmap(@path + "move_panel" + suffix)
     @sprites["move_panel"].x = 4
     @sprites["move_panel"].y = 36
+    @sprites["header"].bitmap.dispose if @sprites["header"].bitmap
     @sprites["header"].set_bitmap(@path + "page_3_details_header")
     @sprites["text"].bitmap.clear
     @sprites["text"].draw_text(
