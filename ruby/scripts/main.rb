@@ -1,14 +1,21 @@
 # Starts the main game loop required to keep the game running.
 
-#s = Sprite.new
-#s.bitmap = Bitmap.new("C:/sprite.png")
-#s.color = Color.new(0, 0, 0, 192)
+bulbasaur = Bitmap.new("gfx/pokemon/front/bulbasaur")
+stat = Bitmap.new("gfx/ui/battle/stat_red")
 
-#t = Time.now
-#while Time.now - t < 1
-#  Graphics.update
-#end
-#abort
+bs = Sprite.new
+bs.bitmap = bulbasaur
+
+ms = Sprite.new
+
+i = 0
+loop do
+  ms.bitmap.dispose if ms.bitmap
+  ms.bitmap = Bitmap.mask(bulbasaur, stat, Rect.new(0, 0, 64, 64), 0, i)
+  break unless Graphics.update
+  i += 4
+end
+abort
 
 map = MKD::Map.fetch(1)
 map.encounter_tables = [
