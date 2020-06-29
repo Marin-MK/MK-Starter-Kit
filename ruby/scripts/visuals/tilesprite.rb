@@ -68,24 +68,12 @@ class Visuals
       end
 
       def real_x=(value)
-        value = value.round(6)
         @real_x = value
-        if value < 0
-          value = value.round
-        else
-          value = value.floor
-        end
-        @sprites.each_value { |s| s.x = value.round if s }
+        @sprites.each_value { |s| s.x = value if s }
       end
 
       def real_y=(value)
-        value = value.round(6)
         @real_y = value
-        if value < 0
-          value = value.round
-        else
-          value = value.floor
-        end
         @sprites.each_value do |s|
           s.y = value if s
           s.z = s.y + s.hash[:priority] * 32 + 32 if s.hash[:priority]

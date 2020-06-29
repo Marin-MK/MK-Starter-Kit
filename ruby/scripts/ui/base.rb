@@ -45,7 +45,6 @@ class BaseUI
     end
     until @stop || @disposed
       Graphics.update
-      Input.update
       update_sprites
       update
     end
@@ -102,7 +101,6 @@ class BaseUI
         Graphics.brightness = 255 - (decrease * i).round
         yield if block_given?
         Graphics.update
-        Input.update
       end
     else
       Graphics.brightness = 0
@@ -117,7 +115,6 @@ class BaseUI
         Graphics.brightness = (increase * i).round
         yield if block_given?
         Graphics.update
-        Input.update
       end
     else
       Graphics.brightness = 255
@@ -129,7 +126,6 @@ class BaseUI
       update_sprites unless disposed?
       yield if block_given?
       Graphics.update
-      Input.update
     end
   end
 end

@@ -158,7 +158,6 @@ class SummaryUI < BaseUI
       sprites["panel"].x += Graphics.width
       for i in 1..frames
         Graphics.update
-        Input.update
         update_sprites
         sprites["panel"].x = Graphics.width - increment * i
       end
@@ -287,7 +286,6 @@ class SummaryUI < BaseUI
       increment = Graphics.width / frames.to_f
       for i in 1..frames
         Graphics.update
-        Input.update
         update_sprites
         @sprites["panel"].x = increment * i
       end
@@ -309,7 +307,6 @@ class SummaryUI < BaseUI
       end
       for i in 1..frames
         Graphics.update
-        Input.update
         update_sprites
         sprites.keys.each do |key|
           sprites[key].x = positions[key] + Graphics.width - increment * i
@@ -399,7 +396,6 @@ class SummaryUI < BaseUI
       increment = Graphics.width / frames.to_f
       for i in 1..frames
         Graphics.update
-        Input.update
         update_sprites
         @sprites["panel"].x = increment * i
       end

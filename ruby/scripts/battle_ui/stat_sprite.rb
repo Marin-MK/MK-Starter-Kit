@@ -20,7 +20,6 @@ class Battle
       for y in 0...@parent.src_rect.height
         if y == @parent.src_rect.height / 2
           Graphics.update
-          Input.update
         end
         for x in 0...@parent.src_rect.width
           color = @parent.bitmap.get_pixel(@parent.src_rect.x + x, @parent.src_rect.y + y)

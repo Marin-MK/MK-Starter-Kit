@@ -145,15 +145,19 @@ class << Input
     end
   end
 
-  alias old_input_update update
+  attr_accessor :repeating
+end
+
+class << Graphics
+  alias input_update update
   def update
-    old_input_update
-    @repeating ||= {}
-    @repeating.keys.each do |key|
+    input_update
+    Input.repeating ||= {}
+    Input.repeating.keys.each do |key|
       if Input.press?(key)
-        @repeating[key][1] += 1
+        Input.repeating[key][1] += 1
       else
-        @repeating.delete(key)
+        Input.repeating.delete(key)
       end
     end
   end

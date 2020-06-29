@@ -79,7 +79,6 @@ class Battle
 
     def update
       Graphics.update
-      Input.update
     end
 
     def dispose

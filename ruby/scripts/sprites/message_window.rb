@@ -251,7 +251,6 @@ class MessageWindow < BaseWindow
     self.text = text if text
     ret = nil
     while self.running?
-      Input.update
       ret = self.update
       Graphics.update
       yield if block_given?

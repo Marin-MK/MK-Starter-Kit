@@ -82,7 +82,6 @@ end
 
 #loop do
 #  Graphics.update
-#  Input.update
 #  abort if Input.trigger?(Input::CTRL)
 #end
 

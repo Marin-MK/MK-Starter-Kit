@@ -114,7 +114,6 @@ class BagUI
     @ret = nil
     until @stop || @disposed
       Graphics.update
-      Input.update
       update_sprites
       update
     end
@@ -162,7 +161,6 @@ class PartyUI
     @ret = nil
     until @stop || @disposed
       Graphics.update
-      Input.update
       update_sprites
       update
     end

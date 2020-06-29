@@ -73,7 +73,6 @@ class Battle
     def update(update_main = true)
       if update_main
         Graphics.update
-        Input.update
       end
       @sprites["base1"].update
       @sprites["base2"].update
@@ -228,11 +227,9 @@ class Battle
       dispose
       for i in 1..framecount(0.2)
         Graphics.update
-        Input.update
       end
       for i in 1..frames
         Graphics.update
-        Input.update
         blackbg.opacity = 255.0 / frames * (frames - i)
       end
       blackbg.dispose
@@ -585,7 +582,6 @@ class Battle
       Graphics.update
       for i in 1..frames
         Graphics.update
-        Input.update
         stat.update
       end
       sprite.visible = true

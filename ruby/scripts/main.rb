@@ -1,22 +1,5 @@
 # Starts the main game loop required to keep the game running.
 
-bulbasaur = Bitmap.new("gfx/pokemon/front/bulbasaur")
-stat = Bitmap.new("gfx/ui/battle/stat_red")
-
-bs = Sprite.new
-bs.bitmap = bulbasaur
-
-ms = Sprite.new
-
-i = 0
-loop do
-  ms.bitmap.dispose if ms.bitmap
-  ms.bitmap = Bitmap.mask(bulbasaur, stat, Rect.new(0, 0, 64, 64), 0, i)
-  break unless Graphics.update
-  i += 4
-end
-abort
-
 map = MKD::Map.fetch(1)
 map.encounter_tables = [
   EncounterTable.new do
@@ -79,7 +62,6 @@ end
 
 main_function
 loop do
-  Input.update
   update = Graphics.update
   if defined?(APPLICATION) && APPLICATION == "ruby-sdl2"
     break unless update

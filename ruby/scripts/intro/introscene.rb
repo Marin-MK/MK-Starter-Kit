@@ -1228,7 +1228,6 @@ class IntroScene
   def main
     loop do
       Graphics.update
-      Input.update
       @anim.update if !@anim.disposed?
       break if @anim.disposed?
       if Input.confirm? || Input.cancel?
@@ -1238,7 +1237,6 @@ class IntroScene
           Graphics.brightness = 255 - (decrease * i).round
           @anim.update if !@anim.disposed?
           Graphics.update
-          Input.update
         end
         @anim.dispose if !@anim.disposed?
         Graphics.brightness = 255

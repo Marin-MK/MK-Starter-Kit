@@ -264,7 +264,6 @@ class PartyUI < BaseUI
     increment = 320.0 / frames
     for i in 1..frames
       Graphics.update
-      Input.update
       update_sprites
       @sprites["panel_#{idx1}"].x = sx1 + increment * i * mod1
       @sprites["panel_#{idx2}"].x = sx2 + increment * i * mod2
@@ -287,7 +286,6 @@ class PartyUI < BaseUI
     sx2 = ns2.x
     for i in 1..frames
       Graphics.update
-      Input.update
       update_sprites
       @sprites["panel_#{idx1}"].x = sx1 - increment * i * mod1
       @sprites["panel_#{idx2}"].x = sx2 - increment * i * mod2

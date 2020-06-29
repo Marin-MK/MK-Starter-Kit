@@ -12,7 +12,6 @@ class PartyUI
     @return_value = nil
     until @stop || @disposed
       Graphics.update
-      Input.update
       update_sprites
       update
       @stop = true if !@return_value.nil?

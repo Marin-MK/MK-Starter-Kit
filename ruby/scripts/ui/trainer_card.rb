@@ -48,13 +48,12 @@ class TrainerCardUI < BaseUI
         stretched_sprite.set_bitmap(Graphics.width, Graphics.height)
         y = (increment * i).round
         stretched_sprite.y = (y / 2.0).round
-        stretched_sprite.bitmap.stretch_blt(
+        stretched_sprite.bitmap.blt(
           Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height - y),
           @sprites["card"].bitmap,
           Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
         )
         Graphics.update
-        Input.update
       end
       @sprites["card"].set_bitmap(@path + "card")
       wait(0.2)
@@ -65,13 +64,12 @@ class TrainerCardUI < BaseUI
         stretched_sprite.set_bitmap(Graphics.width, Graphics.height)
         y = [(increment * i).round, 314].min
         stretched_sprite.y = 161 - (y / 2.0).round
-        stretched_sprite.bitmap.stretch_blt(
+        stretched_sprite.bitmap.blt(
           Rect.new(0, 0, @sprites["card"].bitmap.width, y),
           @sprites["card"].bitmap,
           Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
         )
         Graphics.update
-        Input.update
       end
       @sprites["card"].visible = true
       stretched_sprite.dispose
@@ -145,13 +143,12 @@ class TrainerCardUI < BaseUI
       stretched_sprite.set_bitmap(Graphics.width, Graphics.height)
       y = (increment * i).round
       stretched_sprite.y = (y / 2.0).round
-      stretched_sprite.bitmap.stretch_blt(
+      stretched_sprite.bitmap.blt(
         Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height - y),
         @sprites["card"].bitmap,
         Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
       )
       Graphics.update
-      Input.update
     end
     @sprites["card"].set_bitmap(@path + "card_back")
     wait(0.2)
@@ -162,13 +159,12 @@ class TrainerCardUI < BaseUI
       stretched_sprite.set_bitmap(Graphics.width, Graphics.height)
       y = [(increment * i).round, 314].min
       stretched_sprite.y = 161 - (y / 2.0).round
-      stretched_sprite.bitmap.stretch_blt(
+      stretched_sprite.bitmap.blt(
         Rect.new(0, 0, @sprites["card"].bitmap.width, y),
         @sprites["card"].bitmap,
         Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
       )
       Graphics.update
-      Input.update
     end
     @sprites["card"].visible = true
     stretched_sprite.dispose

@@ -142,7 +142,6 @@ class BagUI < BaseUI
       increment = @sprites["list"].bitmap.height / frames.to_f
       for i in 1..frames
         Graphics.update
-        Input.update
         if i == 2
           Audio.se_play("audio/se/bag_pocket")
         end
@@ -350,7 +349,6 @@ class BagUI < BaseUI
       increment_height = Graphics.height / frames.to_f
       for i in 1..frames
         Graphics.update
-        Input.update
         update_sprites
         sliding.src_rect.height = increment_height * i
         black.opacity = increment_opacity * i
@@ -379,7 +377,6 @@ class BagUI < BaseUI
       Graphics.brightness = 255
       for i in 1..frames
         Graphics.update
-        Input.update
         update_sprites
         sliding.src_rect.height = Graphics.height - increment_height * i
         black.opacity = 255 - increment_opacity * i

@@ -176,7 +176,6 @@ class MultiChoiceWindow < BaseWindow
   def get_choice
     loop do
       Graphics.update
-      Input.update
       oldidx = @index
       cmd = self.update
       yield oldidx, @index if block_given?

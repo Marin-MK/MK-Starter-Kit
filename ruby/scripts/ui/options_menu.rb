@@ -190,6 +190,5 @@ end
 
 #loop do
 #  Graphics.update
-#  Input.update
 #  abort if Input.cancel?
 #end
