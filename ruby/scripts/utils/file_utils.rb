@@ -6,9 +6,9 @@ module FileUtils
   # @param filename [String] the file path.
   # @return [Object] the object that was loaded from the file.
   def load_data(filename, type = nil, return_everything = false)
-    data = File.open(filename, 'rb') do |f|
-      next f.read
-    end
+    f = File.open(filename, 'rb')
+    data = f.read
+    f.close
     json = JSON.parse(data)
     data = deserialize_json_object(json)
     validate_mkd(data, type, filename)
@@ -20,9 +20,9 @@ module FileUtils
   # @param type [Symbol] the type of data to save to the file.
   # @param data [Object] the object to save to the file.
   def save_data(filename, type, data)
-    f2 = File.new(filename, 'wb')
-    f2.write JSON.generate(({type: type, data: data}).dump_data.replace_symbols)
-    f2.close
+    f = File.new(filename, 'wb')
+    f.write JSON.generate(({type: type, data: data}).dump_data.replace_symbols)
+    f.close
     return nil
   end
 
@@ -42,9 +42,9 @@ module FileUtils
   # @param filename [String] the file path.
   # @return [Object] the object that was loaded from the file.
   def load_binary_data(filename, type = nil, return_everything = false)
-    data = File.open(filename, 'rb') do |f|
-      next f.read
-    end
+    f = File.open(filename, 'rb')
+    data = f.read
+    f.close
     # Reverse -> Load -> Deflate -> Reverse -> Load
     json = Marshal.load(Zlib::Deflate.deflate(Marshal.load(data.reverse)).reverse)
     data = deserialize_json_object(json)
@@ -68,7 +68,7 @@ def deserialize_json_object(object)
   if object.is_a?(Array)
     return object.map { |o| deserialize_json_object(o) }
   end
-  object = object.sub(/:/,"").to_sym if object.is_a?(String) && object[0] == ':'
+  object = object.sub(/:/, "").to_sym if object.is_a?(String) && object[0] == ':'
   return object
 end
 
@@ -80,7 +80,7 @@ def deserialize_json_hash(hash)
     hash.each do |key, value|
       next if key == "^c"
       if object.is_a?(Struct)
-        object.set(key.sub(/@/,""), deserialize_json_object(value))
+        object.set(key.sub(/@/, ""), deserialize_json_object(value))
       else
         object.instance_variable_set(key, deserialize_json_object(value))
       end
@@ -92,7 +92,7 @@ def deserialize_json_hash(hash)
       if key[0] == '[' && key[-1] == ']'
         key = JSON.parse(key)
       elsif key[0] == ':'
-        key = key.sub(/:/,"").to_sym
+        key = key.sub(/:/, "").to_sym
       end
       hash[key] = deserialize_json_object(hash[oldkey])
       if key != oldkey
