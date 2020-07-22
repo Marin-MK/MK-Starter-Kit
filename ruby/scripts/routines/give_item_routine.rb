@@ -113,7 +113,7 @@ class BagUI
     @choose_item = true
     @ret = nil
     until @stop || @disposed
-      Graphics.update
+      System.update
       update_sprites
       update
     end
@@ -160,7 +160,7 @@ class PartyUI
     @give_item = true
     @ret = nil
     until @stop || @disposed
-      Graphics.update
+      System.update
       update_sprites
       update
     end

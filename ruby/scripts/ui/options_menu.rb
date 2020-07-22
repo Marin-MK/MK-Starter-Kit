@@ -5,8 +5,8 @@ class OptionsUI < BaseUI
     @sprites["header"] = Sprite.new(@viewport)
     @sprites["header"].set_bitmap(@path + "header")
     @sprites["bg"] = Sprite.new(@viewport)
-    @sprites["bg"].set_bitmap(Graphics.width, Graphics.height - 32)
-    @sprites["bg"].bitmap.fill_rect(0, 0, Graphics.width, Graphics.height - 32, Color.new(0, 0, 0))
+    @sprites["bg"].set_bitmap(System.width, System.height - 32)
+    @sprites["bg"].bitmap.fill_rect(0, 0, System.width, System.height - 32, Color.new(0, 0, 0))
     @sprites["bg"].y = 32
     @sprites["hdrwin"] = SplitSprite.new(@viewport)
     @sprites["hdrwin"].x = 16
@@ -26,7 +26,7 @@ class OptionsUI < BaseUI
     @sprites["textbg"].y = 112
     @sprites["text"] = Sprite.new(@viewport)
     @sprites["text"].z = 1
-    @sprites["text"].set_bitmap(Graphics.width, Graphics.height)
+    @sprites["text"].set_bitmap(System.width, System.height)
     @index = 0
     refresh
   end
@@ -189,6 +189,6 @@ end
 #s.set(Windowskin.get(11))
 
 #loop do
-#  Graphics.update
+#  System.update
 #  abort if Input.cancel?
 #end

@@ -23,7 +23,7 @@ class PauseMenuUI < BaseUI
     choices = choices.concat(["BAG", $trainer.name, "SAVE", "OPTION", "EXIT"])
     @cmdwin = ChoiceWindow.new(
         choices: choices,
-        x: Graphics.width,
+        x: System.width,
         ox: :right,
         line_y_start: -4,
         line_y_space: -2,
@@ -32,7 +32,7 @@ class PauseMenuUI < BaseUI
         initial_choice: $temp.last_menu_index
     )
     @sprites["text"] = Sprite.new(@viewport)
-    @sprites["text"].set_bitmap(Graphics.width, Graphics.height)
+    @sprites["text"].set_bitmap(System.width, System.height)
     @sprites["text"].z = 1
     @sprites["text"].visible = $trainer.options.button_mode == :HELP
     @sprites["desc"].visible = $trainer.options.button_mode == :HELP

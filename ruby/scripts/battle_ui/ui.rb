@@ -7,23 +7,23 @@ class Battle
       @battle = battle
       transition = Transition.new
       transition.main
-      @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+      @viewport = Viewport.new(0, 0, System.width, System.height)
       @viewport.z = 99997
       @sprites = {}
       @sprites["blackbg1"] = Sprite.new(@viewport)
-      @sprites["blackbg1"].bitmap = Bitmap.new(Graphics.width, Graphics.height / 2)
-      @sprites["blackbg1"].bitmap.fill_rect(0, 0, Graphics.width, Graphics.height / 2, Color.new(0, 0, 0))
+      @sprites["blackbg1"].bitmap = Bitmap.new(System.width, System.height / 2)
+      @sprites["blackbg1"].bitmap.fill_rect(0, 0, System.width, System.height / 2, Color.new(0, 0, 0))
       @sprites["blackbg1"].z = 999999
       @sprites["blackbg2"] = Sprite.new(@viewport)
-      @sprites["blackbg2"].bitmap = Bitmap.new(Graphics.width, Graphics.height / 2)
-      @sprites["blackbg2"].bitmap.fill_rect(0, 0, Graphics.width, Graphics.height / 2, Color.new(0, 0, 0))
+      @sprites["blackbg2"].bitmap = Bitmap.new(System.width, System.height / 2)
+      @sprites["blackbg2"].bitmap.fill_rect(0, 0, System.width, System.height / 2, Color.new(0, 0, 0))
       @sprites["blackbg2"].y = @sprites["blackbg1"].bitmap.height
       @sprites["blackbg2"].z = 999999
       @sprites["bg"] = Sprite.new(@viewport)
       @sprites["bg"].bitmap = Bitmap.new("gfx/ui/battle/backdrops/standard")
       @sprites["bg"].z = -2
       @sprites["base1"] = BattleBase.new(@viewport)
-      @sprites["base1"].x = Graphics.width + 256
+      @sprites["base1"].x = System.width + 256
       @sprites["base1"].y = 194
       @sprites["base1"].z = -1
       @sprites["base2"] = BattleBase.new(@viewport, true)
@@ -31,7 +31,7 @@ class Battle
       @sprites["base2"].y = 92
       @sprites["base2"].z = -1
       @sprites["trainer1"] = TrainerSprite.new(0, @viewport)
-      @sprites["trainer1"].x = Graphics.width + 256
+      @sprites["trainer1"].x = System.width + 256
       @sprites["trainer1"].y = 126
       if @battle.wild_battle?
         @sprites["pokemon2"] = BattlerSprite.new(@battle.wild_pokemon, true, @viewport)
@@ -47,7 +47,7 @@ class Battle
         y: 224,
         z: 3,
         viewport: @viewport,
-        width: Graphics.width,
+        width: System.width,
         height: 96,
         text: "",
         letter_by_letter: false,
@@ -72,7 +72,7 @@ class Battle
 
     def update(update_main = true)
       if update_main
-        Graphics.update
+        System.update
       end
       @sprites["base1"].update
       @sprites["base2"].update
@@ -97,7 +97,7 @@ class Battle
       for i in 1..frames
         update
         @sprites["blackbg1"].y = -diffblack * i
-        @sprites["blackbg2"].y = Graphics.height / 2 + diffblack * i
+        @sprites["blackbg2"].y = System.height / 2 + diffblack * i
         @sprites["grass"].x -= 10
         @sprites["base1"].x = startbase1 - diffbase1 * i
         @sprites["base2"].x = startbase2 + diffbase2 * i
@@ -181,8 +181,8 @@ class Battle
       @sprites["pokemon1"].color = Color.new(248, 176, 240)
       @sprites["pokemon1"].appear_from_ball(0.4)
       @sprites["white"] = Sprite.new(@viewport)
-      @sprites["white"].bitmap = Bitmap.new(Graphics.width, Graphics.height)
-      @sprites["white"].bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(248, 248, 248))
+      @sprites["white"].bitmap = Bitmap.new(System.width, System.height)
+      @sprites["white"].bitmap.fill_rect(0, 0, System.width, System.height, Color.new(248, 248, 248))
       @sprites["white"].opacity = 0
       wait(0.1)
       frames = framecount(0.15)
@@ -197,26 +197,26 @@ class Battle
         @sprites["white"].opacity = 255.0 / framecount(0.25) * (framecount(0.15) + i)
       end
       @sprites["databox1"] = Databox.new(battler, false)
-      @sprites["databox1"].x = Graphics.width
+      @sprites["databox1"].x = System.width
       @sprites["databox1"].y = 148
       frames = framecount(0.2)
-      diffx = (Graphics.width - 252) / frames.to_f
+      diffx = (System.width - 252) / frames.to_f
       for i in 1..frames
         update
         @sprites["pokemon1"].color.alpha = 255.0 - 255.0 / frames * i
         @sprites["white"].opacity = 255.0 - 255.0 / frames * i
-        @sprites["databox1"].x = Graphics.width - diffx * i
+        @sprites["databox1"].x = System.width - diffx * i
       end
       @sprites["white"].dispose
       @sprites.delete("white")
     end
 
     def fade_out
-      vp = Viewport.new(0, 0, Graphics.width, Graphics.height)
+      vp = Viewport.new(0, 0, System.width, System.height)
       vp.z = 999999
       blackbg = Sprite.new(vp)
-      blackbg.bitmap = Bitmap.new(Graphics.width, Graphics.height)
-      blackbg.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0))
+      blackbg.bitmap = Bitmap.new(System.width, System.height)
+      blackbg.bitmap.fill_rect(0, 0, System.width, System.height, Color.new(0, 0, 0))
       blackbg.opacity = 0
       blackbg.z = 999999
       frames = framecount(0.6)
@@ -226,10 +226,10 @@ class Battle
       end
       dispose
       for i in 1..framecount(0.2)
-        Graphics.update
+        System.update
       end
       for i in 1..frames
-        Graphics.update
+        System.update
         blackbg.opacity = 255.0 / frames * (frames - i)
       end
       blackbg.dispose
@@ -433,8 +433,8 @@ class Battle
     def recall_battler(message, battler)
       message(message, false)
       @sprites["white"] = Sprite.new(@viewport)
-      @sprites["white"].bitmap = Bitmap.new(Graphics.width, Graphics.height)
-      @sprites["white"].bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(248, 248, 248))
+      @sprites["white"].bitmap = Bitmap.new(System.width, System.height)
+      @sprites["white"].bitmap.fill_rect(0, 0, System.width, System.height, Color.new(248, 248, 248))
       @sprites["white"].opacity = 0
       wait(0.1)
       @ball_animation = BallCloseAnimation.new(@sprites["pokemon1"], @viewport)
@@ -554,7 +554,7 @@ class Battle
 
     def stats_up_window(battler, oldstats, newstats)
       diff = newstats.each_with_index.map { |e, i| e - oldstats[i] }
-      viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+      viewport = Viewport.new(0, 0, System.width, System.height)
       viewport.z = 99999
       window = LevelUpWindow.new(viewport)
       window.x = 288
@@ -579,9 +579,9 @@ class Battle
       sprite = get_battler_sprite(battler)
       stat = StatSprite.new(@viewport, sprite, stat_type, direction)
       frames = framecount(2.0)
-      Graphics.update
+      System.update
       for i in 1..frames
-        Graphics.update
+        System.update
         stat.update
       end
       sprite.visible = true

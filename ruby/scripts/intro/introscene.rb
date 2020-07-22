@@ -957,7 +957,7 @@ class Animation
   end
 
   def set_duration(seconds)
-    @max_frame_count = (seconds * Graphics.frame_rate).round
+    @max_frame_count = (seconds * System.frame_rate).round
   end
 
   def create_particle(name)
@@ -993,7 +993,7 @@ class IntroScene
   end
 
   def initialize
-    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport = Viewport.new(0, 0, System.width, System.height)
     @viewport.z = 99999
     @anim = Animation.load(@viewport, :intro_scene)
     @anim.set_duration(27.1)
@@ -1227,19 +1227,12 @@ class IntroScene
 
   def main
     loop do
-      Graphics.update
+      System.update
       @anim.update if !@anim.disposed?
       break if @anim.disposed?
       if Input.confirm? || Input.cancel?
-        frames = framecount(0.2)
-        decrease = 255.0 / frames
-        for i in 1..frames
-          Graphics.brightness = 255 - (decrease * i).round
-          @anim.update if !@anim.disposed?
-          Graphics.update
-        end
+        System.show_overlay(framecount(0.2)) { @anim.update if !@anim.disposed? }
         @anim.dispose if !@anim.disposed?
-        Graphics.brightness = 255
         break
       end
     end

@@ -148,7 +148,7 @@ class << Input
   attr_accessor :repeating
 end
 
-class << Graphics
+class << System
   alias input_update update
   def update
     input_update

@@ -62,7 +62,7 @@ end
 
 main_function
 loop do
-  update = Graphics.update
+  update = System.update
   if defined?(APPLICATION) && APPLICATION == "ruby-sdl2"
     break unless update
   end

@@ -152,7 +152,7 @@ FrameCache = {}
 
 def framecount(n)
   return FrameCache[n] if FrameCache[n]
-  FrameCache[n] = (n * Graphics.frame_rate).ceil
+  FrameCache[n] = (n * System.frame_rate).ceil
   return FrameCache[n]
 end
 

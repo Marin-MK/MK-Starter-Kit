@@ -45,7 +45,7 @@ class TrainerCardUI < BaseUI
       Audio.se_play("audio/se/trainercard_flip_start")
       for i in 1..frames
         stretched_sprite.bitmap.dispose if stretched_sprite.bitmap
-        stretched_sprite.set_bitmap(Graphics.width, Graphics.height)
+        stretched_sprite.set_bitmap(System.width, System.height)
         y = (increment * i).round
         stretched_sprite.y = (y / 2.0).round
         stretched_sprite.bitmap.blt(
@@ -53,7 +53,7 @@ class TrainerCardUI < BaseUI
           @sprites["card"].bitmap,
           Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
         )
-        Graphics.update
+        System.update
       end
       @sprites["card"].set_bitmap(@path + "card")
       wait(0.2)
@@ -61,7 +61,7 @@ class TrainerCardUI < BaseUI
       wait(0.2)
       for i in 1..frames
         stretched_sprite.bitmap.dispose if stretched_sprite.bitmap
-        stretched_sprite.set_bitmap(Graphics.width, Graphics.height)
+        stretched_sprite.set_bitmap(System.width, System.height)
         y = [(increment * i).round, 314].min
         stretched_sprite.y = 161 - (y / 2.0).round
         stretched_sprite.bitmap.blt(
@@ -69,7 +69,7 @@ class TrainerCardUI < BaseUI
           @sprites["card"].bitmap,
           Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
         )
-        Graphics.update
+        System.update
       end
       @sprites["card"].visible = true
       stretched_sprite.dispose
@@ -97,7 +97,7 @@ class TrainerCardUI < BaseUI
       @sprites["text"].bitmap.clear
       @sprites["text"].visible = true
     end
-    @sprites["text"].set_bitmap(Graphics.width, Graphics.height)
+    @sprites["text"].set_bitmap(System.width, System.height)
     @sprites["text"].draw_text(
       {x: 300, y: 42, text: "IDNo." + $trainer.pid.to_s, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
       {x: 56, y: 80, text: "NAME: " + $trainer.name, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
@@ -107,7 +107,7 @@ class TrainerCardUI < BaseUI
       {x: 56, y: 198, text: "TIME", color: Color::GREYBASE, shadow_color: Color::GREYSHADOW}
     )
     @sprites["time_text"] = Sprite.new(@viewport)
-    @sprites["time_text"].set_bitmap(Graphics.width, Graphics.height)
+    @sprites["time_text"].set_bitmap(System.width, System.height)
     @sprites["colon"] = Sprite.new(@viewport)
     @sprites["colon"].set_bitmap(10, 20)
     @sprites["colon"].draw_text(text: ":", color: Color::GREYBASE, shadow_color: Color::GREYSHADOW)
@@ -140,7 +140,7 @@ class TrainerCardUI < BaseUI
     Audio.se_play("audio/se/trainercard_flip_start")
     for i in 1..frames
       stretched_sprite.bitmap.dispose if stretched_sprite.bitmap
-      stretched_sprite.set_bitmap(Graphics.width, Graphics.height)
+      stretched_sprite.set_bitmap(System.width, System.height)
       y = (increment * i).round
       stretched_sprite.y = (y / 2.0).round
       stretched_sprite.bitmap.blt(
@@ -148,7 +148,7 @@ class TrainerCardUI < BaseUI
         @sprites["card"].bitmap,
         Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
       )
-      Graphics.update
+      System.update
     end
     @sprites["card"].set_bitmap(@path + "card_back")
     wait(0.2)
@@ -156,7 +156,7 @@ class TrainerCardUI < BaseUI
     wait(0.2)
     for i in 1..frames
       stretched_sprite.bitmap.dispose if stretched_sprite.bitmap
-      stretched_sprite.set_bitmap(Graphics.width, Graphics.height)
+      stretched_sprite.set_bitmap(System.width, System.height)
       y = [(increment * i).round, 314].min
       stretched_sprite.y = 161 - (y / 2.0).round
       stretched_sprite.bitmap.blt(
@@ -164,7 +164,7 @@ class TrainerCardUI < BaseUI
         @sprites["card"].bitmap,
         Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
       )
-      Graphics.update
+      System.update
     end
     @sprites["card"].visible = true
     stretched_sprite.dispose
@@ -180,8 +180,8 @@ class TrainerCardUI < BaseUI
   def update_sprites(force_update_time = false)
     super()
     if @page == 0 # Front
-      hours = (Graphics.frame_count / 60 / 60 / 60 % 60).to_s
-      minutes = (Graphics.frame_count / 60 / 60 % 60).to_digits(2)
+      hours = (System.frame_count / 60 / 60 / 60 % 60).to_s
+      minutes = (System.frame_count / 60 / 60 % 60).to_digits(2)
       if @hours != hours || @minutes != minutes || force_update_time
         @sprites["time_text"].bitmap.clear
         @sprites["time_text"].draw_text(

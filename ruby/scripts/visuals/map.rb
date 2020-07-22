@@ -32,8 +32,8 @@ class Visuals
     def initialize(game_map, x = 0, y = 0)
       @game_map = game_map
       @id = @game_map.id
-      @real_x = Graphics.width / 2 - 16 + 32 * x
-      @real_y = Graphics.height / 2 - 16 + 32 * y
+      @real_x = System.width / 2 - 16 + 32 * x
+      @real_y = System.height / 2 - 16 + 32 * y
       @overlays = @game_map.data.panoramas.map { |pan|
         # Creates the sprites for the map's panoramas
         s = Sprite.new($visuals.viewport)

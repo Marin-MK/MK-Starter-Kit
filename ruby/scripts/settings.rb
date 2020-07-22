@@ -19,8 +19,8 @@ GAME_NAME = "MK Starter Kit"
 
 # The number of tiles a map should be away from the player's view to be loaded.
 # If the map is closer than this number of tiles from the player, it will be loaded.
-MAP_LOAD_BUFFER_HORIZONTAL = Graphics.width / 32 / 2 + 1
-MAP_LOAD_BUFFER_VERTICAL = Graphics.height / 32 / 2 + 1
+MAP_LOAD_BUFFER_HORIZONTAL = System.width / 32 / 2 + 1
+MAP_LOAD_BUFFER_VERTICAL = System.height / 32 / 2 + 1
 
 # The number of tiles a map should be away from the player's view to be unloaded.
 # If the map is further than this number of tiles, it will be unloaded (if it was loaded to begin with)

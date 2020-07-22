@@ -7,7 +7,7 @@ class BagUI < BaseUI
     @sprites["background"] = Sprite.new(@viewport)
     @sprites["background"].set_bitmap(@path + "background" + @suffix)
     @sprites["bgtext"] = Sprite.new(@viewport)
-    @sprites["bgtext"].set_bitmap(Graphics.width, Graphics.height)
+    @sprites["bgtext"].set_bitmap(System.width, System.height)
     @sprites["bgtext"].z = 1
     @sprites["bag"] = BagSprite.new($trainer.gender, self)
     @sprites["bag"].x = 22
@@ -141,7 +141,7 @@ class BagUI < BaseUI
       frames = framecount(0.15)
       increment = @sprites["list"].bitmap.height / frames.to_f
       for i in 1..frames
-        Graphics.update
+        System.update
         if i == 2
           Audio.se_play("audio/se/bag_pocket")
         end
@@ -335,27 +335,27 @@ class BagUI < BaseUI
       super(mode)
     else
       black = Sprite.new(@viewport)
-      black.set_bitmap(Graphics.width, Graphics.height)
-      black.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color::BLACK)
+      black.set_bitmap(System.width, System.height)
+      black.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
       black.opacity = 0
       black.z = 99999
       sliding = Sprite.new(@viewport)
-      sliding.set_bitmap(Graphics.width, Graphics.height)
-      sliding.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color::BLACK)
+      sliding.set_bitmap(System.width, System.height)
+      sliding.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
       sliding.src_rect.height = 0
       sliding.z = 99999
       frames = framecount(0.15)
       increment_opacity = 255.0 / frames
-      increment_height = Graphics.height / frames.to_f
+      increment_height = System.height / frames.to_f
       for i in 1..frames
-        Graphics.update
+        System.update
         update_sprites
         sliding.src_rect.height = increment_height * i
         black.opacity = increment_opacity * i
       end
       black.dispose
       sliding.dispose
-      Graphics.brightness = 0
+      System.show_overlay 0
     end
   end
 
@@ -364,21 +364,21 @@ class BagUI < BaseUI
       super(mode)
     else
       black = Sprite.new(@viewport)
-      black.set_bitmap(Graphics.width, Graphics.height)
-      black.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color::BLACK)
+      black.set_bitmap(System.width, System.height)
+      black.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
       black.z = 99999
       sliding = Sprite.new(@viewport)
-      sliding.set_bitmap(Graphics.width, Graphics.height)
-      sliding.bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color::BLACK)
+      sliding.set_bitmap(System.width, System.height)
+      sliding.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
       sliding.z = 99999
       frames = framecount(0.15)
       increment_opacity = 255.0 / frames
-      increment_height = Graphics.height / frames.to_f
-      Graphics.brightness = 255
+      increment_height = System.height / frames.to_f
+      System.hide_overlay 0
       for i in 1..frames
-        Graphics.update
+        System.update
         update_sprites
-        sliding.src_rect.height = Graphics.height - increment_height * i
+        sliding.src_rect.height = System.height - increment_height * i
         black.opacity = 255 - increment_opacity * i
       end
       black.dispose

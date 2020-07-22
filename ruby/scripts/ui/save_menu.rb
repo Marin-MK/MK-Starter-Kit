@@ -24,8 +24,8 @@ class SaveUI < BaseUI
       {x: 130, y: 74, text: $trainer.badge_count.to_s, color: Color.new(96, 96, 96),
        shadow_color: Color.new(208, 208, 200), small: true},
     )
-    hours = (Graphics.frame_count / 60 / 60 / 60 % 60).to_s
-    minutes = (Graphics.frame_count / 60 / 60 % 60).to_digits(2)
+    hours = (System.frame_count / 60 / 60 / 60 % 60).to_s
+    minutes = (System.frame_count / 60 / 60 % 60).to_digits(2)
     if $trainer.has_pokedex?
       @sprites["text"].draw_text(
         {x: 16, y: 102, text: "POKéDEX", color: Color.new(96, 96, 96),

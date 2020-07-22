@@ -126,9 +126,9 @@ class PartyUI < BaseUI
       pokemon = @party[@index]
       choices = get_selection_choices
       cmdwin = ChoiceWindow.new(
-        x: Graphics.width,
+        x: System.width,
         ox: :right,
-        y: Graphics.height,
+        y: System.height,
         oy: :bottom,
         z: 1,
         width: 192,
@@ -151,9 +151,9 @@ class PartyUI < BaseUI
         when "ITEM"
           cmdwin.visible = false
           itemwin = ChoiceWindow.new(
-            x: Graphics.width,
+            x: System.width,
             ox: :right,
-            y: Graphics.height,
+            y: System.height,
             oy: :bottom,
             z: 1,
             width: 144,
@@ -263,7 +263,7 @@ class PartyUI < BaseUI
     frames = framecount(0.2)
     increment = 320.0 / frames
     for i in 1..frames
-      Graphics.update
+      System.update
       update_sprites
       @sprites["panel_#{idx1}"].x = sx1 + increment * i * mod1
       @sprites["panel_#{idx2}"].x = sx2 + increment * i * mod2
@@ -285,7 +285,7 @@ class PartyUI < BaseUI
     sx1 = ns1.x
     sx2 = ns2.x
     for i in 1..frames
-      Graphics.update
+      System.update
       update_sprites
       @sprites["panel_#{idx1}"].x = sx1 - increment * i * mod1
       @sprites["panel_#{idx2}"].x = sx2 - increment * i * mod2

@@ -252,7 +252,7 @@ class MessageWindow < BaseWindow
     ret = nil
     while self.running?
       ret = self.update
-      Graphics.update
+      System.update
       yield if block_given?
       $visuals.update(:no_events)
     end

@@ -11,7 +11,7 @@ class Visuals
   # Creates a new Visuals object.
   def initialize
     @maps = {}
-    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport = Viewport.new(0, 0, System.width, System.height)
     @map_renderer = MapRenderer.new
   end
 

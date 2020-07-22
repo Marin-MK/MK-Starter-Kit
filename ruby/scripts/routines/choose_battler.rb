@@ -11,7 +11,7 @@ class PartyUI
     @choose_battler = true
     @return_value = nil
     until @stop || @disposed
-      Graphics.update
+      System.update
       update_sprites
       update
       @stop = true if !@return_value.nil?

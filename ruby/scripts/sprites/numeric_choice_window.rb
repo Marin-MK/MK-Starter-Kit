@@ -127,7 +127,7 @@ class NumericChoiceWindow < BaseWindow
 
   def get_choice
     loop do
-      Graphics.update
+      System.update
       oldvalue = @value
       value = self.update
       yield oldvalue, value if block_given?

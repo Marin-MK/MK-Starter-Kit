@@ -1,19 +1,19 @@
 class Battle
   class Transition
     def initialize
-      @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+      @viewport = Viewport.new(0, 0, System.width, System.height)
       @viewport.z = 999998
       @sprites = {}
-      bmp = Graphics.snap_to_bitmap
+      bmp = System.screenshot
       @sprites["overlay"] = Sprite.new(@viewport)
-      @sprites["overlay"].bitmap = Bitmap.new(Graphics.width, Graphics.height)
-      @sprites["overlay"].bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(72, 72, 72, 192))
+      @sprites["overlay"].bitmap = Bitmap.new(System.width, System.height)
+      @sprites["overlay"].bitmap.fill_rect(0, 0, System.width, System.height, Color.new(72, 72, 72, 192))
       @sprites["overlay"].opacity = 0
       @sprites["overlay"].z = 1
       @sprites["one"] = Sprite.new(@viewport)
-      @sprites["one"].bitmap = Bitmap.new(Graphics.width, Graphics.height)
+      @sprites["one"].bitmap = Bitmap.new(System.width, System.height)
       @sprites["two"] = Sprite.new(@viewport)
-      @sprites["two"].bitmap = Bitmap.new(Graphics.width, Graphics.height)
+      @sprites["two"].bitmap = Bitmap.new(System.width, System.height)
       for y in 0...bmp.height
         if y % 2 == 0
           @sprites["one"].bitmap.blt(0, y, bmp, Rect.new(0, y, bmp.width, 1))
@@ -66,7 +66,7 @@ class Battle
       flicker_overlay_in
       flicker_overlay_out
       wait(0.08)
-      @sprites["overlay"].bitmap.fill_rect(0, 0, Graphics.width, Graphics.height, Color.new(0, 0, 0))
+      @sprites["overlay"].bitmap.fill_rect(0, 0, System.width, System.height, Color.new(0, 0, 0))
       @sprites["overlay"].opacity = 255
       @sprites["one"].z = 2
       @sprites["two"].z = 2
@@ -78,7 +78,7 @@ class Battle
     end
 
     def update
-      Graphics.update
+      System.update
     end
 
     def dispose

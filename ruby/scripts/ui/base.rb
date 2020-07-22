@@ -27,24 +27,24 @@ class BaseUI
     @fade = fade
     @fade_time = fade_time
     @wait_time = wait_time
-    @viewport = Viewport.new(0, 0, Graphics.width, Graphics.height)
+    @viewport = Viewport.new(0, 0, System.width, System.height)
     @viewport.z = 99999
     @sprites = {}
     @stop = false
     @disposed = false
     @ret = true
     @update = update
-    show_black(:opening) { @update.call if @update } if @fade
+    System.show_overlay { @update.call if @update } if @fade
   end
 
   def main
     test_disposed
     if @fade
       wait(@wait_time)
-      hide_black { update_sprites }
+      System.hide_overlay { update_sprites }
     end
     until @stop || @disposed
-      Graphics.update
+      System.update
       update_sprites
       update
     end
@@ -72,7 +72,7 @@ class BaseUI
   def stop
     test_disposed
     return if stopped?
-    show_black { update_sprites; @update.call if @update } if @fade
+    System.show_overlay { update_sprites; @update.call if @update } if @fade
     @stop = true
   end
 
@@ -89,35 +89,7 @@ class BaseUI
     super
     if @fade
       wait(@wait_time)
-      hide_black(:closing)
-    end
-  end
-
-  def show_black(mode = nil)
-    if Graphics.brightness == 255
-      frames = framecount(@fade_time)
-      decrease = 255.0 / frames
-      for i in 1..frames
-        Graphics.brightness = 255 - (decrease * i).round
-        yield if block_given?
-        Graphics.update
-      end
-    else
-      Graphics.brightness = 0
-    end
-  end
-
-  def hide_black(mode = nil)
-    if Graphics.brightness == 0
-      frames = framecount(@fade_time)
-      increase = 255.0 / frames
-      for i in 1..frames
-        Graphics.brightness = (increase * i).round
-        yield if block_given?
-        Graphics.update
-      end
-    else
-      Graphics.brightness = 255
+      System.hide_overlay
     end
   end
 
@@ -125,7 +97,7 @@ class BaseUI
     framecount(n).times do
       update_sprites unless disposed?
       yield if block_given?
-      Graphics.update
+      System.update
     end
   end
 end

@@ -19,8 +19,8 @@ class Visuals
       @sprite.src_rect.y = @sprite.src_rect.height * (@game_player.direction / 2 - 1)
       @sprite.ox = @sprite.src_rect.width / 2
       @sprite.oy = @sprite.src_rect.height
-      @sprite.x = Graphics.width / 2
-      @sprite.y = Graphics.height / 2 + 16
+      @sprite.x = System.width / 2
+      @sprite.y = System.height / 2 + 16
       @fake_anim = nil
       @stop_fake_anim = false
     end

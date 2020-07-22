@@ -29,10 +29,10 @@ class SummaryUI < BaseUI
     @sprites["panel"] = Sprite.new(@viewport)
     @sprites["panel"].y = 32
     @sprites["text"] = Sprite.new(@viewport)
-    @sprites["text"].set_bitmap(Graphics.width, Graphics.height)
+    @sprites["text"].set_bitmap(System.width, System.height)
     @sprites["text"].z = 1
     @sprites["vartext"] = Sprite.new(@viewport)
-    @sprites["vartext"].set_bitmap(Graphics.width, Graphics.height)
+    @sprites["vartext"].set_bitmap(System.width, System.height)
     @sprites["vartext"].z = 1
     @page = 1
     @i = -framecount(0.25) if !@pokemon.fainted?
@@ -154,12 +154,12 @@ class SummaryUI < BaseUI
       @sprites["exp"].dispose
       sprites["panel"].z = 1
       frames = framecount(0.08)
-      increment = Graphics.width / frames.to_f
-      sprites["panel"].x += Graphics.width
+      increment = System.width / frames.to_f
+      sprites["panel"].x += System.width
       for i in 1..frames
-        Graphics.update
+        System.update
         update_sprites
-        sprites["panel"].x = Graphics.width - increment * i
+        sprites["panel"].x = System.width - increment * i
       end
       @sprites["panel"].dispose
       @sprites["vartext"].bitmap.clear
@@ -283,9 +283,9 @@ class SummaryUI < BaseUI
       @sprites["type2"].dispose if @sprites["type2"]
       @sprites["panel"].z = 1
       frames = framecount(0.08)
-      increment = Graphics.width / frames.to_f
+      increment = System.width / frames.to_f
       for i in 1..frames
-        Graphics.update
+        System.update
         update_sprites
         @sprites["panel"].x = increment * i
       end
@@ -299,17 +299,17 @@ class SummaryUI < BaseUI
       end
       sprites["panel"].z = 1
       frames = framecount(0.08)
-      increment = Graphics.width / frames.to_f
+      increment = System.width / frames.to_f
       positions = {}
       sprites.keys.each do |key|
         positions[key] = sprites[key].x
-        sprites[key].x += Graphics.width
+        sprites[key].x += System.width
       end
       for i in 1..frames
-        Graphics.update
+        System.update
         update_sprites
         sprites.keys.each do |key|
-          sprites[key].x = positions[key] + Graphics.width - increment * i
+          sprites[key].x = positions[key] + System.width - increment * i
         end
       end
       @sprites["panel"].dispose
@@ -393,9 +393,9 @@ class SummaryUI < BaseUI
       @sprites["exp"].dispose
       @sprites["panel"].z = 1
       frames = framecount(0.08)
-      increment = Graphics.width / frames.to_f
+      increment = System.width / frames.to_f
       for i in 1..frames
-        Graphics.update
+        System.update
         update_sprites
         @sprites["panel"].x = increment * i
       end
@@ -522,7 +522,7 @@ class SummaryUI < BaseUI
       shadow_color: Color.new(216, 216, 216)
     )
     @sprites["movetext"] = Sprite.new(@viewport)
-    @sprites["movetext"].set_bitmap(Graphics.width, Graphics.height)
+    @sprites["movetext"].set_bitmap(System.width, System.height)
     @sprites["movetext"].z = 1
     @move_index = 0
     @page = 4

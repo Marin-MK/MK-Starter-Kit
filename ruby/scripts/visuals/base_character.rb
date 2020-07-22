@@ -167,7 +167,7 @@ class Visuals
       # Executes horizontal movement
       if @x_travelled && @x_destination && (@x_destination.abs - @x_travelled.abs) >= 0.01
         # Floating point precision movement
-        pixels = 32.0 / (@game_character.speed * Graphics.frame_rate) * (@x_destination <=> 0)
+        pixels = 32.0 / (@game_character.speed * System.frame_rate) * (@x_destination <=> 0)
         old_x_travelled = @x_travelled
         @x_travelled += pixels
         @animate_count += pixels.abs
@@ -192,7 +192,7 @@ class Visuals
       # Executes vertical movement
       if @y_travelled && @y_destination && (@y_destination.abs - @y_travelled.abs) >= 0.01
         # Floating point precision movement
-        pixels = 32.0 / (@game_character.speed * Graphics.frame_rate) * (@y_destination <=> 0)
+        pixels = 32.0 / (@game_character.speed * System.frame_rate) * (@y_destination <=> 0)
         old_x_travelled = @y_travelled
         @y_travelled += pixels
         @animate_count += pixels.abs
@@ -227,11 +227,11 @@ class Visuals
       idle = false if !@game_character.idle_animation
       speed = @game_character.speed
       if idle
-        pixels = 32.0 / (@game_character.idle_speed * Graphics.frame_rate)
+        pixels = 32.0 / (@game_character.idle_speed * System.frame_rate)
         @animate_count += pixels.abs
         speed = @game_character.idle_speed
       end
-      if 32.0 / (speed * Graphics.frame_rate) > @game_character.animation_speed && @oldanimate_count != @animate_count ||
+      if 32.0 / (speed * System.frame_rate) > @game_character.animation_speed && @oldanimate_count != @animate_count ||
          @oldanimate_count % @game_character.animation_speed > @animate_count % @game_character.animation_speed
         next_frame
       end
