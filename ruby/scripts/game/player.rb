@@ -107,8 +107,8 @@ class Game
           raise "Map ##{c.map_id} overlaps map ##{@map_id} and can thus not be loaded."
         elsif !$game.is_map_loaded?(c.map_id) && dist[0] <= MAP_LOAD_BUFFER_HORIZONTAL && dist[1] <= MAP_LOAD_BUFFER_VERTICAL
           $game.load_map(c.map_id)
-          $visuals.maps[c.map_id].real_x = $visuals.map.real_x + c.relative_x * 32
-          $visuals.maps[c.map_id].real_y = $visuals.map.real_y + c.relative_y * 32
+          $visuals.maps[c.map_id].x = $visuals.map.x + c.relative_x * 32
+          $visuals.maps[c.map_id].y = $visuals.map.y + c.relative_y * 32
         elsif $game.is_map_loaded?(c.map_id) && (dist[0] > MAP_UNLOAD_BUFFER_HORIZONTAL || dist[1] > MAP_UNLOAD_BUFFER_VERTICAL)
           $game.unload_map(c.map_id)
         end

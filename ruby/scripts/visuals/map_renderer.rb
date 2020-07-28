@@ -43,14 +43,14 @@ class Visuals
     end
 
     def move_horizontal(px)
-      @array.each { |e| e.real_x -= px }
-      $visuals.maps.each_value { |map| map.real_x -= px }
+      @array.each { |e| e.x -= px }
+      $visuals.maps.each_value { |map| map.x -= px }
       $visuals.map_renderer.refresh_tiles
     end
 
     def move_vertical(px)
-      @array.each { |e| e.real_y -= px }
-      $visuals.maps.each_value { |map| map.real_y -= px }
+      @array.each { |e| e.y -= px }
+      $visuals.maps.each_value { |map| map.y -= px }
       $visuals.map_renderer.refresh_tiles
     end
 
@@ -102,8 +102,8 @@ class Visuals
           mapx = startx + x
           mapy = starty + y
           idx = x + y * XSIZE
-          @array[idx].real_x = $visuals.map.real_x + mapx * 32
-          @array[idx].real_y = $visuals.map.real_y + mapy * 32
+          @array[idx].x = $visuals.map.x + mapx * 32
+          @array[idx].y = $visuals.map.y + mapy * 32
           draw_tile(@array[idx], mapx, mapy)
         end
       end
@@ -116,13 +116,13 @@ class Visuals
       return if empty?
       # Since sprites are moved when the player moves, they will eventually go off-screen.
       # This difference is the number of rows/columns that are off-screen, and should thus be re-rendered.
-      xdiff = @array[0].real_x.round / -32 - 1
-      ydiff = @array[0].real_y.round / -32 - 1
+      xdiff = @array[0].x.round / -32 - 1
+      ydiff = @array[0].y.round / -32 - 1
       if ydiff > 0
         ydiff.times do
           move_up do |sprite|
             sprite.mapy += YSIZE
-            sprite.real_y += 32 * YSIZE
+            sprite.y += 32 * YSIZE
             draw_tile(sprite, sprite.mapx, sprite.mapy)
           end
         end
@@ -130,7 +130,7 @@ class Visuals
         ydiff.abs.times do
           move_down do |sprite|
             sprite.mapy -= YSIZE
-            sprite.real_y -= 32 * YSIZE
+            sprite.y -= 32 * YSIZE
             draw_tile(sprite, sprite.mapx, sprite.mapy)
           end
         end
@@ -139,7 +139,7 @@ class Visuals
         xdiff.times do
           move_left do |sprite|
             sprite.mapx += XSIZE
-            sprite.real_x += 32 * XSIZE
+            sprite.x += 32 * XSIZE
             draw_tile(sprite, sprite.mapx, sprite.mapy)
           end
         end
@@ -147,7 +147,7 @@ class Visuals
         xdiff.abs.times do
           move_right do |sprite|
             sprite.mapx -= XSIZE
-            sprite.real_x -= 32 * XSIZE
+            sprite.x -= 32 * XSIZE
             draw_tile(sprite, sprite.mapx, sprite.mapy)
           end
         end

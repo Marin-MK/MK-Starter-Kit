@@ -3,37 +3,37 @@ class Visuals
   class Map
     # Creates a new map linked to the map object.
     # @param game_map [Game::Map] the map object.
-    def self.create(game_map, real_x = 0, real_y = 0)
-      $visuals.maps[game_map.id] = self.new(game_map, real_x, real_y)
+    def self.create(game_map, x = 0, y = 0)
+      $visuals.maps[game_map.id] = self.new(game_map, x, y)
     end
 
     # @return [Hash<Visuals::Event>] the hash of event visuals.
     attr_accessor :events
     # @return [Integer] the x position of the top-left corner of the map.
-    attr_reader :real_x
+    attr_reader :x
     # @return [Integer] the y position of the top-left corner of the map.
-    attr_reader :real_y
+    attr_reader :y
     # @return [Integer] the ID of this map.
     attr_reader :id
 
-    def real_x=(value)
-      @real_x = value
-      @overlays.each { |o| o[0].x = @real_x }
-      @events.each_value { |e| e.sprite.x = @real_x + e.relative_x }
+    def x=(value)
+      @x = value
+      @overlays.each { |o| o[0].x = @x }
+      @events.each_value { |e| e.sprite.x = @x + e.relative_x }
     end
 
-    def real_y=(value)
-      @real_y = value
-      @overlays.each { |o| o[0].y = @real_y }
-      @events.each_value { |e| e.sprite.y = @real_y + e.relative_y }
+    def y=(value)
+      @y = value
+      @overlays.each { |o| o[0].y = @y }
+      @events.each_value { |e| e.sprite.y = @y + e.relative_y }
     end
 
     # Creates a new Map object.
     def initialize(game_map, x = 0, y = 0)
       @game_map = game_map
       @id = @game_map.id
-      @real_x = System.width / 2 - 16 + 32 * x
-      @real_y = System.height / 2 - 16 + 32 * y
+      @x = System.width / 2 - 16 + 32 * x
+      @y = System.height / 2 - 16 + 32 * y
       @overlays = @game_map.data.panoramas.map { |pan|
         # Creates the sprites for the map's panoramas
         s = Sprite.new($visuals.viewport)
@@ -43,8 +43,8 @@ class Visuals
         dir = pan.animate_direction
         s.src_rect.x = pan.pattern_repeat_interval if dir == :downright || dir == :right || dir == :upright
         s.src_rect.y = pan.pattern_repeat_interval if dir == :downleft || dir == :down || dir == :downright
-        s.x = real_x
-        s.y = real_y
+        s.x = x
+        s.y = y
         s.z = -1
         next [s, pan, 0]
       }.concat(@game_map.data.fogs.map { |fog|
@@ -56,8 +56,8 @@ class Visuals
         dir = fog.animate_direction
         s.src_rect.x = fog.pattern_repeat_interval if dir == :downright || dir == :right || dir == :upright
         s.src_rect.y = fog.pattern_repeat_interval if dir == :downleft || dir == :down || dir == :downright
-        s.x = real_x
-        s.y = real_y
+        s.x = x
+        s.y = y
         s.z = 999999
         next [s, fog, 0]
       })

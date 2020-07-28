@@ -182,13 +182,3 @@ class OptionsUI < BaseUI
     end
   end
 end
-
-#s = SplitSprite.new
-#s.width = 128
-#s.height = 128
-#s.set(Windowskin.get(11))
-
-#loop do
-#  System.update
-#  abort if Input.cancel?
-#end

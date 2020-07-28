@@ -154,12 +154,11 @@ class SummaryUI < BaseUI
       @sprites["exp"].dispose
       sprites["panel"].z = 1
       frames = framecount(0.08)
-      increment = System.width / frames.to_f
       sprites["panel"].x += System.width
       for i in 1..frames
         System.update
         update_sprites
-        sprites["panel"].x = System.width - increment * i
+        sprites["panel"].x -= System.width / frames.to_f
       end
       @sprites["panel"].dispose
       @sprites["vartext"].bitmap.clear
@@ -283,11 +282,10 @@ class SummaryUI < BaseUI
       @sprites["type2"].dispose if @sprites["type2"]
       @sprites["panel"].z = 1
       frames = framecount(0.08)
-      increment = System.width / frames.to_f
       for i in 1..frames
         System.update
         update_sprites
-        @sprites["panel"].x = increment * i
+        @sprites["panel"].x += System.width / frames.to_f
       end
       @sprites["panel"].dispose
       @sprites["vartext"].bitmap.clear
@@ -299,7 +297,6 @@ class SummaryUI < BaseUI
       end
       sprites["panel"].z = 1
       frames = framecount(0.08)
-      increment = System.width / frames.to_f
       positions = {}
       sprites.keys.each do |key|
         positions[key] = sprites[key].x
@@ -309,7 +306,7 @@ class SummaryUI < BaseUI
         System.update
         update_sprites
         sprites.keys.each do |key|
-          sprites[key].x = positions[key] + System.width - increment * i
+          sprites[key].x = positions[key] + System.width / frames.to_f
         end
       end
       @sprites["panel"].dispose
@@ -393,11 +390,10 @@ class SummaryUI < BaseUI
       @sprites["exp"].dispose
       @sprites["panel"].z = 1
       frames = framecount(0.08)
-      increment = System.width / frames.to_f
       for i in 1..frames
         System.update
         update_sprites
-        @sprites["panel"].x = increment * i
+        @sprites["panel"].x += Ssytem.width / frames.to_f
       end
       @sprites["panel"].dispose
       @sprites["vartext"].bitmap.clear

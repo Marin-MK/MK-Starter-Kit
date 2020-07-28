@@ -2,7 +2,7 @@ class PartyUI
   def self.start_choose_battler(party, &update)
     instance = self.new
     instance.start(party, &update)
-    instance.hide_black { instance.update_sprites }
+    System.hide_overlay { instance.update_sprites }
     return instance
   end
 

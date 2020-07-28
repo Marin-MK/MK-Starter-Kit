@@ -332,7 +332,7 @@ class BagUI < BaseUI
 
   def show_black(mode = nil)
     if mode == :opening || mode == :closing
-      super(mode)
+      System.show_overlay { update }
     else
       black = Sprite.new(@viewport)
       black.set_bitmap(System.width, System.height)
@@ -345,13 +345,11 @@ class BagUI < BaseUI
       sliding.src_rect.height = 0
       sliding.z = 99999
       frames = framecount(0.15)
-      increment_opacity = 255.0 / frames
-      increment_height = System.height / frames.to_f
       for i in 1..frames
         System.update
         update_sprites
-        sliding.src_rect.height = increment_height * i
-        black.opacity = increment_opacity * i
+        sliding.src_rect.height += System.height / frames.to_f
+        black.opacity += 255.0 / frames
       end
       black.dispose
       sliding.dispose
@@ -361,7 +359,7 @@ class BagUI < BaseUI
 
   def hide_black(mode = nil)
     if mode == :opening || mode == :closing
-      super(mode)
+      System.hide_overlay { update }
     else
       black = Sprite.new(@viewport)
       black.set_bitmap(System.width, System.height)
@@ -378,8 +376,8 @@ class BagUI < BaseUI
       for i in 1..frames
         System.update
         update_sprites
-        sliding.src_rect.height = System.height - increment_height * i
-        black.opacity = 255 - increment_opacity * i
+        sliding.src_rect.height -= System.height / frames.to_f
+        black.opacity -= 255.0 / frames
       end
       black.dispose
       sliding.dispose

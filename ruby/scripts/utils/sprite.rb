@@ -78,10 +78,4 @@ class Sprite
       self.bitmap = Bitmap.new(*args)
     end
   end
-
-  alias old_sprite_update update
-  def update
-    raise RGSSError, "disposed sprite" if disposed?
-    old_sprite_update
-  end
 end

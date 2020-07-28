@@ -142,11 +142,11 @@ class Battle
       frames = framecount(0.15)
       for i in 1..frames
         @battle.ui.update
-        @sprites["levelup"].opacity = 200.0 / frames * i
+        @sprites["levelup"].opacity += 200.0 / frames
       end
       for i in 1..frames
         @battle.ui.update
-        @sprites["levelup"].opacity = 200.0 / frames * (frames - i)
+        @sprites["levelup"].opacity -= 200.0 / frames
       end
       @sprites["levelup"].dispose
       @sprites.delete("levelup")
@@ -159,27 +159,27 @@ class Battle
     end
 
     def width
-      return @viewport.rect.width
+      return @viewport.width
     end
 
     def height
-      return @viewport.rect.height
+      return @viewport.height
     end
 
     def x
-      return @viewport.rect.x
+      return @viewport.x
     end
 
     def x=(value)
-      @viewport.rect.x = value
+      @viewport.x = value
     end
 
     def y
-      return @viewport.rect.y
+      return @viewport.y
     end
 
     def y=(value)
-      @viewport.rect.y = value
+      @viewport.y = value
     end
 
     def z

@@ -176,8 +176,8 @@ class Visuals
         else
           @relative_x += pixels
         end
+        # Account for overshooting the tile, due to rounding errors
         if (@x_destination.abs - @x_travelled.abs) < 0.01
-          # Account for overshooting the tile, due to rounding errors
           if self.is_a?(Player)
             $visuals.map_renderer.move_horizontal(@x_destination - @x_travelled)
           else
@@ -201,8 +201,8 @@ class Visuals
         else
           @relative_y += pixels
         end
+        # Account for overshooting the tile, due to rounding errors
         if (@y_destination.abs - @y_travelled.abs) < 0.01
-          # Account for overshooting the tile, due to rounding errors
           if self.is_a?(Player)
             $visuals.map_renderer.move_vertical(@y_destination - @y_travelled)
           else
@@ -275,8 +275,8 @@ class Visuals
     def update_position
       # Sets the sprite's on-screen location based on the map's offset and the coordinates of the sprite relative to the map.
       map = $visuals.maps[@game_character.map_id]
-      @sprite.x = (map.real_x + @relative_x).round
-      @sprite.y = (map.real_y + @relative_y).round
+      @sprite.x = (map.x + @relative_x).round
+      @sprite.y = (map.y + @relative_y).round
       @sprite.z = @sprite.y + 31
     end
 

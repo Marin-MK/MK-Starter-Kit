@@ -50,8 +50,8 @@ class Visuals
         ]
       }
 
-      attr_reader :real_x
-      attr_reader :real_y
+      attr_reader :x
+      attr_reader :y
       attr_accessor :mapx
       attr_accessor :mapy
       attr_accessor :sprites
@@ -59,21 +59,21 @@ class Visuals
       def initialize(viewport)
         @sprites = {0 => Sprite.new(viewport, {priority: 0, tile_id: 0})}
         @viewport = viewport
-        @real_x = 0
-        @real_y = 0
+        @x = 0
+        @y = 0
         @priority = 0
         @mapx = 0
         @mapy = 0
         @i = 0
       end
 
-      def real_x=(value)
-        @real_x = value
+      def x=(value)
+        @x = value
         @sprites.each_value { |s| s.x = value if s }
       end
 
-      def real_y=(value)
-        @real_y = value
+      def y=(value)
+        @y = value
         @sprites.each_value do |s|
           s.y = value if s
           s.z = s.y + s.hash[:priority] * 32 + 32 if s.hash[:priority]
@@ -161,8 +161,8 @@ class Visuals
 
         if !@sprites[layer]
           @sprites[layer] = Sprite.new(@viewport)
-          @sprites[layer].x = @real_x
-          @sprites[layer].y = @real_y
+          @sprites[layer].x = @x
+          @sprites[layer].y = @y
         end
 
         if tile_type == 0 # Tileset

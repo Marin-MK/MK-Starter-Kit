@@ -43,7 +43,7 @@ class GiveItemRoutine
         @item = @bag_ui.choose_item
       elsif from_bag?
         @item = Item.get(@bag_ui.selected_item[:item])
-        @pokemon = @party_ui.give_item
+        @pokemon = @party_ui.give_item_sequence
       end
       if @item.nil? || @pokemon.nil?
         ret = nil
@@ -104,7 +104,7 @@ class BagUI
   def self.start_choose_item
     instance = self.new
     instance.start
-    instance.hide_black
+    System.hide_overlay
     return instance
   end
 
@@ -151,11 +151,11 @@ class PartyUI
     instance = self.new
     instance.start
     instance.sprites["window"].text = "Give to which POKéMON?"
-    instance.hide_black
+    System.hide_overlay
     return instance
   end
 
-  def give_item
+  def give_item_sequence
     test_disposed
     @give_item = true
     @ret = nil

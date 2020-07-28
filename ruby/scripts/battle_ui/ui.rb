@@ -89,32 +89,25 @@ class Battle
     def begin_start
       wait(0.2)
       frames = framecount(0.8)
-      startbase1 = @sprites["base1"].x
-      startbase2 = @sprites["base2"].x
-      diffblack = @sprites["blackbg2"].y / frames.to_f
-      diffbase1 = (startbase1 - 8) / frames.to_f / 2.0
-      diffbase2 = (-startbase2 + 224) / frames.to_f / 2.0
       for i in 1..frames
         update
-        @sprites["blackbg1"].y = -diffblack * i
-        @sprites["blackbg2"].y = System.height / 2 + diffblack * i
-        @sprites["grass"].x -= 10
-        @sprites["base1"].x = startbase1 - diffbase1 * i
-        @sprites["base2"].x = startbase2 + diffbase2 * i
+        @sprites["blackbg1"].y -= System.height / 2.0 / frames
+        @sprites["blackbg2"].y += System.height / 2.0 / frames
+        @sprites["grass"].x -= 480.0 / frames
+        @sprites["base1"].x -= 364.0 / frames
+        @sprites["base2"].x += 368.0 / frames
         @sprites["trainer1"].x = @sprites["base1"].x + 100
         @sprites["pokemon2"].x = @sprites["base2"].x + 64 + @sprites["pokemon2"].pokemon.species.battler_front_x
       end
       @sprites["blackbg1"].dispose
       @sprites["blackbg2"].dispose
       frames = framecount(0.8)
-      startbase1 = @sprites["base1"].x
-      startbase2 = @sprites["base2"].x
       for i in 1..frames
         update
-        @sprites["grass"].x -= 10
-        @sprites["grass"].y += 3
-        @sprites["base1"].x = startbase1 - diffbase1 * i
-        @sprites["base2"].x = startbase2 + diffbase2 * i
+        @sprites["grass"].x -= 480.0 / frames
+        @sprites["grass"].y += 144.0 / frames
+        @sprites["base1"].x -= 364.0 / frames
+        @sprites["base2"].x += 368.0 / frames
         @sprites["trainer1"].x = @sprites["base1"].x + 100
         @sprites["pokemon2"].x = @sprites["base2"].x + 64 + @sprites["pokemon2"].pokemon.species.battler_front_x
       end
@@ -129,13 +122,11 @@ class Battle
       @sprites["databox2"].x = -@sprites["databox2"].width
       @sprites["databox2"].y = 32
       frames = framecount(0.4)
-      diffx = (-@sprites["databox2"].x + 26) / frames.to_f
       for i in 1..frames
         update
-        @sprites["databox2"].x = -@sprites["databox2"].width + diffx * i
-        @sprites["pokemon2"].color.alpha = 128.0 / frames * (frames - i) if @sprites["pokemon2"].color.alpha > 0
+        @sprites["databox2"].x += 226.0 / frames
+        @sprites["pokemon2"].color.alpha -= 128.0 / frames if @sprites["pokemon2"].color.alpha > 0
       end
-      @sprites["pokemon2"].color.alpha = 0
       update while @msgwin.running?
       @msgwin.text = ""
       @msgwin.ending_arrow = false
@@ -144,11 +135,10 @@ class Battle
     def send_out_initial_pokemon(message, battler)
       message(message, false)
       frames = framecount(0.5)
-      diffx = (@sprites["trainer1"].src_rect.width + 108) / frames.to_f
       @sprites["trainer1"].frame = 1
       for i in 1..frames
         update
-        @sprites["trainer1"].x = 108 - diffx * i
+        @sprites["trainer1"].x -= 236.0 / frames
         if i >= framecount(0.1) && @sprites["trainer1"].frame == 1 ||
            i >= framecount(0.2) && @sprites["trainer1"].frame == 2 ||
            i >= framecount(0.3) && @sprites["trainer1"].frame == 3
@@ -188,24 +178,23 @@ class Battle
       frames = framecount(0.15)
       for i in 1..frames
         update
-        @sprites["white"].opacity = 255.0 / framecount(0.25) * i
+        @sprites["white"].opacity += 255.0 / framecount(0.25)
       end
       @ball_animation = BallOpenAnimation.new(@sprites["pokemon1"], @viewport)
       frames = framecount(0.1)
       for i in 1..frames
         update
-        @sprites["white"].opacity = 255.0 / framecount(0.25) * (framecount(0.15) + i)
+        @sprites["white"].opacity += 255.0 / framecount(0.25)
       end
       @sprites["databox1"] = Databox.new(battler, false)
       @sprites["databox1"].x = System.width
       @sprites["databox1"].y = 148
       frames = framecount(0.2)
-      diffx = (System.width - 252) / frames.to_f
       for i in 1..frames
         update
-        @sprites["pokemon1"].color.alpha = 255.0 - 255.0 / frames * i
-        @sprites["white"].opacity = 255.0 - 255.0 / frames * i
-        @sprites["databox1"].x = System.width - diffx * i
+        @sprites["pokemon1"].color.alpha -= 255.0 / frames
+        @sprites["white"].opacity -= 255.0 / frames
+        @sprites["databox1"].x -= 228.0 / frames
       end
       @sprites["white"].dispose
       @sprites.delete("white")
@@ -222,7 +211,7 @@ class Battle
       frames = framecount(0.6)
       for i in 1..frames
         update
-        blackbg.opacity = 255.0 / frames * i
+        blackbg.opacity += 255.0 / frames
       end
       dispose
       for i in 1..framecount(0.2)
@@ -230,7 +219,7 @@ class Battle
       end
       for i in 1..frames
         System.update
-        blackbg.opacity = 255.0 / frames * (frames - i)
+        blackbg.opacity -= 255.0 / frames
       end
       blackbg.dispose
       vp.dispose
@@ -448,7 +437,7 @@ class Battle
       for i in 1..frames
         update
         @sprites["white"].opacity = 255.0 / framecount(0.25) * (framecount(0.15) + i)
-        @sprites["pokemon1"].color.alpha = 255.0 / frames * i
+        @sprites["pokemon1"].color.alpha += 255.0 / frames
       end
       for i in 1..framecount(0.3)
         update
@@ -475,12 +464,12 @@ class Battle
       starty = sprite.y
       for i in 1..framecount(0.2)
         update
-        sprite.y = starty + 120.0 / framecount(0.4) * i
+        sprite.y += 120.0 / framecount(0.4)
       end
       for i in 1..framecount(0.2)
         update
-        sprite.y = starty + 120.0 / framecount(0.2) * (framecount(0.2) + i)
-        sprite.opacity = 255.0 * (framecount(0.2) - i)
+        sprite.y += 120.0 / framecount(0.4)
+        sprite.opacity -= 255.0 / framecount(0.2)
       end
       sprite.dispose
       @sprites.delete(@sprites.key(sprite))

@@ -256,17 +256,14 @@ class PartyUI < BaseUI
     idx2 = @index
     @sprites["panel_#{idx2}"].deselect
     @sprites["panel_#{idx2}"].switching = true
-    sx1 = @sprites["panel_#{idx1}"].x
-    sx2 = @sprites["panel_#{idx2}"].x
     mod1 = idx1 == 0 ? -1 : 1
     mod2 = idx2 == 0 ? -1 : 1
     frames = framecount(0.2)
-    increment = 320.0 / frames
     for i in 1..frames
       System.update
       update_sprites
-      @sprites["panel_#{idx1}"].x = sx1 + increment * i * mod1
-      @sprites["panel_#{idx2}"].x = sx2 + increment * i * mod2
+      @sprites["panel_#{idx1}"].x += 320.0 / frames * mod1
+      @sprites["panel_#{idx2}"].x += 320.0 / frames * mod2
     end
     wait(0.5)
     @party.swap!(idx1, idx2)
@@ -287,8 +284,8 @@ class PartyUI < BaseUI
     for i in 1..frames
       System.update
       update_sprites
-      @sprites["panel_#{idx1}"].x = sx1 - increment * i * mod1
-      @sprites["panel_#{idx2}"].x = sx2 - increment * i * mod2
+      @sprites["panel_#{idx1}"].x -= 320.0 / frames * mod1
+      @sprites["panel_#{idx2}"].x -= 320.0 / frames * mod2
     end
     @sprites["panel_#{idx2}"].select
     stop_switching

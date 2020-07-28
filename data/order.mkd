@@ -1,11 +1,9 @@
 settings.rb: Settings
-utils/os.rb: OS Utilities
 utils/other.rb: Other Utilities
 utils/file_utils.rb: File Utilities
 utils/input.rb: Input Utilities
 utils/numeric.rb: Numeric Utilities
 utils/validate.rb: Validator Utilities
-utils/viewport.rb: Viewport Utilities
 utils/sprite.rb: Sprite Utilities
 system_event.rb: System Event
 mkd/map_overlay.rb: Map Overlay

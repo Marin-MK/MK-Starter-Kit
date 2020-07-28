@@ -32,30 +32,26 @@ class Battle
 
     def flicker_overlay_in
       frames = framecount(0.1)
-      result = 192.0 / frames
       for i in 1..frames
         update
-        @sprites["overlay"].opacity = result * i
+        @sprites["overlay"].opacity += 192.0 / frames
       end
     end
 
     def flicker_overlay_out
       frames = framecount(0.1)
-      result = 192.0 / frames
       for i in 1..frames
         update
-        @sprites["overlay"].opacity = 192 - result * i
+        @sprites["overlay"].opacity -= 192.0 / frames
       end
     end
 
     def move_screen(pixels, speed)
       frames = framecount(speed)
-      pixels = pixels / frames.to_f
-      startx = @sprites["one"].x
       for i in 1..frames
         update
-        @sprites["one"].x = startx + pixels * i
-        @sprites["two"].x = -startx - pixels * i
+        @sprites["one"].x += pixels / frames.to_f
+        @sprites["two"].x -= pixels / frames.to_f
       end
     end
 
@@ -72,8 +68,8 @@ class Battle
       @sprites["two"].z = 2
       move_screen(120, 0.15)
       move_screen(120, 0.08)
+      move_screen(120, 0.05)
       move_screen(120, 0.03)
-      move_screen(120, 0.01)
       dispose
     end
 

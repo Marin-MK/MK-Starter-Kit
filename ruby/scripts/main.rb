@@ -44,7 +44,7 @@ $game.load_map(3)
 $trainer = Trainer.new
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 12, item: :REPEL))
 $trainer.add_pokemon((p=Pokemon.new(:BULBASAUR, 32);p.exp+=2000;p))
-$trainer.add_pokemon(Pokemon.new(:BULBASAUR, 3, gender: 1, status: :paralyzed, hp: 13))
+$trainer.add_pokemon(Pokemon.new(:BULBASAUR, 3, gender: 1, status: :paralyzed, hp: 13))       
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 4, item: :REPEL))
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 5, hp: 6, status: :poisoned))
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 6, gender: 1, hp: 0))
