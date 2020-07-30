@@ -393,7 +393,7 @@ class SummaryUI < BaseUI
       for i in 1..frames
         System.update
         update_sprites
-        @sprites["panel"].x += Ssytem.width / frames.to_f
+        @sprites["panel"].x += System.width / frames.to_f
       end
       @sprites["panel"].dispose
       @sprites["vartext"].bitmap.clear
