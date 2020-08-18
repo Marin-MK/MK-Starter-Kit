@@ -14,12 +14,12 @@ class Battle
     end
 
     def inflict_damage
-      frames = framecount(0.5)
+      frames = framecount(0.4)
       up = true
       @target_databox.y -= 1
       for i in 1..frames
         @battle.ui.update
-        if i % 4 == 0
+        if i % framecount(0.05) == 0
           @target_sprite.visible = !@target_sprite.visible
           if up
             @target_databox.y += 2

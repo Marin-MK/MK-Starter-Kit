@@ -54,8 +54,7 @@ def main_function
   $game.update
   $visuals.update
   if Input.trigger?(Input::CTRL)
-    #Battle.new($trainer, Pokemon.new(:BULBASAUR, 5))
-    System.vsync = !System.vsync
+    Battle.new($trainer, Pokemon.new(:BULBASAUR, 5))
     #return false
   end
   return true

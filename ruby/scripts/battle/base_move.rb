@@ -194,7 +194,7 @@ class Battle
     end
 
     def after_use_effect(user, target, damage, critical_hit)
-      #target.lower_stat(:attack, 3, true, false)
+      target.lower_stat(:attack, 3, true, false)
     end
 
     def deal_damage(user, target, damage, critical_hit)

@@ -564,12 +564,9 @@ class Battle
     end
 
     def stat_anim(battler, stat_type, direction)
-      return
       sprite = get_battler_sprite(battler)
       stat = StatSprite.new(@viewport, sprite, stat_type, direction)
-      frames = framecount(2.0)
-      System.update
-      for i in 1..frames
+      until stat.done?
         System.update
         stat.update
       end

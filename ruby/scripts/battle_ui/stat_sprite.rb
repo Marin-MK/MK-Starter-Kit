@@ -10,24 +10,34 @@ class Battle
       self.x = @parent.x
       self.y = @parent.y
       self.z = @parent.z + 1
-      self.bitmap = Bitmap.new(@parent.src_rect.width, @parent.src_rect.height)
-      self.bitmap.fill_rect(0, 0, 20, 20, Color.new(255, 0, 0))
+      @parent.color = Color.new(0, 0, 0, 0)
+      self.opacity = 0
+      @done = false
+      @i = 0
+    end
+
+    def done?
+      return @done
     end
 
     def update
       super
-      self.bitmap.clear
-      for y in 0...@parent.src_rect.height
-        if y == @parent.src_rect.height / 2
-          System.update
+      @i += 1
+      if @i <= framecount(0.2)
+        @parent.color.alpha += 32.0 / framecount(0.1) if @i <= framecount(0.1)
+        self.opacity += 128.0 / framecount(0.2)
+      elsif @i > framecount(0.6) && @i <= framecount(0.8)
+        if self.bitmap
+          self.bitmap.dispose
+          self.bitmap = nil
         end
-        for x in 0...@parent.src_rect.width
-          color = @parent.bitmap.get_pixel(@parent.src_rect.x + x, @parent.src_rect.y + y)
-          next if color.alpha == 0
-          self.bitmap.set_pixel(x, y, @src.get_pixel(@src_x + x % 64, (y - @y_offset) % 64))
-        end
+        @parent.color.alpha -= 32.0 / framecount(0.1) if @i > framecount(0.7)
+        self.opacity -= 128.0 / framecount(0.2)
+        @done = true if @i == framecount(0.8)
       end
-      @y_offset += 1
+      self.bitmap.dispose if self.bitmap
+      self.bitmap = Bitmap.mask(@parent.bitmap, @src, Rect.new(@src_x, 0, 64, 64), 0, @y_offset % 64)
+      @y_offset += @direction == :up ? 6 : -6
     end
   end
 end
