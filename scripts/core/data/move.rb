@@ -1,0 +1,276 @@
+class Move < Serializable
+  Cache = {}
+
+  # @return [Symbol] the internal name of the move.
+  attr_reader :intname
+  # @return [Integer] the ID of the move.
+  attr_reader :id
+  # @return [String] the name of the move.
+  attr_reader :name
+  # @return [Symbol] the type of the move.
+  attr_reader :type
+  # @return [Integer] the base power of the move.
+  attr_reader :power
+  # @return [Symbol] the target of the move.
+  attr_reader :target
+  # @return [Integer] the priority of the move.
+  attr_reader :priority
+  # @return [Integer] the critical hit stage increase of the move.
+  attr_reader :critical_hit_ratio
+  # @return [Integer] the total PP of the move.
+  attr_reader :totalpp
+  # @return [Integer] the base accuracy of the move.
+  attr_reader :accuracy
+  # @return [Symbol] the category of the move.
+  attr_reader :category
+  # @return [String] the description of the move.
+  attr_reader :description
+
+  # Creates a new Move object.
+  def initialize(&block)
+    validate block => Proc
+    @id = 0
+    @priority = 0
+    @description = ""
+    @critical_hit_ratio = 0
+    instance_eval(&block)
+    validate_move
+    Cache[@intname] = self
+    self.class.const_set(@intname, self)
+  end
+
+  # Ensures this move contains valid data.
+  def validate_move
+    validate \
+        @intname => Symbol,
+        @id => Integer,
+        @name => String,
+        @type => Symbol,
+        @power => Integer,
+        @target => Symbol,
+        @priority => Integer,
+        @critical_hit_ratio => Integer,
+        @category => Symbol,
+        @description => String
+    raise "Type #{@type.inspect} doesn't exist for new Move object" unless Type.exists?(@type)
+    unless [:physical, :special, :status].include?(@category)
+      raise "Category #{@category.inspect} must be one of :physical, :special or :status for new Move object"
+    end
+    raise "Cannot have an ID of 0 or lower for new Move object" if @id < 1
+  end
+
+  # @param move [Symbol, Integer] the move to look up.
+  # @return [Move]
+  def self.get(move)
+    validate move => [Symbol, Integer, Move]
+    return move if move.is_a?(Move)
+    unless Move.exists?(move)
+      raise "No move could be found for #{move.inspect}"
+    end
+    return Move.try_get(move)
+  end
+
+  # @param move [Symbol, Integer] the move to look up.
+  # @return [Move, NilClass]
+  def self.try_get(move)
+    validate move => [Symbol, Integer, Move]
+    return move if move.is_a?(Move)
+    return Cache[move] if move.is_a?(Symbol)
+    return Cache.values.find { |m| m.id == move }
+  end
+
+  # @param move [Symbol, Integer] the move to look up.
+  # @return [Boolean] whether or not the move exists.
+  def self.exists?(move)
+    validate move => [Symbol, Integer, Move]
+    return true if move.is_a?(Move)
+    return Cache.has_key?(move) if move.is_a?(Symbol)
+    return Cache.values.any? { |m| m.id == move }
+  end
+
+  # @return [Move] a randomly chosen move's internal name.
+  def self.random
+    return Cache.keys.sample
+  end
+
+  # @return [Integer] the total number of moves.
+  def self.count
+    return Cache.size
+  end
+
+  def status?
+    return @category == :status
+  end
+
+  def physical?
+    return PHYSICAL_SPECIAL_SPLIT ? @category == :physical : Type.get(@type).physical?
+  end
+
+  def special?
+    return PHYSICAL_SPECIAL_SPLIT ? @category == Pspecial : Type.get(@type).special?
+  end
+end
+
+# Target modes:
+# :opponent
+# :single (may also affect partner if chosen)
+# :self
+# :ally
+# :all_allies
+# :all_opponents
+
+Move.new do
+  @intname = :POUND
+  @id = 1
+  @name = "POUND"
+  @type = :NORMAL
+  @power = 40
+  @target = :single_opponent
+  @totalpp = 35
+  @accuracy = 100
+  @category = :physical
+  @description = "A physical attack delivered with a long tail or a foreleg, etc."
+end
+
+Move.new do
+  @intname = :VINEWHIP
+  @id = 22
+  @name = "VINE WHIP"
+  @type = :GRASS
+  @power = 35
+  @target = :single_opponent
+  @totalpp = 10
+  @accuracy = 100
+  @category = :physical
+  @description = "The foe is struck with slender, whiplike vines."
+end
+
+Move.new do
+  @intname = :TACKLE
+  @id = 33
+  @name = "TACKLE"
+  @type = :NORMAL
+  @power = 35
+  @target = :single_opponent
+  @totalpp = 35
+  @accuracy = 95
+  @category = :physical
+  @description = "A physical attack in which the user charges, full body, into the foe."
+end
+
+Move.new do
+  @intname = :GROWL
+  @id = 45
+  @name = "GROWL"
+  @type = :NORMAL
+  @power = 0
+  @target = :adjacent_opponents
+  @totalpp = 40
+  @accuracy = 100
+  @category = :status
+  @description = "The user growls in a cute way, making the foe lower its Attack stat."
+end
+
+Move.new do
+  @intname = :LEECHSEED
+  @id = 73
+  @name = "LEECH SEED"
+  @type = :GRASS
+  @power = 0
+  @target = :single_opponent
+  @totalpp = 10
+  @accuracy = 100
+  @category = :status
+  @description = "A seed is planted on the foe to steal some HP for the user on every turn."
+end
+
+Move.new do
+  @intname = :GROWTH
+  @id = 74
+  @name = "GROWTH"
+  @type = :NORMAL
+  @power = 0
+  @target = :self
+  @totalpp = 40
+  @accuracy = 0
+  @category = :status
+  @description = "The user's body is forced to grow, raising the Sp. Atk stat."
+end
+
+Move.new do
+  @intname = :RAZORLEAF
+  @id = 75
+  @name = "RAZOR LEAF"
+  @type = :GRASS
+  @power = 55
+  @target = :adjacent_opponents
+  @totalpp = 25
+  @accuracy = 95
+  @category = :physical
+  @description = "The foe is hit with a cutting leaf. It has a high critical-hit ratio."
+end
+
+Move.new do
+  @intname = :SOLARBEAM
+  @id = 76
+  @name = "SOLARBEAM"
+  @type = :GRASS
+  @power = 120
+  @target = :single_opponent
+  @totalpp = 10
+  @accuracy = 100
+  @category = :special
+  @description = "A 2-turn move that blasts the foe with absorbed energy in the 2nd turn."
+end
+
+Move.new do
+  @intname = :POISONPOWDER
+  @id = 77
+  @name = "POISONPOWDER"
+  @type = :POISON
+  @power = 0
+  @target = :single_opponent
+  @totalpp = 35
+  @accuracy = 75
+  @category = :status
+  @description = "A cloud of toxic dust is scattered. It may poison the foe."
+end
+
+Move.new do
+  @intname = :SLEEPPOWDER
+  @id = 79
+  @name = "SLEEP POWDER"
+  @type = :GRASS
+  @power = 0
+  @target = :single_opponent
+  @totalpp = 15
+  @accuracy = 75
+  @category = :status
+  @description = "A sleep-inducing dust is scattered in high volume around a foe."
+end
+
+Move.new do
+  @intname = :SWEETSCENT
+  @id = 230
+  @name = "SWEET SCENT"
+  @type = :NORMAL
+  @power = 0
+  @target = :single_opponent
+  @totalpp = 20
+  @accuracy = 100
+  @category = :status
+  @description = "Allures the foe to reduce evasiveness. It also attracts wild Pokémon."
+end
+
+Move.new do
+  @intname = :SYNTHESIS
+  @id = 235
+  @name = "SYNTHESIS"
+  @type = :GRASS
+  @power = 0
+  @target = :self
+  @totalpp = 5
+  @accuracy = 0
+  @category = :status
+  @description = "Restores the user's HP. The amount of HP regained varies with the weather."
+end
