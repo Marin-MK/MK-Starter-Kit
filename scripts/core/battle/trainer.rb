@@ -8,6 +8,9 @@ class Battle
     attr_accessor :wild_pokemon
     attr_accessor :battle
 
+    # Creates a Trainer object to wrap a utility trainer.
+    # @param battle [Battle] the battle associated with this trainer
+    # @param party [Object::Trainer, Array<Pokemon>] a trainer and its party or a list of Pokémon
     def initialize(battle, party = [])
       @battle = battle
       party = party.party if party.is_a?(Object::Trainer)
