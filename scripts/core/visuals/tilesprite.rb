@@ -76,20 +76,20 @@ class Visuals
         @y = value
         @sprites.each_value do |s|
           s.y = value if s
-          s.z = s.y + s.hash[:priority] * 32 + 32 if s.hash[:priority]
+          s.z = s.y + s.data[:priority] * 32 + 32 if s.data[:priority]
         end
-        @sprites.each_value { |s| s.z = s.y + s.hash[:priority] * 32 + 32 if s && s.hash[:priority] && !s.hash[:special] }
+        @sprites.each_value { |s| s.z = s.y + s.data[:priority] * 32 + 32 if s && s.data[:priority] && !s.data[:special] }
       end
 
       def priority=(value)
-        @sprites.each_value { |s| s.z = s.y + s.hash[:priority] * 32 + 32 if s && s.hash[:priority] }
+        @sprites.each_value { |s| s.z = s.y + s.data[:priority] * 32 + 32 if s && s.data[:priority] }
       end
 
       def clear
         @sprites.each_value do |s|
-          if s && !s.hash[:special]
+          if s && !s.data[:special]
             s.bitmap = nil
-            s.hash = {}
+            s.data = {}
             s.z = 0
           end
         end
@@ -103,8 +103,8 @@ class Visuals
       def update(i)
         @i = i
         @sprites.each do |key, sprite|
-          if sprite.hash[:autotile]
-            map_id, tile_data = sprite.hash[:map_id], sprite.hash[:tile_data]
+          if sprite.data[:autotile]
+            map_id, tile_data = sprite.data[:map_id], sprite.data[:tile_data]
             tile_type, index, tile_id = tile_data
             autotile_id = MKD::Map.fetch(map_id).autotiles[index]
             autotile = MKD::Autotile.fetch(autotile_id)
@@ -126,7 +126,7 @@ class Visuals
         @sprites[layer].src_rect.x = tile_id % 8 * 32
         @sprites[layer].src_rect.y = (tile_id / 8).floor * 32
         @sprites[layer].z = @sprites[layer].y + priority * 32 + 32
-        @sprites[layer].hash = {priority: priority, map_id: map_id, tile_data: tile_data, autotile: false}
+        @sprites[layer].data = {priority: priority, map_id: map_id, tile_data: tile_data, autotile: false}
       end
 
       def draw_autotile(layer, map_id, tile_data, frame = nil)
@@ -152,7 +152,7 @@ class Visuals
           end
         end
         @sprites[layer].z = @sprites[layer].y + priority * 32 + 32
-        @sprites[layer].hash = {priority: priority, map_id: map_id, tile_data: tile_data, frame: frame, autotile: true}
+        @sprites[layer].data = {priority: priority, map_id: map_id, tile_data: tile_data, frame: frame, autotile: true}
       end
 
       def set(layer, map_id, tile_data)

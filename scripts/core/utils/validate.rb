@@ -1,13 +1,3 @@
-def format_stack(stack)
-  stack.map! do |e|
-    full = e.gsub(Dir.pwd + "/scripts/", "")
-    file, line, *details = full.split(':')
-    next if file == 'ruby' || file == 'scripts/start.rb' || file == 'utils/validate.rb'
-    next "At " + file + " line " + line + ": " + details.join(':')
-  end
-  return stack.compact.join("\n")
-end
-
 # Ensures the given keys have the same data type as their value. Raises an error if invalid.
 # @param hash [Hash] the values to validate.
 def validate(hash)
@@ -17,11 +7,13 @@ def validate(hash)
     elsif value.is_a?(Symbol)
       next "Expected #{key} to respond_to #{value}." unless key.respond_to?(value)
     else
-      next "Expected #{key} to be a #{value}, but got #{key.class}." unless key.is_a?(value)
+      if !key.is_a?(value)
+        next "Expected #{key} to be a #{value}, but got #{key.class}." unless key.is_a?(Integer) && value == Float
+      end
     end
   end
   return if errors.none?
-  raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ") + "\n\n" + format_stack(caller)
+  raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ")
 end
 
 # Ensures the given keys (variable names, not values like in #validate) have the same data as their value. Raises an error if invalid.
@@ -36,14 +28,16 @@ def validate_binding(input_binding, **hash)
       elsif value.is_a?(Symbol)
         next "Expected `#{lv_name}` (#{key}) to respond_to #{value}." unless key.respond_to?(value)
       else
-        next "Expected `#{lv_name}` to be a #{value}, but got #{key.class}." unless key.is_a?(value)
+        if !key.is_a?(value)
+          next "Expected #{lv_name} to be a #{value}, but got #{key.class}." unless key.is_a?(Integer) && value == Float
+        end
       end
     else
       "Expected the `#{lv_name}` argument to be defined, did you miss-use validate_binding?"
     end
   end
   return if errors.none?
-  raise ArgumentError, errors.compact.join(", ") + "\n\n" + format_stack(caller)
+  raise ArgumentError, errors.compact.join(", ")
 end
 
 # Ensures the direction is a symbol or a valid Integer. Raises an error if invalid.
@@ -58,7 +52,7 @@ def validate_direction(dir)
       raise "Invalid direction value #{dir.inspect}\n\n#{stack}"
     end
   elsif !dir.is_a?(Integer) || (dir.is_a?(Integer) && dir < 1 || dir > 9)
-    raise "Invalid direction value #{dir}\n\n#{format_stack(caller)}"
+    raise "Invalid direction value #{dir}"
   end
   return dir
 end
@@ -72,14 +66,16 @@ def validate_array(hash)
       elsif value.is_a?(Symbol)
         next "Expected #{key} to contain elements that respond_to #{value}." unless e.respond_to?(value)
       else
-        next "Expected #{key} to contain elements of #{value}, but got #{e.class}." unless e.is_a?(value)
+        if !e.is_a?(value)
+          next "Expected #{key} to be a #{value}, but got #{key.class}." unless e.is_a?(Integer) && value == Float
+        end
       end
     end
     next if suberrors.none?
     next suberrors.find { |e| !e.nil? }
   end
   return if errors.none?
-  raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ") + "\n\n" + format_stack(caller)
+  raise ArgumentError, "Invalid argument passed to method.\n\n" + errors.compact.join(", ")
 end
 
 def validate_mkd(data, type, filename = nil)

@@ -69,12 +69,12 @@ end
 
 class Sprite
   # Empty hash that can be used to store some data on a sprite.
-  attr_accessor :hash
+  attr_accessor :data
 
   alias old_initialize initialize
-  def initialize(viewport = nil, hash = {})
+  def initialize(viewport = nil, data = {})
     old_initialize(viewport)
-    @hash = hash
+    @data = data
   end
 end
 
