@@ -11,7 +11,7 @@ class Battle
           battle => Battle,
           user => Battler,
           target => Battler,
-          damage => Integer,
+          damage => [NilClass, Integer],
           critical_hit => Boolean
       @battle = battle
       @viewport = @battle.ui.viewport

@@ -295,13 +295,13 @@ class Battle
     # Displays the move failed message.
     # @param user [Battler] the user of the move.
     # @param target [Battler] the target of the move.f
-    # @param damage [Integer] the damage the user did to the target.
+    # @param damage [NilClass, Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def fail_message(user, target, damage, critical_hit)
       validate \
           user => Battler,
           target => Battler,
-          damage => Integer,
+          damage => [NilClass, Integer],
           critical_hit => Boolean
       message("But it failed!")
     end
@@ -342,7 +342,7 @@ class Battle
       validate \
           user => Battler,
           target => Battler,
-          damage => Integer,
+          damage => [NilClass, Integer],
           critical_hit => Boolean
       anim = BaseMoveAnimation.new(@battle, user, target, damage, critical_hit)
       anim.main
@@ -358,7 +358,7 @@ class Battle
       validate \
           user => Battler,
           target => Battler,
-          damage => Integer,
+          damage => [NilClass, Integer],
           critical_hit => Boolean
       execute_animation(user, target, damage, critical_hit)
     end
@@ -366,16 +366,16 @@ class Battle
     # Apply this move's after-use effects.
     # @param user [Battler] the user of the move.
     # @param target [Battler] the target of the move.f
-    # @param damage [Integer] the damage the user did to the target.
+    # @param damage [NilClass, Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def after_use_effect(user, target, damage, critical_hit)
       validate \
           user => Battler,
           target => Battler,
-          damage => Integer,
+          damage => [NilClass, Integer],
           critical_hit => Boolean
       # Example: Lower attack 3 stats
-      # target.lower_stat(:attack, 3, true, false)
+      target.lower_stat(:attack, 1, true, false) if @move.intname != :TACKLE
     end
 
     # Deals damage when the move is being used.

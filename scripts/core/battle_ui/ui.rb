@@ -742,10 +742,9 @@ class Battle
       # Create a new StatSprite to mask over the battler sprite
       stat = StatSprite.new(@viewport, sprite, stat_type, direction)
       until stat.done?
-        System.update
+        update
         stat.update
       end
-      sprite.visible = true
       stat.dispose
     end
   end

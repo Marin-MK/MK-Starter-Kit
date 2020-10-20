@@ -444,7 +444,7 @@ class Battle
         if success_message
           # Show a success message if enabled
           if diff == 1
-            message("#{self.name}'s #{statname}\nfell!'")
+            message("#{self.name}'s #{statname}\nfell!")
           elsif diff == 2
             message("#{self.name}'s #{statname}\nharsly fell!")
           elsif diff >= 3

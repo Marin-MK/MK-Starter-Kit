@@ -20,6 +20,8 @@ class Battle
       @parent = parent
       self.x = @parent.x
       self.y = @parent.y
+      self.ox = @parent.ox
+      self.oy = @parent.oy
       self.z = @parent.z + 1
       @parent.color = Color.new(0, 0, 0, 0)
       self.opacity = 0
