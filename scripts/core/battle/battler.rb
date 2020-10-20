@@ -15,6 +15,9 @@ class Battle
     # @param battle [Battle] the battle object associated with the battler
     # @param pokemon [Pokemon] the Pokémon object that this battler wraps
     def initialize(battle, pokemon)
+      validate \
+          battle => Battle,
+          pokemon => Pokemon
       @battle = battle
       @pokemon = pokemon
       @wild_pokemon = false
@@ -193,6 +196,7 @@ class Battle
     # @param type [Type] the type to test for.
     # @return [Boolean] whether the battler has the given type.
     def has_type?(type)
+      validate type => [Symbol, Integer, Type]
       return @pokemon.has_type?(type)
     end
 
@@ -245,6 +249,7 @@ class Battle
     # @param defeated_battler [Battler] the battler that was defeated
     # @return [Integer] the exp to be gained by this battler.
     def calculate_exp_gain(defeated_battler)
+      validate defeated_battler => Battler
       # Trainer/Wild Pokemon difference
       a = 1
       # Defeated's Base EXP
@@ -272,6 +277,7 @@ class Battle
     # Gives this battler a certain amount of exp.
     # @param exp [Integer] the amount of exp to give to this battler.
     def gain_exp(exp)
+      validate exp => Integer
       # Unsupported for opposing Pokémon
       if self.side == 1
         @pokemon.exp += exp
@@ -316,13 +322,14 @@ class Battle
       @battle.ui.faint(self)
       message("#{self.name}\nfainted!", true, true)
       # Give the opposing side exp for defeating this battler.
-      opposing_side.distribute_xp(self)
+      opposing_side.distribute_exp(self)
     end
 
     # Make this battler attempt an escape.
     # @param opponent [Battler] the opposing battler to compare speed with.
     # @return [Boolean] whether or not this battler escaped.
     def attempt_to_escape(opponent)
+      validate opponent => Battler
       a = @pokemon.speed
       b = [1, opponent.pokemon.speed].max
       c = @battle.run_attempts
@@ -361,6 +368,7 @@ class Battle
     # Lower this battler's HP.
     # @param damage [Integer] the damage to apply to this battler.
     def lower_hp(damage)
+      validate damage => [Integer, Float]
       damage = damage.floor
       damage = @pokemon.hp if damage > @pokemon.hp
       return if damage <= 0
@@ -374,6 +382,7 @@ class Battle
     # @param stat [Symbol] the stat symbol to get the stage value of
     # @return [Integer] the stage of the given stat.
     def get_stage(stat)
+      validate stat => Symbol
       if ![:attack, :defense, :spatk, :spdef, :speed, :accuracy, :evasion].include?(stat)
         raise "Invalid stat '#{stat}': must be one of [:attack, :defense, :spatk, :spdef, :speed, :accuracy, :evasion]"
       end
@@ -384,6 +393,9 @@ class Battle
     # @param stat [Symbol] the stat symbol to set the stage value of
     # @param value [Integer] the new value of the stat stage.
     def set_stage(stat, value)
+      validate \
+          stat => Symbol,
+          value => Integer
       if ![:attack, :defense, :spatk, :spdef, :speed, :accuracy, :evasion].include?(stat)
         raise "Invalid stat '#{stat}': must be one of [:attack, :defense, :spatk, :spdef, :speed, :accuracy, :evasion]"
       end
@@ -397,6 +409,12 @@ class Battle
     # @param fail_message [Boolean] whether to show a message if the stat could not be lowered
     # @param success_message [Boolean] whether to show a message if the stat was lowered
     def lower_stat(stat, stages, animation = true, fail_message = true, success_message = true)
+      validate \
+          stat => Symbol,
+          stages => Integer,
+          animation => Boolean,
+          fail_message => Boolean,
+          success_message => Boolean
       current_stage = get_stage(stat)
       # Get the display name of the stat.
       statname = {

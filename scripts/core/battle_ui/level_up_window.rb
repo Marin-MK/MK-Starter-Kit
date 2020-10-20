@@ -3,6 +3,7 @@ class Battle
     # Creates a window for displaying 6 stats.
     # @param viewport [Viewport] the viewport of the window.
     def initialize(viewport)
+      validate viewport => [NilClass, Viewport]s
       # Creates a window with fixed parameters.
       super(192, 208, Windowskin.get(:choice), viewport)
       # Draws the names of the stats.
@@ -25,6 +26,7 @@ class Battle
     # Draws the given stats as an increase.
     # @param array [Array<Integer>] the stat increases to draw.
     def show_increase(array)
+      validate_array array => Integer
       color = Color.new(72, 72, 72)
       shadow = Color::GREYSHADOW
       for i in 0...6
@@ -36,6 +38,7 @@ class Battle
     # Draws the total new stats.
     # @param array [Array<Integer>] the stats to draw.
     def show_stats(array)
+      validate_array array => Integer
       self.clear
       draw_stat_names
       color = Color.new(72, 72, 72)

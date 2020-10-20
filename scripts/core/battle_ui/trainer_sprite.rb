@@ -4,6 +4,9 @@ class Battle
     # @param gender [Integer] the gender of the trainer.
     # @param viewport [Viewport] the viewport of the sprite.
     def initialize(gender = 0, viewport = nil)
+      validate \
+          gender => Integer,
+          viewport => [NilClass, Viewport]
       super(viewport)
       self.bitmap = Bitmap.new("gfx/trainers/red_back")
       self.set_cell(128, 98)

@@ -9,6 +9,9 @@ class Battle
     # @param battler [Battler] the battler the command is associated with, if any.
     # @param *arguments [*] any arguments for the desired purpose.
     def initialize(type, battler, *arguments)
+      validate \
+          type => Symbol,
+          battler => Battler
       @type = type
       @battler = battler
       @arguments = arguments

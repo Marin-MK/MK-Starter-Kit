@@ -6,6 +6,7 @@ class Battle
     # Initializes the visuals of a battle.
     # @param battle [Battle] the battle associated with this UI.
     def initialize(battle)
+      validate battle => Battle
       @battle = battle
       # Start and process a transition.
       transition = Transition.new
@@ -84,6 +85,7 @@ class Battle
     # Waits a certain number of seconds.
     # @param seconds [Float] the number of seconds to wait.
     def wait(seconds)
+      validate seconds => Float
       for i in 1..framecount(seconds)
         update
       end
@@ -91,6 +93,7 @@ class Battle
 
     # Updates the visuals and animates where necessary.
     def update(update_main = true)
+      validate update_main => Boolean
       if update_main
         System.update
       end
@@ -142,6 +145,7 @@ class Battle
     # Finishes by running the second part of the battle intro.
     # @param intro_message [String] the encounter message to display.
     def finish_start(intro_message)
+      validate intro_message => String
       @msgwin.letter_by_letter = true
       @msgwin.ending_arrow = true
       @msgwin.text = intro_message
@@ -166,6 +170,9 @@ class Battle
     # @param message [String] the sendout message for the battler.
     # @param battler [Battler] the battler to be sent out.
     def send_out_initial_pokemon(message, battler)
+      validate \
+          message => String,
+          battler => Battler
       message(message, false)
       frames = framecount(0.5)
       # Show the first frame of the trainer throwing a ball.
@@ -193,6 +200,7 @@ class Battle
     # Shows the ball throw animation for sending out a battler.
     # @param battler [Battler] the battler to send out.
     def throw_ball(battler)
+      validate battler => Battler
       @sprites["ball"] = BallSprite.new(battler.ball_used, @viewport)
       @sprites["ball"].update
     end
@@ -202,6 +210,10 @@ class Battle
     # @param battler [Battler] the battler to send out.
     # @param throw [Boolean] whether to show the ball throw animation.
     def send_out_pokemon(msg, battler, throw = true)
+      validate \
+          msg => [NilClass, String],
+          battler => Battler,
+          throw => Boolean
       if msg
         message(msg, false)
       end
@@ -284,6 +296,7 @@ class Battle
     # @param battler [Battler] the battler that is to choose a command.
     # @return [Command] the command for the battler.
     def choose_command(battler)
+      validate battler => Battler
       @msgwin.text = "What will\n#{battler.name} do?"
       @msgwin.letter_by_letter = false
       # Shows a 2x2 choice window.
@@ -321,6 +334,9 @@ class Battle
     # @param initial_index [Integer] the move index that begins selected.
     # @return [Choice] the move choice of the battler.
     def choose_move(battler, initial_index = @last_move_index)
+      validate \
+          battler => Battler,
+          initial_index => Integer
       choices = [["-", "-"], ["-", "-"]]
       for i in 0...battler.moves.size
         choices[i / 2][i % 2] = battler.moves[i].name
@@ -380,6 +396,9 @@ class Battle
     # @param battler [Battler] the battler of which the move is.
     # @param move_index [Integer] the move index to draw the information of.
     def draw_move_info(battler, move_index)
+      validate \
+          battler => Battler,
+          move_index => Integer
       pp_base = Color.new(32, 32, 32)
       pp_shadow = Color.new(208, 208, 200)
       # The fraction of PP left.
@@ -447,6 +466,11 @@ class Battle
     # @param ending_arrow [Boolean] whether the message should have a moving down arrow.
     # @param reset [Boolean] whether the message box should clear after the message is done.
     def message(text, await_input = false, ending_arrow = false, reset = true)
+      validate \
+          text => String,
+          await_input => Boolean,
+          ending_arrow => Boolean,
+          reset => Boolean
       @msgwin.text = text
       @msgwin.ending_arrow = ending_arrow
       @msgwin.letter_by_letter = true
@@ -467,6 +491,7 @@ class Battle
     # @param battler [Battler] the currently active battler.
     # @return [Integer] the party index of the new battler.
     def switch_battler(battler)
+      validate battler => Battler
       ui = PartyUI.start_choose_battler(@battle.sides[0].trainers[0].party.map { |e| e.pokemon }) { update }
       msgwin = MessageWindow.new(
         y: 224,
@@ -509,6 +534,9 @@ class Battle
     # @apram message [String] the recall message to display.
     # @param battler [Battler] the battler to recall.
     def recall_battler(message, battler)
+      validate \
+          message => String,
+          battler => Battler
       message(message, false)
       # Creates a new flash overlay sprite and bitmap.
       @sprites["white"] = Sprite.new(@viewport)
@@ -547,6 +575,7 @@ class Battle
     # @param battler [Battler] the battler to get the sprite of.
     # @return [BattlerSprite] the sprite of the battler.
     def get_battler_sprite(battler)
+      validate battler => Battler
       return battler.side == 0 ? @sprites["pokemon1"] : @sprites["pokemon2"]
     end
 
@@ -554,12 +583,14 @@ class Battle
     # @param battler [Battler] the battler to get the databox of.
     # @return [BattlerSprite] the databox of the battler.
     def get_battler_databox(battler)
+      validate battler => Battler
       return battler.side == 0 ? @sprites["databox1"] : @sprites["databox2"]
     end
 
     # Shows the faint animation for the given battler.
     # @param battler [Battler] the battler to show fainting.
     def faint(battler)
+      validate battler => Battler
       # Get the battler's sprite
       sprite = get_battler_sprite(battler)
       starty = sprite.y
@@ -583,8 +614,11 @@ class Battle
 
     # Shows the HP lower animation given a battler and damage.
     # @param battler [Battler] the battler that has its HP lowered.
-    # @param damage [Integer] the number of HP points to subtract.
+    # @param damage [Float] the number of HP points to subtract.
     def lower_hp(battler, damage)
+      validate \
+          battler => Battler,
+          damage => Float
       # Get the battler's databox
       databox = get_battler_databox(battler)
       frames = framecount(0.3)
@@ -599,8 +633,11 @@ class Battle
 
     # Shows the EXP gain animation given a battler and exp.
     # @param battler [Battler] the battler that is to receive exp.
-    # @param exp [Integer] the amount of exp to gain.
+    # @param exp [Float] the amount of exp to gain.
     def gain_exp(battler, exp)
+        validate \
+            battler => Battler,
+            exp => Float
       # Get the battler's databox
       databox = get_battler_databox(battler)
       frames = framecount(0.7)
@@ -615,6 +652,7 @@ class Battle
     # Shows the level up animation for the given battler
     # @param battler [Battler] the battler that leveled up.
     def level_up(battler)
+      validate battler => Battler
       databox = get_battler_databox(battler)
       databox.level_up
       databox.draw_level
@@ -661,6 +699,10 @@ class Battle
     # @param oldstats [Array<Integer>] the old stats.
     # @param newstats [Array<Integer>] the new stats.
     def stats_up_window(battler, oldstats, newstats)
+      validate battler => Battler
+      validate_array \
+          oldstats => Integer,
+          newstats => Integer
       # Find the difference per stat
       diff = newstats.each_with_index.map { |e, i| e - oldstats[i] }
       viewport = Viewport.new(0, 0, System.width, System.height)
@@ -691,6 +733,10 @@ class Battle
     # @param stat_type [:up, :down] the type of the animation.
     # @param direction [Symbol] the direction of the animation.
     def stat_anim(battler, stat_type, direction)
+      validate \
+          battler => Battler,
+          stat_type => Symbol,
+          direction => Symbol
       # Get the battler's sprite
       sprite = get_battler_sprite(battler)
       # Create a new StatSprite to mask over the battler sprite

@@ -5,6 +5,7 @@ class Battle
     # Create a new choice object, used by UI controls
     # @param value [Integer] the choice made in the UI. Fight = 0, Bag = 1, Switch = 2, Run = 3.
     def initialize(value = nil)
+      validate value => [NilClass, Integer]
       @value = value
     end
 

@@ -9,6 +9,7 @@ class Battle
     # @param battle [Battle] the battle associated with this side
     # @param arg [*] a trainer, Pokémon, or array thereof
     def initialize(battle, arg)
+      validate battle => Battle
       @battle = battle
       # If arg is an array
       if arg.is_a?(Array)
@@ -30,6 +31,8 @@ class Battle
         # If arg is a Pokémon, wrap it in a Battle::Trainer.
         @trainers = [Trainer.new(battle, [arg])]
         @trainers[0].party[0].wild_pokemon = true
+      else
+        raise "Invalid argument for Side.new: #{arg.inspect}"
       end
       @effects = {}
       @trainers.each do |t|
@@ -42,6 +45,7 @@ class Battle
     # Make the given battler one of the active battlers on this side.
     # @param battler [Battler] the battler to make active.
     def register_battler(battler)
+      validate battler => Battler
       @battlers << battler
       battler.side = @index
       battler.index = @battlers.index(battler)
@@ -49,7 +53,8 @@ class Battle
 
     # Distribute exp over all battlers on this side that fought against the defeated battler.
     # @param defeated_battler [Battler] the battler that was defeated.
-    def distribute_xp(defeated_battler)
+    def distribute_exp(defeated_battler)
+      validate defeated_battler => Battler
       # TODO: only give exp for battlers that fought against the battler,
       #       instead of only to all currently active battlers, and factor it into
       #       the calculate_exp_gain method.

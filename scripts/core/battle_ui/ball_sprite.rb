@@ -2,6 +2,9 @@ class Battle
   class BallSprite < Sprite
     # Creates a new thrown all sprite. Isolated due to the math of its arc.
     def initialize(ball_used, viewport = nil)
+      validate \
+          ball_used => Symbol,
+          viewport => [NilClass, Viewport]
       super(viewport)
       self.bitmap = Bitmap.new("gfx/ui/battle/ball")
       self.ox = self.bitmap.width / 2

@@ -4,6 +4,9 @@ class Battle
     # @param battler [Battler] the battler associated with the databox.
     # @param is_opponent [Boolean] whether this databox belongs to an opponent.
     def initialize(battler, is_opponent)
+      validate \
+          battler => Battler,
+          is_opponent => Boolean
       @battler = battler
       @battle = battler.battle
       @is_opponent = is_opponent
@@ -97,8 +100,9 @@ class Battle
     end
 
     # Draws the HP inside the HP bar.
-    # @param hp [Integer] the amount of HP to draw.
+    # @param hp [Float] the amount of HP to draw.
     def draw_hp(hp = @battler.hp)
+      validate hp => Float
       if @sprites["hp"].nil?
         @sprites["hp"] = Sprite.new(@viewport)
         @sprites["hp"].bitmap = Bitmap.new(HP_PATH)
@@ -121,8 +125,9 @@ class Battle
     end
 
     # Draw the exp inside the exp bar.
-    # @param exp [Integer] the amount of exp to draw.
+    # @param exp [Float] the amount of exp to draw.
     def draw_exp(exp = @battler.exp)
+      validte exp => Float
       exp = exp.floor
       if @sprites["exp"].nil?
         @sprites["exp"] = Sprite.new(@viewport)
@@ -192,6 +197,7 @@ class Battle
     # Sets the x position of the databox.
     # @param value [Integer] the new x position of the databox.
     def x=(value)
+      validate value => Float
       @viewport.x = value
     end
 
@@ -203,6 +209,7 @@ class Battle
     # Sets the y position of the databox.
     # @param value [Integer] the new y position of the databox.
     def y=(value)
+      validate value => Float
       @viewport.y = value
     end
 
@@ -214,6 +221,7 @@ class Battle
     # Sets the z position of the databox.
     # @param value [Integer] the new z position of the databox.
     def z=(value)
+      validate z => Integer
       @viewport.z = value
     end
 

@@ -6,6 +6,11 @@ class Battle
     # @param stat_type [Symbol] the color of the stat.
     # @param direction [Symbol] the direction of animation.
     def initialize(viewport, parent, stat_type, direction)
+      validate \
+          viewport => [NilClass, Viewport],
+          parent => Sprite,
+          stat_type => Symbol,
+          direction => Symbol
       super(viewport)
       # Load the source bitmap
       @src = Bitmap.new("gfx/ui/battle/stat_#{stat_type}")

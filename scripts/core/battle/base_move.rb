@@ -4,6 +4,9 @@ class Battle
     # @param battle [Battle] the associated battle.
     # @param move [MoveObject] the move to use.
     def initialize(battle, move)
+      validate \
+          battle => Battle,
+          move => MoveObject
       @battle = battle
       @move = move
     end
@@ -35,6 +38,7 @@ class Battle
     # Gets the target of the move given a user.
     # @param user [Battler] the battler that is to execute the move.
     def get_target(user)
+      validate user => Battler
       if @move.target == :single_opponent
         # Battler directly opposite this battler.
         return @battle.sides[1 - user.side].battlers[user.index]
@@ -59,6 +63,9 @@ class Battle
     # @param target [Battler] the target of the move.
     # @return [Boolean] whether this move can be a critical hit.
     def can_critical_hit?(user, target)
+      validate \
+          user => Battler,
+          target => Battler
       return false if status?
       return true
     end
@@ -66,6 +73,7 @@ class Battle
     # Gets the critical hit stage when executed.
     # @param user [Battler] the user of the move.
     def get_critical_hit_stage(user)
+      validate user => Battler
       stage = @move.critical_hit_ratio
       return stage
     end
@@ -74,6 +82,7 @@ class Battle
     # @param user [Battler] the user of the move.
     # @return [Boolean] whether the usage is a critical hit.
     def critical_hit?(user)
+      validate user => Battler
       stage = get_critical_hit_stage(user)
       if stage > 2
         return true
@@ -90,6 +99,8 @@ class Battle
     # @param target_types [Array<Type>] the types of the target.
     # @return [Float] the modifier based on type effectiveness.
     def self.get_type_effectiveness_modifier(move_type, target_types)
+      validate move_type => Type
+      validate_array target_types => Type
       mod = 1.0
       target_types.each do |target_type|
         next if target_type.nil?
@@ -106,6 +117,11 @@ class Battle
     # @param critical_hit [Boolean] whether the move is a critical hit.
     # @return [Float] the damage multiplier.
     def get_damage_multiplier(user, target, multiple_targets, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          multiple_targets => Boolean,
+          critical_hit => Boolean
       mod = 1.0
       # TODO: Weather boosting
       mod *= 0.75 if multiple_targets
@@ -123,6 +139,11 @@ class Battle
     # @param multiple_targets [Boolean] whether the move has multiple targets.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def get_user_attack(user, target, multiple_targets, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          multiple_targets => Boolean,
+          critical_hit => Boolean
       if physical?
         # Use physical stats if the move is physical.
         attack = user.attack
@@ -141,6 +162,11 @@ class Battle
     # @param multiple_targets [Boolean] whether the move has multiple targets.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def get_target_defense(user, target, multiple_targets, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          multiple_targets => Boolean,
+          critical_hit => Boolean
       if physical?
         # Use physical stats if the move is physical.
         defense = target.defense
@@ -159,6 +185,11 @@ class Battle
     # @param multiple_targets [Boolean] whether the move has multiple targets.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def calculate_damage(user, target, multiple_targets, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          multiple_targets => Boolean,
+          critical_hit => Boolean
       # Gets the user's attack or special attack depending on the move/type,
       # and applies various modifiers.
       attack = get_user_attack(user, target, multiple_targets, critical_hit)
@@ -177,6 +208,9 @@ class Battle
     # @param target [Battler] the target of the move.
     # @return [Float] the accuracy multiplier.
     def get_accuracy_multiplier(user, target)
+      validate \
+          user => Battler,
+          target => Battler
       mod = 1.0
       return mod
     end
@@ -186,6 +220,9 @@ class Battle
     # @param target [Battler] the target of the move.
     # @return [Boolean] whether the move landed.
     def hit?(user, target)
+      validate \
+          user => Battler,
+          target => Battler
       t = @move.accuracy * user.accuracy * target.evasion
       t *= get_accuracy_multiplier(user, target)
       return rand(1..100) <= t
@@ -195,6 +232,9 @@ class Battle
     # @param user [Battler] the user of the move.
     # @param target [NilClass, Battler] the target of the move.
     def execute(user, target = nil)
+      validate \
+          user => Battler,
+          target => [NilClass, Battler]
       targets = target || get_target(user)
       targets = [targets] if targets.is_a?(Battler)
       # Determines if a critical hit for this user is possible by checking each target.
@@ -230,6 +270,11 @@ class Battle
     # @param damage [Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def use_move_message(user, target, damage, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          damage => Integer,
+          critical_hit => Boolean
       message("#{user.name} used #{@move.name}!")
     end
 
@@ -239,6 +284,11 @@ class Battle
     # @param damage [Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def critical_hit_message(user, target, damage, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          damage => Integer,
+          critical_hit => Boolean
       message("A critical hit!")
     end
 
@@ -248,6 +298,11 @@ class Battle
     # @param damage [Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def fail_message(user, target, damage, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          damage => Integer,
+          critical_hit => Boolean
       message("But it failed!")
     end
 
@@ -257,6 +312,11 @@ class Battle
     # @param damage [Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def use_move(user, target, damage, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          damage => Integer,
+          critical_hit => Boolean
       # Show the move used message.
       use_move_message(user, target, damage, critical_hit)
       # Apply any potential before-use effects.
@@ -279,6 +339,11 @@ class Battle
     # @param damage [Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def execute_animation(user, target, damage, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          damage => Integer,
+          critical_hit => Boolean
       anim = BaseMoveAnimation.new(@battle, user, target, damage, critical_hit)
       anim.main
       anim.dispose
@@ -290,6 +355,11 @@ class Battle
     # @param damage [Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def before_use_effect(user, target, damage, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          damage => Integer,
+          critical_hit => Boolean
       execute_animation(user, target, damage, critical_hit)
     end
 
@@ -299,6 +369,11 @@ class Battle
     # @param damage [Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def after_use_effect(user, target, damage, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          damage => Integer,
+          critical_hit => Boolean
       # Example: Lower attack 3 stats
       # target.lower_stat(:attack, 3, true, false)
     end
@@ -309,6 +384,11 @@ class Battle
     # @param damage [Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def deal_damage(user, target, damage, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          damage => Integer,
+          critical_hit => Boolean
       target.lower_hp(damage)
     end
   end

@@ -7,6 +7,10 @@ class Battle
     # @param front [Boolean] whether to use the front or back sprite.
     # @param viewport [Viewport] the viewport of the sprite.
     def initialize(pokemon, front, viewport = nil)
+      validate \
+          pokemon => [Battler, Pokemon],
+          front => Boolean,
+          viewport => [NilClass, Viewport]
       super(viewport)
       pokemon = pokemon.pokemon if pokemon.is_a?(Battler)
       @pokemon = pokemon
@@ -45,6 +49,7 @@ class Battle
     # Start an async animation to make the sprite grow from the bottom center.
     # @param duration [Float] the number of seconds for the animation to take.
     def appear_from_ball(duration)
+      validate duration => Float
       x = self.x - self.ox
       y = self.y - self.oy
       self.ox = self.src_rect.width / 2
@@ -60,6 +65,7 @@ class Battle
     # Start an async animation to make the sprite shrink to the bottom center.
     # @param duration [Float] the number of seconds for the animation to take.
     def disappear_into_ball(duration)
+      validate duration => Float
       x = self.x - self.ox
       y = self.y - self.oy
       self.ox = self.src_rect.width / 2

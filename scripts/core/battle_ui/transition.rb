@@ -28,6 +28,7 @@ class Battle
     # Wait for a certain number of seconds
     # @param seconds [Float] the number of seconds to wait.
     def wait(seconds)
+      validate seconds => Float
       for i in 1..framecount(seconds)
         update
       end
@@ -55,6 +56,9 @@ class Battle
     # @param pixels [Integer] the number of pixels to move the screen by.
     # @param speed [Float] the number of seconds over which to apply the movement.
     def move_screen(pixels, speed)
+      validate \
+          pixels => Integer,
+          speed => Float
       frames = framecount(speed)
       for i in 1..frames
         update

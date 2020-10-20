@@ -4,9 +4,15 @@ class Battle
     # @param battle [Battle] the associated battle.
     # @param user [Battler] the user of the move.
     # @param target [Battler] the target of the move.
-    # @param damage [Battler] the damage dealt.
+    # @param damage [Integer] the damage dealt.
     # @param critical_hit [Boolean] whether this move was a critical hit.
     def initialize(battle, user, target, damage, critical_hit)
+      validate \
+          battle => Battle,
+          user => Battler,
+          target => Battler,
+          damage => Integer,
+          critical_hit => Boolean
       @battle = battle
       @viewport = @battle.ui.viewport
       @user = user

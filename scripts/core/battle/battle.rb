@@ -156,6 +156,7 @@ class Battle
   # @param battler [Battler] the battler that is to use a move.
   # @return [Command] the player's command for the battler.
   def get_player_command(battler)
+    validate battler => Battler
     # Loop the choose command menu until a command was actually chosen
     loop do
       # Get the main choice
@@ -184,6 +185,7 @@ class Battle
   # @param battler [Battler] the battler that is to use a move.
   # @return [Command] the move the battler will use.
   def get_move_command(battler)
+    validate battler => Battler
     movechoice = nil
     move = nil
     index = 0
@@ -209,6 +211,7 @@ class Battle
   # @param battler [Battler] the battler that is to use a move.
   # @return [Command] the opponent's command for the battler.
   def get_opponent_command(battler)
+    validate battler => Battler
     move, target = @ai.pick_move_and_target(battler)
     target = @sides[0].battlers.find { |b| b == target.battler }
     return Command.new(:use_move, battler, move, target)
@@ -217,6 +220,7 @@ class Battle
   # Processes and executes a battle command.
   # @param command [Command] a fight, item or switch command.
   def process_command(command)
+    validate command => Command
     if command.use_move?
       # If the command is a fight command
       # Don't use the move if the battler is fainted

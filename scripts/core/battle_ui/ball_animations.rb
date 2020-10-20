@@ -4,6 +4,9 @@ class Battle
     # @param battler_sprite [BattlerSprite] the battler that appeared out of the ball.
     # @param viewport [Viewport] the viewport of the animation sprites.
     def initialize(battler_sprite, viewport = nil)
+      validate \
+          battler_sprite => BattlerSprite,
+          viewport => [NilClass, Viewport]
       @viewport = viewport
       @battler_sprite = battler_sprite
       @particles = []
@@ -62,8 +65,15 @@ class Battle
     # @param yspeed [Float] the number of pixels to move each frame vertically.
     # @param x [Float] the starting x position of the particle.
     # @param y [Float] the startiing y position of the particle.
-    # @param viewport [Viewport] the viewport of the particle sprite.
+    # @param viewport [NilClass, Viewport] the viewport of the particle sprite.
     def initialize(lifetime, xspeed, yspeed, x, y, viewport = nil)
+      validate \
+          lifetime => Float,
+          xspeed => Float,
+          yspeed => Float,
+          x => Float,
+          y => Float,
+          viewport => [NilClass, Viewport]
       super(viewport)
       self.bitmap = Bitmap.new(14, 6)
       self.bitmap.fill_rect(0, 0, 14, 3, Color.new(248, 168, 0))
