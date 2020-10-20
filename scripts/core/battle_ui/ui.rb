@@ -33,6 +33,7 @@ class Battle
       @sprites["trainer1"] = TrainerSprite.new(0, @viewport)
       @sprites["trainer1"].x = System.width + 256
       @sprites["trainer1"].y = 126
+      @sprites["trainer1"].z = 1
       if @battle.wild_battle?
         @sprites["pokemon2"] = BattlerSprite.new(@battle.wild_pokemon, true, @viewport)
         @sprites["pokemon2"].color = Color.new(0, 0, 0, 128)
