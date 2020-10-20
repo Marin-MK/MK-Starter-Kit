@@ -79,7 +79,6 @@ class Battle
           # If the battler is on the player's side, get the player's command
           if side == 0 # Player side
             cmd = get_player_command(battler)
-            return if @stop
             @commands << cmd if !cmd.nil?
           else # If the battler is on the opponent's side, get its command.
             # Use random move from moveset.
@@ -96,6 +95,8 @@ class Battle
         process_command(@commands[0])
         # Remove it from the list
         @commands.delete_at(0)
+        # Stop processing if @stop is true, when running, for instance.
+        return if @stop
       end
 
       # Process end-of-turn effects
@@ -124,7 +125,7 @@ class Battle
   # Can be used in the middle of a turn too.
   def sort_commands
     # The hard-coded precendence of different command types.
-    precedence = [:switch, :use_item, :use_move]
+    precedence = [:run, :switch, :use_item, :use_move]
     # Sort commands based on priority, speed and command type
     @commands.sort! do |a, b|
       if a.type != b.type
@@ -173,17 +174,7 @@ class Battle
         return Command.new(:switch, battler, newbattler)
       elsif choice.run?
         # If the player chooses Run, try to escape from the battle.
-        if wild_battle?
-          escaped = battler.attempt_to_escape(@sides[1].battlers[0])
-          if escaped
-            @ui.fade_out
-            @stop = true
-            return
-          end
-        else
-          # Cannot run from non-wild battles
-          message("No! There's no running\nfrom a TRAINER battle!", true, true)
-        end
+        return Command.new(:run, battler, @sides[1].battlers[0])
       end
       break
     end
@@ -239,6 +230,19 @@ class Battle
       @ui.recall_battler("#{command.battler.name}, that's enough!\nCome back!", command.battler)
       # Send out the new battler
       @ui.send_out_pokemon("Go! #{command.new_battler.name}!", command.new_battler)
+    elsif command.run?
+      if wild_battle?
+        battler = command.battler
+        opposing_battler = command.opposing_battler
+        escaped = battler.attempt_to_escape(opposing_battler)
+        if escaped
+          @ui.fade_out
+          @stop = true
+        end
+      else
+        # Cannot run from non-wild battles
+        message("No! There's no running\nfrom a TRAINER battle!", true, true)
+      end
     else
       raise "not yet implemented"
     end

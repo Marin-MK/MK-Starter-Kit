@@ -40,5 +40,16 @@ class Battle
     def new_battler
       return switch_pokemon? ? @arguments[0] : nil
     end
+
+    #====================== Running =======================#
+    # @return [Boolean] whether the command type is that of running away.
+    def run?
+      return @type == :run
+    end
+
+    # @return [Battler] the battle opposite the running battler.
+    def opposing_battler
+      return run? ? @arguments[0] : nil
+    end
   end
 end

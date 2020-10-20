@@ -299,7 +299,8 @@ class Battle
     # @param damage [Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def after_use_effect(user, target, damage, critical_hit)
-      target.lower_stat(:attack, 3, true, false)
+      # Example: Lower attack 3 stats
+      # target.lower_stat(:attack, 3, true, false)
     end
 
     # Deals damage when the move is being used.
