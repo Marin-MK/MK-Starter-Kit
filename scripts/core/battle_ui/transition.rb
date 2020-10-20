@@ -1,5 +1,6 @@
 class Battle
   class Transition
+    # Create a new battle transition
     def initialize
       @viewport = Viewport.new(0, 0, System.width, System.height)
       @viewport.z = 999998
@@ -24,12 +25,15 @@ class Battle
       bmp.dispose
     end
 
+    # Wait for a certain number of seconds
+    # @param seconds [Float] the number of seconds to wait.
     def wait(seconds)
       for i in 1..framecount(seconds)
         update
       end
     end
 
+    # Flickers the overlay in.
     def flicker_overlay_in
       frames = framecount(0.1)
       for i in 1..frames
@@ -38,6 +42,7 @@ class Battle
       end
     end
 
+    # Flickers the overlay out.
     def flicker_overlay_out
       frames = framecount(0.1)
       for i in 1..frames
@@ -46,6 +51,9 @@ class Battle
       end
     end
 
+    # Moves the screen by a certain amount at a certain speed.
+    # @param pixels [Integer] the number of pixels to move the screen by.
+    # @param speed [Float] the number of seconds over which to apply the movement.
     def move_screen(pixels, speed)
       frames = framecount(speed)
       for i in 1..frames
@@ -55,6 +63,7 @@ class Battle
       end
     end
 
+    # Performs the transition.
     def main
       flicker_overlay_in
       flicker_overlay_out
@@ -70,13 +79,14 @@ class Battle
       move_screen(120, 0.08)
       move_screen(120, 0.05)
       move_screen(120, 0.03)
-      dispose
     end
 
+    # Updates the animation's visuals.
     def update
       System.update
     end
 
+    # Disposes the transition and it visuals.
     def dispose
       @sprites.each_value(&:dispose)
       @viewport.dispose

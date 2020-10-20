@@ -1,5 +1,11 @@
 class Battle
   class BaseMoveAnimation
+    # Creates a new move animation instance.
+    # @param battle [Battle] the associated battle.
+    # @param user [Battler] the user of the move.
+    # @param target [Battler] the target of the move.
+    # @param damage [Battler] the damage dealt.
+    # @param critical_hit [Boolean] whether this move was a critical hit.
     def initialize(battle, user, target, damage, critical_hit)
       @battle = battle
       @viewport = @battle.ui.viewport
@@ -13,6 +19,7 @@ class Battle
       @critical_hit = critical_hit
     end
 
+    # Shows the damage-inflicting flickering of the battler sprite.
     def inflict_damage
       frames = framecount(0.4)
       up = true
@@ -34,10 +41,12 @@ class Battle
       @target_databox.y += up ? 1 : -1
     end
 
+    # Performs the animation.
     def main
       inflict_damage
     end
 
+    # Disposes any new sprites this animation created.
     def dispose
 
     end

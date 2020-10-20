@@ -1,5 +1,6 @@
 class Battle
   class BallSprite < Sprite
+    # Creates a new thrown all sprite. Isolated due to the math of its arc.
     def initialize(ball_used, viewport = nil)
       super(viewport)
       self.bitmap = Bitmap.new("gfx/ui/battle/ball")
@@ -8,6 +9,7 @@ class Battle
       @i = 95
     end
 
+    # Update the positioning and spin of the ball.
     def update
       @rx ||= self.x
       @ry ||= self.y
@@ -33,6 +35,7 @@ class Battle
       end
     end
 
+    # @return [Boolean] whether the animation is close the done.
     def almost_done?
       return @i >= 148
     end

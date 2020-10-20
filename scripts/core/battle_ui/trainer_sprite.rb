@@ -1,5 +1,8 @@
 class Battle
   class TrainerSprite < CellSprite
+    # Creates a trainer sprite given a gender and viewport.
+    # @param gender [Integer] the gender of the trainer.
+    # @param viewport [Viewport] the viewport of the sprite.
     def initialize(gender = 0, viewport = nil)
       super(viewport)
       self.bitmap = Bitmap.new("gfx/trainers/red_back")

@@ -1,10 +1,15 @@
 class Battle
   class LevelUpWindow < BaseWindow
+    # Creates a window for displaying 6 stats.
+    # @param viewport [Viewport] the viewport of the window.
     def initialize(viewport)
+      # Creates a window with fixed parameters.
       super(192, 208, Windowskin.get(:choice), viewport)
+      # Draws the names of the stats.
       draw_stat_names
     end
 
+    # Draws the names of the stats.
     def draw_stat_names
       color = Color.new(72, 72, 72)
       shadow = Color::GREYSHADOW
@@ -17,6 +22,8 @@ class Battle
       self.draw_text(x: 16, y: 172, text: "SPEED", color: color, shadow_color: shadow)
     end
 
+    # Draws the given stats as an increase.
+    # @param array [Array<Integer>] the stat increases to draw.
     def show_increase(array)
       color = Color.new(72, 72, 72)
       shadow = Color::GREYSHADOW
@@ -26,6 +33,8 @@ class Battle
       end
     end
 
+    # Draws the total new stats.
+    # @param array [Array<Integer>] the stats to draw.
     def show_stats(array)
       self.clear
       draw_stat_names

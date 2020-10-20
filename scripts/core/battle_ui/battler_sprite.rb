@@ -2,11 +2,16 @@ class Battle
   class BattlerSprite < CellSprite
     attr_reader :pokemon
 
+    # Creates a new battler sprite.
+    # @param pokemon [Battler, Pokemon] the Pokémon to use in the file path.
+    # @param front [Boolean] whether to use the front or back sprite.
+    # @param viewport [Viewport] the viewport of the sprite.
     def initialize(pokemon, front, viewport = nil)
       super(viewport)
       pokemon = pokemon.pokemon if pokemon.is_a?(Battler)
       @pokemon = pokemon
       @front = front
+      # Looks through all variants of the file to find the best match.
       suffix = pokemon.shiny? ? "_shiny" : ""
       path = "gfx/pokemon/#{front ? "front" + suffix : "back" + suffix}/" + pokemon.species.intname.to_s.downcase
       if pokemon.male? && File.file?(path + "_m.png")
@@ -27,6 +32,7 @@ class Battle
         end
       end
       if File.file?(path + ".png")
+        # load the detected file.
         self.bitmap = Bitmap.new(path)
         self.set_cell(self.bitmap.width, self.bitmap.height)
       else
@@ -36,6 +42,8 @@ class Battle
       end
     end
 
+    # Start an async animation to make the sprite grow from the bottom center.
+    # @param duration [Float] the number of seconds for the animation to take.
     def appear_from_ball(duration)
       x = self.x - self.ox
       y = self.y - self.oy
@@ -49,6 +57,8 @@ class Battle
       @appear_counter = 0
     end
 
+    # Start an async animation to make the sprite shrink to the bottom center.
+    # @param duration [Float] the number of seconds for the animation to take.
     def disappear_into_ball(duration)
       x = self.x - self.ox
       y = self.y - self.oy
@@ -62,6 +72,7 @@ class Battle
       @disappear_counter = 0
     end
 
+    # Update the sprite and performs the appear and disappear animations.
     def update
       super
       if @appear_frames && @appear_counter

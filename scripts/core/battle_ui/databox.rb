@@ -1,10 +1,14 @@
 class Battle
   class Databox
+    # Creates a databox for a battler.
+    # @param battler [Battler] the battler associated with the databox.
+    # @param is_opponent [Boolean] whether this databox belongs to an opponent.
     def initialize(battler, is_opponent)
       @battler = battler
       @battle = battler.battle
       @is_opponent = is_opponent
       @sprites = {}
+      # Load the databox graphic.
       bmp = Bitmap.new(is_opponent ? OPPONENT_BOX_PATH : PLAYER_BOX_PATH)
       @viewport = Viewport.new(0, 0, bmp.width, bmp.height)
       @viewport.z = 99998
@@ -29,10 +33,12 @@ class Battle
       draw_status_condition
     end
 
+    # @return [Boolean] whether this databox belongs to an opponent.
     def opponent?
       return @is_opponent
     end
 
+    # Draws the battler's name and gender.
     def draw_name_and_gender
       @sprites["name_gender"].bitmap.clear
       name_x = opponent? ? OPPONENT_NAME_X : PLAYER_NAME_X
@@ -48,6 +54,7 @@ class Battle
       end
     end
 
+    # Draws the battler's level.
     def draw_level
       @sprites["level"].bitmap.clear
       level_x = opponent? ? OPPONENT_LEVEL_X : PLAYER_LEVEL_X
@@ -55,6 +62,7 @@ class Battle
       @sprites["level"].draw_text(x: level_x, y: level_y, text: symbol(:lv) + @battler.level.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, small: true, align: :right)
     end
 
+    # Draws an "owned" ball in the databox if the battler is already owned by the player.
     def draw_owned_ball
       if @sprites["owned_ball"].nil?
         @sprites["owned_ball"] = Sprite.new(@viewport)
@@ -65,6 +73,7 @@ class Battle
       @sprites["owned_ball"].visible = false if opponent? && !@battler.status.nil?
     end
 
+    # Draws an HP bar.
     def draw_hp_bar
       if @sprites["hp_bar"].nil?
         @sprites["hp_bar"] = Sprite.new(@viewport)
@@ -87,6 +96,8 @@ class Battle
       end
     end
 
+    # Draws the HP inside the HP bar.
+    # @param hp [Integer] the amount of HP to draw.
     def draw_hp(hp = @battler.hp)
       if @sprites["hp"].nil?
         @sprites["hp"] = Sprite.new(@viewport)
@@ -109,6 +120,8 @@ class Battle
       end
     end
 
+    # Draw the exp inside the exp bar.
+    # @param exp [Integer] the amount of exp to draw.
     def draw_exp(exp = @battler.exp)
       exp = exp.floor
       if @sprites["exp"].nil?
@@ -125,6 +138,7 @@ class Battle
       @sprites["exp"].src_rect.width = fraction * @sprites["exp"].bitmap.width
     end
 
+    # Draw the status conditon.
     def draw_status_condition
       if @sprites["status"].nil?
         @sprites["status"] = StatusConditionIcon.new(@battler, @viewport)
@@ -135,6 +149,7 @@ class Battle
       end
     end
 
+    # Show the databox level up animation.
     def level_up
       @sprites["levelup"] = Sprite.new(@viewport)
       @sprites["levelup"].bitmap = Bitmap.new(PLAYER_BOX_LEVEL_UP_PATH)
@@ -152,52 +167,67 @@ class Battle
       @sprites.delete("levelup")
     end
 
+    # Update the databox's displayed status condition.
     def update_status_condition
       draw_status_condition
       draw_hp_bar
       @sprites["owned_ball"].visible = @battler.status.nil? if opponent?
     end
 
+    # @return [Integer] the width of the databox.
     def width
       return @viewport.width
     end
 
+    # @return [Integer] the height of the databox.
     def height
       return @viewport.height
     end
 
+    # @return [Integer] the x position of the databox.
     def x
       return @viewport.x
     end
 
+    # Sets the x position of the databox.
+    # @param value [Integer] the new x position of the databox.
     def x=(value)
       @viewport.x = value
     end
 
+    # @return [Integer] the y position of the databox.
     def y
       return @viewport.y
     end
 
+    # Sets the y position of the databox.
+    # @param value [Integer] the new y position of the databox.
     def y=(value)
       @viewport.y = value
     end
 
+    # @return [Integer] the z position of the databox.
     def z
       return @viewport.z
     end
 
+    # Sets the z position of the databox.
+    # @param value [Integer] the new z position of the databox.
     def z=(value)
       @viewport.z = value
     end
 
+    # Updates the databox.
     def update
     end
 
+    # Updates the databox and all its sprites.
     def dispose
       @sprites.each_value { |e| e.dispose if !e.disposed? }
       @viewport.dispose
     end
 
+    # @return [Boolean] whether the databox is disposed.
     def disposed?
       return @viewport.disposed?
     end
