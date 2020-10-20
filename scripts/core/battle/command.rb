@@ -23,7 +23,7 @@ class Battle
       return @type == :use_move
     end
 
-    # @return [MoveObject] the move object the battler wants to use.
+    # @return [UsableMove] the move object the battler wants to use.
     def move
       return use_move? ? @arguments[0] : nil
     end

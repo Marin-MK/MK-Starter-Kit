@@ -55,7 +55,7 @@ class Battle
       return @pokemon.species
     end
 
-    # @return [Array<MoveObject>] the moves of this battler.
+    # @return [Array<UsableMove>] the moves of this battler.
     def moves
       return @pokemon.moves
     end
@@ -154,7 +154,7 @@ class Battle
 
     # @return [Symbol] the ball used to capture this Pokémon.
     def ball_used
-      return @ball_used
+      return @pokemon.ball_used
     end
 
     # @return [Integer] the total HP of this Pokémon.

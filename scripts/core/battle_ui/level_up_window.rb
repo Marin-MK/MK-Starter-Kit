@@ -3,7 +3,7 @@ class Battle
     # Creates a window for displaying 6 stats.
     # @param viewport [Viewport] the viewport of the window.
     def initialize(viewport)
-      validate viewport => [NilClass, Viewport]s
+      validate viewport => [NilClass, Viewport]
       # Creates a window with fixed parameters.
       super(192, 208, Windowskin.get(:choice), viewport)
       # Draws the names of the stats.

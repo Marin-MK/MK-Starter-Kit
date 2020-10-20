@@ -127,7 +127,7 @@ class Battle
     # Draw the exp inside the exp bar.
     # @param exp [Float] the amount of exp to draw.
     def draw_exp(exp = @battler.exp)
-      validte exp => Float
+      validate exp => Float
       exp = exp.floor
       if @sprites["exp"].nil?
         @sprites["exp"] = Sprite.new(@viewport)

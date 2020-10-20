@@ -7,8 +7,6 @@ class Move < Serializable
   attr_reader :id
   # @return [String] the name of the move.
   attr_reader :name
-  # @return [Symbol] the type of the move.
-  attr_reader :type
   # @return [Integer] the base power of the move.
   attr_reader :power
   # @return [Symbol] the target of the move.
@@ -98,16 +96,24 @@ class Move < Serializable
     return Cache.size
   end
 
+  # @return [Boolean] whether the move is status.
   def status?
     return @category == :status
   end
 
+# @return [Boolean] whether the move is physical.
   def physical?
     return PHYSICAL_SPECIAL_SPLIT ? @category == :physical : Type.get(@type).physical?
   end
 
+  # @return [Boolean] whether the move is special.
   def special?
     return PHYSICAL_SPECIAL_SPLIT ? @category == Pspecial : Type.get(@type).special?
+  end
+
+  # @return [Type] the type of the move.
+  def type
+    return Type.get(@type)
   end
 end
 

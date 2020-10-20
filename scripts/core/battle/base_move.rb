@@ -1,12 +1,12 @@
 class Battle
   class BaseMove
-    # Creates a helper class for using a specific MoveObject.
+    # Creates a helper class for using a specific UsableMove.
     # @param battle [Battle] the associated battle.
-    # @param move [MoveObject] the move to use.
+    # @param move [UsableMove] the move to use.
     def initialize(battle, move)
       validate \
           battle => Battle,
-          move => MoveObject
+          move => UsableMove
       @battle = battle
       @move = move
     end
@@ -247,7 +247,7 @@ class Battle
       end
       # Calculates if this move is a critical hit, but only if it's possible
       # to receive a critical hit in the first place.
-      crit = critical_hit?(user) if can_crit
+      crit = can_crit ? critical_hit?(user) : false
       for target in targets
         # Determines whether the move hit the target.
         hit = hit?(user, target)
@@ -258,7 +258,7 @@ class Battle
           use_move(user, target, damage, crit)
         else
           # Move missed
-          use_move_message(user, target, damage, crit)
+          use_move_message(user, target, nil, false)
           message("#{user.name}'s\nattack missed!'")
         end
       end
@@ -267,13 +267,13 @@ class Battle
     # Displays the move used message.
     # @param user [Battler] the user of the move.
     # @param target [Battler] the target of the move.f
-    # @param damage [Integer] the damage the user did to the target.
+    # @param damage [NilClass, Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def use_move_message(user, target, damage, critical_hit)
       validate \
           user => Battler,
           target => Battler,
-          damage => Integer,
+          damage => [NilClass, Integer],
           critical_hit => Boolean
       message("#{user.name} used #{@move.name}!")
     end
@@ -309,13 +309,13 @@ class Battle
     # Uses the move.
     # @param user [Battler] the user of the move.
     # @param target [Battler] the target of the move.f
-    # @param damage [Integer] the damage the user did to the target.
+    # @param damage [NiLClass, Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
     def use_move(user, target, damage, critical_hit)
       validate \
           user => Battler,
           target => Battler,
-          damage => Integer,
+          damage => [NilClass, Integer],
           critical_hit => Boolean
       # Show the move used message.
       use_move_message(user, target, damage, critical_hit)

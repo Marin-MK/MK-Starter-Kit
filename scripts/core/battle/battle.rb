@@ -42,7 +42,9 @@ class Battle
     # Send out our battler
     @ui.send_out_initial_pokemon("Go! #{battler.name}!", battler)
     # Show our battler and its visible properties to our AI handler
-    @ai.show_battler(battler)
+    @ai.register_battler(0, battler)
+    # Show the opposing battler and its visible properties to our AI handler.
+    @ai.register_battler(1, @sides[1].battlers[0])
     # Start the main process
     main
   end
@@ -212,7 +214,7 @@ class Battle
   # @return [Command] the opponent's command for the battler.
   def get_opponent_command(battler)
     validate battler => Battler
-    move, target = @ai.pick_move_and_target(battler)
+    move, target = @ai.pick_move_and_target(1, battler)
     target = @sides[0].battlers.find { |b| b == target.battler }
     return Command.new(:use_move, battler, move, target)
   end
