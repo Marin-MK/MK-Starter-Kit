@@ -73,6 +73,11 @@ class Battle
       )
       # Records the last selected move
       @last_move_index = 0
+      # The timer used for time- or interval-based animations.
+      @i = 0
+      # The counters used to animate the active battler and databox bobbing up and down.
+      @spritebobcount = 0
+      @boxbobcount = 0
     end
 
     # Disposes all sprites associated with this UI.
@@ -107,6 +112,40 @@ class Battle
       @sprites["ball"].update if @sprites["ball"] && !@sprites["ball"].disposed?
       @msgwin.update
       @ball_animation.update if @ball_animation
+      if @battler_bob
+        @i += 1
+        if @i % framecount(0.4) == 0
+          @sprites["pokemon1"].y -= 2
+          @spritebobcount -= 1
+        elsif @i % framecount(0.2) == 0
+          @sprites["pokemon1"].y += 2
+          @spritebobcount += 1
+        end
+        if (@i - framecount(0.1)) % framecount(0.4) == 0
+          @sprites["databox1"].y -= 2
+          @boxbobcount -= 1
+        elsif (@i - framecount(0.1)) % framecount(0.2) == 0
+          @sprites["databox1"].y += 2
+          @boxbobcount += 1
+        end
+      else
+        if @spritebobcount > 0
+          @sprites["pokemon1"].y -= 2
+          @spritebobcount -= 1
+        elsif @spritebobcount < 0
+          @sprites["pokemon1"].y += 2
+          @spritebobcount += 1
+        end
+        if @boxbobcount > 0
+          @sprites["databox1"].y -= 2
+          @boxbobcount -= 1
+        elsif @boxbobcount < 0
+          @sprites["databox1"].y += 2
+          @boxbobcount += 1
+        end
+        @i = 0
+      end
+      @oldbattler_bob = @battler_bob
     end
 
     # Starts the first part of the battle intro.
@@ -297,6 +336,7 @@ class Battle
     # @return [Command] the command for the battler.
     def choose_command(battler)
       validate battler => Battler
+      @battler_bob = true
       # The command window is not disposed until a command has been chosen.
       # So if it still exists, that means a command was chosen but then
       # cancelled, like opening the party and cancelling.
@@ -337,6 +377,7 @@ class Battle
 
     # Disposes the command window used in selecting a command
     def chose_command
+      @battler_bob = false
       @cmdwin.dispose
       @cmdwin = nil
     end
@@ -349,6 +390,7 @@ class Battle
       validate \
           battler => Battler,
           initial_index => Integer
+      @battler_bob = true
       choices = [["-", "-"], ["-", "-"]]
       for i in 0...battler.moves.size
         choices[i / 2][i % 2] = battler.moves[i].name
@@ -401,7 +443,10 @@ class Battle
       @cmdwin.dispose
       @cmdwin = nil
       @ppwin.dispose
-      @last_move_index = cmd if !cmd.cancel?
+      if !cmd.cancel?
+        @last_move_index = cmd
+        @battler_bob = false
+      end
       return cmd
     end
 
