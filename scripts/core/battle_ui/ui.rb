@@ -297,25 +297,32 @@ class Battle
     # @return [Command] the command for the battler.
     def choose_command(battler)
       validate battler => Battler
-      @msgwin.text = "What will\n#{battler.name} do?"
-      @msgwin.letter_by_letter = false
-      # Shows a 2x2 choice window.
-      @cmdwin = MultiChoiceWindow.new(
-        x: 240,
-        y: 224,
-        z: 4,
-        width: 240,
-        height: 96,
-        line_x_space: 112,
-        viewport: @viewport,
-        choices: [["FIGHT", "BAG"], ["POKéMON", "RUN"]],
-        cancel_choice: nil,
-        arrow_path: "gfx/ui/battle/choice_arrow",
-        arrow_states: 1,
-        can_loop: false,
-        color: Color.new(72, 72, 72),
-        windowskin: :battle_choice
-      )
+      # The command window is not disposed until a command has been chosen.
+      # So if it still exists, that means a command was chosen but then
+      # cancelled, like opening the party and cancelling.
+      # In that case, we don't need a new command window, because the old one
+      # still points to the correct place with the correct values.
+      if @cmdwin.nil?
+        @msgwin.text = "What will\n#{battler.name} do?"
+        @msgwin.letter_by_letter = false
+        # Shows a 2x2 choice window.
+        @cmdwin ||= MultiChoiceWindow.new(
+          x: 240,
+          y: 224,
+          z: 4,
+          width: 240,
+          height: 96,
+          line_x_space: 112,
+          viewport: @viewport,
+          choices: [["FIGHT", "BAG"], ["POKéMON", "RUN"]],
+          cancel_choice: nil,
+          arrow_path: "gfx/ui/battle/choice_arrow",
+          arrow_states: 1,
+          can_loop: false,
+          color: Color.new(72, 72, 72),
+          windowskin: :battle_choice
+        )
+      end
       cmd = nil
       loop do
         update
@@ -325,8 +332,13 @@ class Battle
           break
         end
       end
-      @cmdwin.dispose
       return cmd
+    end
+
+    # Disposes the command window used in selecting a command
+    def chose_command
+      @cmdwin.dispose
+      @cmdwin = nil
     end
 
     # Gets and returns a move choice to the battle logic.
@@ -387,6 +399,7 @@ class Battle
         end
       end
       @cmdwin.dispose
+      @cmdwin = nil
       @ppwin.dispose
       @last_move_index = cmd if !cmd.cancel?
       return cmd
@@ -517,6 +530,11 @@ class Battle
             msgwin.visible = true
             msgwin.show("#{battler.name} is already\nin battle!")
             msgwin.visible = false
+          elsif battler.fainted?
+            msgwin.ending_arrow = false
+            msgwin.visible = true
+            msgwin.show("#{battler.name} is unable to battle!")
+            msgwin.visible = false
           else
             ret = battler
             break
@@ -560,6 +578,7 @@ class Battle
         @sprites["pokemon1"].color.alpha += 255.0 / frames
       end
       for i in 1..framecount(0.3)
+        @sprites["white"].opacity = 255 - 255.0 / framecount(0.1) * i if i <= framecount(0.1)
         update
       end
       @ball_animation = nil

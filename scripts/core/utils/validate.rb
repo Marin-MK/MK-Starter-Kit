@@ -48,8 +48,7 @@ def validate_direction(dir)
     if [:down,:left,:right,:up].include?(dir)
       dir = ([:down,:left,:right,:up].index(dir) + 1) * 2
     else
-      stack = caller.join("\n")
-      raise "Invalid direction value #{dir.inspect}\n\n#{stack}"
+      raise "Invalid direction value #{dir.inspect}"
     end
   elsif !dir.is_a?(Integer) || (dir.is_a?(Integer) && dir < 1 || dir > 9)
     raise "Invalid direction value #{dir}"

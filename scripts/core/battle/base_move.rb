@@ -196,9 +196,10 @@ class Battle
       # Gets the target's defense or special defense depending on the move/type,
       # and applies various modifiers.
       defense = get_target_defense(user, target, multiple_targets, critical_hit)
-      dmg = (2 * user.level / 5 + 2) * @move.power * attack / defense / 50 + 2
+      dmg = (2 * user.level / 5 + 2) * @move.power * attack / defense / 50
       # Applies various multipliers to the final damage result.
       dmg *= get_damage_multiplier(user, target, multiple_targets, critical_hit)
+      dmg += 2
       dmg = 1 if dmg < 1
       return dmg.floor
     end
@@ -223,7 +224,7 @@ class Battle
       validate \
           user => Battler,
           target => Battler
-      t = @move.accuracy * ACCURACY_STAGE_MULTIPLIER[user.accuracy - target.evasion + 6]
+      t = @move.accuracy * ACCURACY_STAGE_MULTIPLIER[user.accuracy_stage - target.evasion_stage + 6]
       t *= get_accuracy_multiplier(user, target)
       return rand(1..100) <= t
     end

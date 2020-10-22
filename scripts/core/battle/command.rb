@@ -28,9 +28,14 @@ class Battle
       return use_move? ? @arguments[0] : nil
     end
 
-    # @return [Battler] the target of the move.
-    def target
+    # @Return [Integer] the side the battler wants to attack.
+    def side
       return use_move? ? @arguments[1] : nil
+    end
+
+    # @return [Integer] the index of the target of the move.
+    def target
+      return use_move? ? @arguments[2] : nil
     end
 
     #===================== Switching Pokémon =====================#

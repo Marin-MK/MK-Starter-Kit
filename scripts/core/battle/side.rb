@@ -51,6 +51,13 @@ class Battle
       battler.index = @battlers.index(battler)
     end
 
+    # Make the given battler no longer an active battler on this side.
+    # @param battler [Battler] the battler to make inactive.
+    def deregister_battler(battler)
+      validate battler => Battler
+      @battlers.delete(battler)
+    end
+
     # Distribute exp over all battlers on this side that fought against the defeated battler.
     # @param defeated_battler [Battler] the battler that was defeated.
     def distribute_exp(defeated_battler)

@@ -165,6 +165,7 @@ class Battle
       choice = @ui.choose_command(battler)
       if choice.fight?
         # If the player chooses Fight, get the move the battler should use
+        @ui.chose_command
         cmd = get_move_command(battler)
         next if cmd.nil?
         return cmd
@@ -173,13 +174,14 @@ class Battle
       elsif choice.pokemon?
         # If the player chooses Pokémon, get which Pokémon to switch in.
         newbattler = @ui.switch_battler(battler)
-        next if battler.nil? # Go back to @ui.choose_command
+        next if newbattler.nil? # Go back to @ui.choose_command
+        @ui.chose_command
         return Command.new(:switch, battler, newbattler)
       elsif choice.run?
         # If the player chooses Run, try to escape from the battle.
+        @ui.chose_command
         return Command.new(:run, battler, @sides[1].battlers[0])
       end
-      break
     end
   end
 
@@ -206,7 +208,7 @@ class Battle
       break
     end
     return if movechoice.cancel? # Go back to @ui.choose_command
-    return Command.new(:use_move, battler, move)
+    return Command.new(:use_move, battler, move, 1, 0)
   end
 
   # Gets the opponent's command for one of their battlers.
@@ -214,9 +216,8 @@ class Battle
   # @return [Command] the opponent's command for the battler.
   def get_opponent_command(battler)
     validate battler => Battler
-    move, target = @ai.pick_move_and_target(1, battler)
-    target = @sides[0].battlers.find { |b| b == target.battler }
-    return Command.new(:use_move, battler, move, target)
+    move, side, target = @ai.pick_move_and_target(1, battler)
+    return Command.new(:use_move, battler, move, side, target)
   end
 
   # Processes and executes a battle command.
@@ -230,12 +231,16 @@ class Battle
       # Associate a helper BaseMove class with the move data
       move = BaseMove.new(self, command.move)
       # Execute the move
-      move.execute(command.battler, command.target)
+      move.execute(command.battler, @sides[command.side].battlers[command.target])
     elsif command.switch_pokemon?
       # If the command is a switch command, recall the active battler
       @ui.recall_battler("#{command.battler.name}, that's enough!\nCome back!", command.battler)
+      @ai.deregister_battler(0, command.battler)
+      @sides[0].deregister_battler(command.battler)
       # Send out the new battler
       @ui.send_out_pokemon("Go! #{command.new_battler.name}!", command.new_battler)
+      @ai.register_battler(0, command.new_battler)
+      @sides[0].register_battler(command.new_battler)
     elsif command.run?
       if wild_battle?
         battler = command.battler

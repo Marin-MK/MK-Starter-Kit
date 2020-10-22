@@ -60,7 +60,7 @@ class Battle
             # Get the move score given a user and a target
             score = get_move_score(user, target, move)
             next if score.nil?
-            scores << [score, i, target]
+            scores << [score, i, 1 - side, opposing_side.battlers.index(target)]
           end
         end
       end
@@ -71,7 +71,7 @@ class Battle
       # Get a random move based on weights and an average multiplication factor
       idx = weighted_factored_rand(skill, scores.map { |e| e[0] })
       # Return [UsableMove, target]
-      return [user.moves[scores[idx][1]], scores[idx][2]]
+      return [user.moves[scores[idx][1]], scores[idx][2], scores[idx][3]]
     end
 
     # Calculates the score of a move based on the user and target.
