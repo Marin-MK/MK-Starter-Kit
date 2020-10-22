@@ -8,6 +8,7 @@ class Battle
           battle => Battle,
           move => UsableMove
       @battle = battle
+      @ui = @battle.ui
       @move = move
     end
 
@@ -82,6 +83,7 @@ class Battle
     # @param user [Battler] the user of the move.
     # @return [Boolean] whether the usage is a critical hit.
     def critical_hit?(user)
+      return true
       validate user => Battler
       stage = get_critical_hit_stage(user)
       if stage > 2
@@ -91,7 +93,6 @@ class Battle
         odds = [24, 8, 2]
         return rand(odds[stage]) == 0
       end
-      return false
     end
 
     # Gets the type effectiveness modifier of a type when used on a set of other types.
@@ -276,7 +277,7 @@ class Battle
           target => Battler,
           damage => [NilClass, Integer],
           critical_hit => Boolean
-      message("#{user.name} used #{@move.name}!")
+      message("#{user.name} used #{@move.name}!", false, false, false)
     end
 
     # Displays the critical hit message.
@@ -290,7 +291,7 @@ class Battle
           target => Battler,
           damage => Integer,
           critical_hit => Boolean
-      message("A critical hit!")
+      message("A critical hit!", false, false, false)
     end
 
     # Displays the move failed message.
@@ -325,13 +326,18 @@ class Battle
       if damage
         # Deal the damage dealt by the move.
         deal_damage(user, target, damage, critical_hit)
+        @ui.wait(0.2)
         # Show the critical hit message if this move is a critical hit
         critical_hit_message(user, target, damage, critical_hit) if critical_hit
       end
       # Apply any potential after-use effects.
       after_use_effect(user, target, damage, critical_hit)
+      @ui.wait(0.2)
       # Faint the target if it is out of HP.
-      target.faint if target.fainted?
+      if target.fainted?
+        @ui.wait(0.4)
+        target.faint
+      end
     end
 
     # Show the animation of the move being used.
@@ -376,7 +382,7 @@ class Battle
           damage => [NilClass, Integer],
           critical_hit => Boolean
       # Example: Lower attack 3 stats
-      target.lower_stat(:attack, 1, true, false) if @move.intname != :TACKLE
+      target.lower_stat(:attack, 1, true, false) if @move.intname == :GROWL
     end
 
     # Deals damage when the move is being used.

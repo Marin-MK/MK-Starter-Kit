@@ -27,9 +27,9 @@ class Battle
       self.x = x
       self.y = y
       self.angle += 35
-      if @i >= 107 && @i < 121
+      if @i >= 110 && @i < 124
         # Float in the air a little longer around the top
-        @i += 0.5
+        @i += 0.75
       else
         @i += 2
       end
