@@ -136,20 +136,14 @@ class Battle
       return (base_speed * GENERIC_STAGE_MULTIPLIER[@stages.speed + 6]).floor
     end
 
-    # @return [Integer] the effective accuracy of this battler.
-    def accuracy
-      if @stages.accuracy < -6 || @stages.accuracy > 6
-        raise "Invalid accuracy stage: #{@stages.accuracy}"
-      end
-      return ACCURACY_EVASION_STAGE_MULTIPLIER[@stages.accuracy + 6]
+    # @return [Integer] the accuracy stage of this battler.
+    def accuracy_stage
+      return @stages.accuracy
     end
 
-    # @return [Integer] the effective evasion of this battler.
-    def evasion
-      if @stages.evasion < -6 || @stages.evasion > 6
-        raise "Invalid evasion stage: #{@stages.evasion}"
-      end
-      return ACCURACY_EVASION_STAGE_MULTIPLIER[@stages.evasion + 6]
+    # @return [Integer] the evasion stage of this battler.
+    def evasion_stage
+      return @stages.evasion
     end
 
     # @return [Symbol] the ball used to capture this Pokémon.

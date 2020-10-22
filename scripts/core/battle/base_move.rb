@@ -223,7 +223,7 @@ class Battle
       validate \
           user => Battler,
           target => Battler
-      t = @move.accuracy * user.accuracy * target.evasion
+      t = @move.accuracy * ACCURACY_STAGE_MULTIPLIER[user.accuracy - target.evasion + 6]
       t *= get_accuracy_multiplier(user, target)
       return rand(1..100) <= t
     end
