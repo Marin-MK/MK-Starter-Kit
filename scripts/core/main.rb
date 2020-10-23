@@ -54,7 +54,7 @@ def main_function
   $game.update
   $visuals.update
   if Input.trigger?(Input::CTRL)
-    Battle.new($trainer, Pokemon.new(:BULBASAUR, 50))
+    Battle.new($trainer, Pokemon.new(:BULBASAUR, 8))
     #return false
   end
   return true

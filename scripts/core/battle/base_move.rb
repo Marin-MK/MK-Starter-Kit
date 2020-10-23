@@ -229,6 +229,13 @@ class Battle
       return rand(1..100) <= t
     end
 
+    # Decreases the PP of the move used.
+    # @param user [Battler] the user of the move.
+    # @param target [Battler] the target of the move.
+    def decrease_pp(user, target)
+      @move.pp -= 1
+    end
+
     # Execute this move.
     # @param user [Battler] the user of the move.
     # @param target [NilClass, Battler] the target of the move.
@@ -330,6 +337,7 @@ class Battle
         # Show the critical hit message if this move is a critical hit
         critical_hit_message(user, target, damage, critical_hit) if critical_hit
       end
+      decrease_pp(user, target)
       # Apply any potential after-use effects.
       after_use_effect(user, target, damage, critical_hit)
       @ui.wait(0.2)
@@ -381,8 +389,6 @@ class Battle
           target => Battler,
           damage => [NilClass, Integer],
           critical_hit => Boolean
-      # Example: Lower attack 3 stats
-      target.lower_stat(:attack, 1, true, false) if @move.intname == :GROWL
     end
 
     # Deals damage when the move is being used.
