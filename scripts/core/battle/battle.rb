@@ -108,7 +108,8 @@ class Battle
       for side in 0...@sides.size
         if !@sides[side].battlers.any? { |b| !b.fainted? }
           if side == 0 # Black out
-            raise "Black Out"
+            black_out(@sides[side].trainers[0])
+            return
           else
             if @sides[side].trainers[0].wild_pokemon
               # Defeated a wild Pokémon
@@ -266,5 +267,34 @@ class Battle
         battler.end_of_turn
       end
     end
+  end
+
+  # The player blacks out.
+  # @param trainer [Battle::Trainer] the trainer to black out.
+  def black_out(trainer)
+    message("#{trainer.name} is out of\nusable Pokémon!", true, false, false)
+    @ui.wait(0.5)
+    money = black_out_money_lost(trainer)
+    $trainer.money -= money
+    message("#{trainer.name} panicked and lost #{format_money(money)}...", true, false, false)
+    @ui.wait(0.5)
+    message("... ... ... ...", true, false, false)
+    @ui.wait(0.5)
+    message("#{trainer.name} blacked out!", true, false, false)
+    @ui.wait(0.5)
+    @ui.fade_out
+    @stop = true
+  end
+
+  # Gets the money lost upon blacking out.
+  # @param trainer [Battle::Trainer] the trainer that lost.
+  # @return [Integer] the money to be lost.
+  def black_out_money_lost(trainer)
+    validate trainer => Trainer
+    maxlevel = trainer.party.map { |e| e.level }.max
+    base_payout = [8, 16, 24, 36, 48, 64, 80, 100, 120][$trainer.badge_count]
+    money = maxlevel * base_payout
+    money = $trainer.money if money > $trainer.money
+    return money
   end
 end

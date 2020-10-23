@@ -287,3 +287,16 @@ def weighted_factored_rand(factor, weights)
   end
   return weighted_rand(newweights)
 end
+
+def format_money(money)
+  str = money.to_s
+  return "$" + str if str.size <= 4 # $3000
+  # If more than 4 digits, add commas
+  str.reverse!
+  newstr = ""
+  for i in 0...str.size
+    newstr << str[i]
+    newstr << "," if (i + 1) % 3 == 0 && i < str.size - 1
+  end
+  return "$" + newstr.reverse # $30,000
+end

@@ -143,16 +143,7 @@ class Trainer
   #============================================================================#
 
   def get_money_text
-    str = @money.to_s
-    return "$" + str if str.size <= 4 # $3000
-    # If more than 4 digits, add commas
-    str.reverse!
-    newstr = ""
-    for i in 0...str.size
-      newstr << str[i]
-      newstr << "," if (i + 1) % 3 == 0 && i < str.size - 1
-    end
-    return "$" + newstr.reverse # $30,000
+    return format_money(@money)
   end
 
   #============================================================================#

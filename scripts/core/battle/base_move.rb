@@ -83,7 +83,6 @@ class Battle
     # @param user [Battler] the user of the move.
     # @return [Boolean] whether the usage is a critical hit.
     def critical_hit?(user)
-      return true
       validate user => Battler
       stage = get_critical_hit_stage(user)
       if stage > 2
@@ -292,6 +291,7 @@ class Battle
           damage => Integer,
           critical_hit => Boolean
       message("A critical hit!", false, false, false)
+      @ui.wait(0.4)
     end
 
     # Displays the move failed message.

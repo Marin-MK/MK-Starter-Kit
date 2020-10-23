@@ -151,7 +151,7 @@ class Battle
     # Starts the first part of the battle intro.
     def begin_start
       wait(0.2)
-      frames = framecount(0.8)
+      frames = framecount(1.2)
       for i in 1..frames
         update
         # Move the black bars vertically out of screen, split from the middle.
@@ -166,7 +166,7 @@ class Battle
       end
       @sprites["blackbg1"].dispose
       @sprites["blackbg2"].dispose
-      frames = framecount(0.8)
+      frames = framecount(1.2)
       for i in 1..frames
         update
         # Move the battle bases, battlers and trainers horizontally.
@@ -234,6 +234,7 @@ class Battle
       update until @sprites["ball"].almost_done?
       # Show the sendout animation for the battler.
       send_out_pokemon(nil, battler, false)
+      wait(0.3)
     end
 
     # Shows the ball throw animation for sending out a battler.
@@ -685,7 +686,7 @@ class Battle
           damage => Float
       # Get the battler's databox
       databox = get_battler_databox(battler)
-      frames = framecount(0.3)
+      frames = framecount(0.45)
       damage = battler.hp if damage > battler.hp
       diff = damage / frames.to_f
       for i in 1..frames

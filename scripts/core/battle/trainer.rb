@@ -17,8 +17,10 @@ class Battle
           party => [Object::Trainer, Array]
       validate_array party => Pokemon if party.is_a?(Array)
       @battle = battle
-      party = party.party if party.is_a?(Object::Trainer)
+      trainer = party if party.is_a?(Object::Trainer)
+      party = trainer.party if trainer
       @party = party.map { |e| Battler.new(battle, e) }
+      @name = trainer.name if trainer
     end
   end
 end
