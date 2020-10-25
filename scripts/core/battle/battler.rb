@@ -3,6 +3,7 @@ class Battle
 
   class Battler
     attr_accessor :battle
+    attr_accessor :ui
     attr_accessor :pokemon
     attr_accessor :effects
     attr_accessor :battle
@@ -199,9 +200,31 @@ class Battle
       return @pokemon.status
     end
 
+    # Burns the Pokémon.
+    def burn
+      if burned?
+        message("#{self.name} was already\nburned!")
+      else
+        @pokemon.status = :burned
+        @ui.update_status(self)
+        message("#{self.name} was burned!")
+      end
+    end
+
     # @return [Boolean] whether the Pokémon is burned.
     def burned?
       return @pokemon.status == :burned
+    end
+
+    # Freezes the Pokémon.
+    def freeze
+      if frozen?
+        message("#{self.name} was already\nfrozen!")
+      else
+        @pokemon.status = :frozen
+        @ui.update_status(self)
+        message("#{self.name} was frozen solid!")
+      end
     end
 
     # @return [Boolean] whether the Pokémon is frozen.
@@ -209,14 +232,48 @@ class Battle
       return @pokemon.status == :frozen
     end
 
+    # Paralyzes the Pokémon.
+    def paralyze
+      if paralyzed?
+        message("#{self.name} was already\nparalyzed!")
+      else
+        @pokemon.status = :paralyzed
+        @ui.update_status(self)
+        message("#{self.name} was paralyzed!")
+      end
+    end
+
     # @return [Boolean] whether the Pokémon is paralyzed.
     def paralyzed?
       return @pokemon.status == :paralyzed
     end
 
+    # Poisons the Pokémon.
+    def poison(bad = false)
+      if poisoned?
+        message("#{self.name} was already\npoisoned!")
+      else
+        @pokemon.status = :poisoned
+        @ui.update_status(self)
+        message("#{self.name} was #{bad ? "badly " : ""}poisoned!")
+        raise "Bad Poison not yet implemented" if bad
+      end
+    end
+
     # @return [Boolean] whether the Pokémon is poisoned.
     def poisoned?
       return @pokemon.status == :poisoned
+    end
+
+    # Makes the Pokémon fall asleep.
+    def sleep
+      if asleep?
+        message("#{self.name} was already\nasleep!")
+      else
+        @pokemon.status = :asleep
+        @ui.update_status(self)
+        message("#{self.name} fell asleep!")
+      end
     end
 
     # @return [Boolean] whether this Pokémon is asleep.
@@ -291,7 +348,7 @@ class Battle
         exp -= diffexp
         if diffexp > 0
           # Show the exp gain
-          @battle.ui.gain_exp(self, diffexp)
+          @ui.gain_exp(self, diffexp)
           oldstats = [@pokemon.totalhp, @pokemon.attack, @pokemon.defense, @pokemon.spatk, @pokemon.spdef, @pokemon.speed]
           # Actually apply the exp increase
           @pokemon.exp += diffexp
@@ -300,11 +357,11 @@ class Battle
             # Calculate the Pokémon's new stats
             @pokemon.calc_stats
             # Show the level up animation
-            @battle.ui.level_up(self)
+            @ui.level_up(self)
             message("#{self.name} grew to\nLV. #{i + 1}!", true, true, false)
             newstats = [@pokemon.totalhp, @pokemon.attack, @pokemon.defense, @pokemon.spatk, @pokemon.spdef, @pokemon.speed]
             # Show the difference in stats
-            @battle.ui.stats_up_window(self, oldstats, newstats)
+            @ui.stats_up_window(self, oldstats, newstats)
           end
         end
       end
@@ -313,7 +370,7 @@ class Battle
     # Faints this battler.
     def faint
       # Show this battler fainting.
-      @battle.ui.faint(self)
+      @ui.faint(self)
       message("#{self.name}\nfainted!", true, true)
       # Give the opposing side exp for defeating this battler.
       opposing_side.distribute_exp(self)
@@ -346,14 +403,9 @@ class Battle
     # The effects applied to this battler at the end of a round.
     def end_of_turn
       if poisoned?
-        if @bad_poison_counter.nil? # Regular poison
-          message("#{self.name} is hurt\nby poison!")
-          lower_hp(totalhp / 8)
-        else # Bad poison
-
-        end
-      end
-      if burned?
+        message("#{self.name} is hurt\nby poison!")
+        lower_hp(totalhp / 8)
+      elsif burned?
         message("#{self.name} is hurt\nby its burn!")
         lower_hp(totalhp / 8)
       end
@@ -367,7 +419,7 @@ class Battle
       damage = @pokemon.hp if damage > @pokemon.hp
       return if damage <= 0
       # Show the HP bar going down
-      @battle.ui.lower_hp(self, damage)
+      @ui.lower_hp(self, damage)
       # Apply the HP change
       @pokemon.hp -= damage
     end
@@ -433,7 +485,7 @@ class Battle
         diff = current_stage - new_stage
         if animation
           # Show a stat down animation if enabled
-          @battle.ui.stat_anim(self, :red, :down)
+          @ui.stat_anim(self, :red, :down)
         end
         if success_message
           # Show a success message if enabled

@@ -696,6 +696,13 @@ class Battle
       end
     end
 
+    # Updates the status condition visuals of the battler.
+    # @param battler [Battler] the battler to update the status condition visuals of.
+    def update_status(battler)
+      databox = get_battler_databox(battler)
+      databox.update_status_condition
+    end
+
     # Shows the EXP gain animation given a battler and exp.
     # @param battler [Battler] the battler that is to receive exp.
     # @param exp [Float] the amount of exp to gain.
