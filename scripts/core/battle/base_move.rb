@@ -330,6 +330,8 @@ class Battle
       use_move_message(user, target, damage, critical_hit)
       # Apply any potential before-use effects.
       before_use_effect(user, target, damage, critical_hit)
+      # Executes the move animation
+      execute_animation(user, target, damage, critical_hit)
       if damage
         # Deal the damage dealt by the move.
         deal_damage(user, target, damage, critical_hit)
@@ -375,7 +377,7 @@ class Battle
           target => Battler,
           damage => [NilClass, Integer],
           critical_hit => Boolean
-      execute_animation(user, target, damage, critical_hit)
+
     end
 
     # Apply this move's after-use effects.

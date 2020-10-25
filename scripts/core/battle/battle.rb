@@ -29,6 +29,14 @@ class Battle
     @ai = AI.new(self)
     # Define a helper UI object that manages all visuals
     @ui = UI.new(self)
+    # Give all battlers access to the UI handler
+    for side in @sides
+      for trainers in side.trainers
+        for battler in trainers.party
+          battler.ui = @ui
+        end
+      end
+    end
     # Start initializing the UI
     @ui.begin_start
     # Shiny sparkle if we're encoutering a shiny wild Pokémon
@@ -230,7 +238,12 @@ class Battle
       # Don't use the move if the battler is fainted
       return if command.battler.fainted?
       # Associate a helper BaseMove class with the move data
-      move = BaseMove.new(self, command.move)
+      intname = command.move.intname
+      if Battle.constants.include?("Move#{intname}".to_sym)
+        move = Battle.const_get("Move#{intname}".to_sym).new(self, command.move)
+      else
+        move = BaseMove.new(self, command.move)
+      end
       # Execute the move
       move.execute(command.battler, @sides[command.side].battlers[command.target])
     elsif command.switch_pokemon?
@@ -265,6 +278,7 @@ class Battle
     for side in 0...@sides.size
       for battler in @sides[side].battlers
         battler.end_of_turn
+        battler.faint if battler.fainted?
       end
     end
   end

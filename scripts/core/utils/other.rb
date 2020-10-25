@@ -300,3 +300,10 @@ def format_money(money)
   end
   return "$" + newstr.reverse # $30,000
 end
+
+# Performs a chance operation and returns the result.
+# @param x [Integer] a value between 0 and 1 representing the chance.
+# @return [Boolean] the random result.
+def chance(x)
+  return rand(1..1000) <= x * 1000
+end
