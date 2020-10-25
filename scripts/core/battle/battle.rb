@@ -1,3 +1,17 @@
+def wild_battle(arg1, arg2 = nil)
+  pokemon = nil
+  if arg1 && !arg2
+    validate arg1 => Pokemon
+  elsif arg1 && arg2
+    validate \
+        arg1 => [Species, Symbol, Integer],
+        arg2 => Integer
+    pokemon = Pokemon.new(arg1, arg2)
+  end
+  battle = Battle.new($trainer, pokemon, true)
+  battle.main
+end
+
 class Battle
   attr_accessor :sides
   attr_accessor :effects
@@ -8,21 +22,21 @@ class Battle
   # Initializes a battle between two different sides.
   # @param side1 [*] a trainer, Pokémon, or array thereof
   # @param side2 [*] a trainer, Pokémon, or array thereof
-  def initialize(side1, side2)
+  def initialize(side1, side2, wild_battle)
     # Initialize the hash containing all global battle effects.
     @effects = {}
     # Convert and process the two sides of the battle.
     @sides = [Side.new(self, side1), Side.new(self, side2)]
     @sides[0].index = 0
     @sides[1].index = 1
-    @wild_battle = false
+    @wild_battle = wild_battle
     # Hardcode the battle to be a wild battle if the second side is one Pokémon object
-    if side2.is_a?(Pokemon)
-      @sides[1].trainers[0].wild_pokemon = true
+    if @wild_battle
+      @sides[1].trainers.each { |t| t.party.each { |b| b.wild_pokemon = true} }
       @sides[1].register_battler(@sides[1].trainers[0].party[0])
-      @wild_battle = true
+      @wild_pokemon = @sides[1].trainers[0].party[0]
     end
-    @wild_pokemon = @sides[1].trainers[0].party[0] if @wild_battle
+    # The number of times the player has attempted to run.
     @run_attempts = 1
     @stop = false
     # Define a helper AI object that manages the opposing side.
@@ -45,16 +59,14 @@ class Battle
     @ui.finish_start("#{@wild_pokemon.name} appeared!")
     # Find the first able battler of our party
     battler = @sides[0].trainers[0].party.find { |e| !e.egg? && !e.fainted? }
-    # Register the battler as active on our side
-    @sides[0].register_battler(battler)
     # Send out our battler
     @ui.send_out_initial_pokemon("Go! #{battler.name}!", battler)
+    # Register the battler as active on our side
+    @sides[0].register_battler(battler)
     # Show our battler and its visible properties to our AI handler
     @ai.register_battler(0, battler)
     # Show the opposing battler and its visible properties to our AI handler.
     @ai.register_battler(1, @sides[1].battlers[0])
-    # Start the main process
-    main
   end
 
   # @return [Boolean] whether or not this battle is a battle against a wild Pokémon.

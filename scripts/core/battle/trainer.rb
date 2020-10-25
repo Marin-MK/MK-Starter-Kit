@@ -5,7 +5,6 @@ class Battle
     attr_accessor :party
     attr_accessor :items
     attr_accessor :skill
-    attr_accessor :wild_pokemon
     attr_accessor :battle
 
     # Creates a Trainer object to wrap a utility trainer.
