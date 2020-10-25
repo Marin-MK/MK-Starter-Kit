@@ -369,11 +369,13 @@ class Battle
 
     # Faints this battler.
     def faint
+      return if @shown_fainted
       # Show this battler fainting.
       @ui.faint(self)
       message("#{self.name}\nfainted!", true, true)
       # Give the opposing side exp for defeating this battler.
       opposing_side.distribute_exp(self)
+      @shown_fainted = true
     end
 
     # Make this battler attempt an escape.

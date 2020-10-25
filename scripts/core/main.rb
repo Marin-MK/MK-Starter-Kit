@@ -55,9 +55,20 @@ def main_function
   $visuals.update
   if Input.trigger?(Input::CTRL)
     wild_battle(:BULBASAUR, 8)
-    #return false
   end
   return true
+end
+
+class << System
+  alias speedup_update update
+  def update
+    if Input.trigger?(Input::Q)
+      System.render_speed /= 2
+    elsif Input.trigger?(Input::E)
+      System.render_speed *= 2
+    end
+    speedup_update
+  end
 end
 
 main_function
