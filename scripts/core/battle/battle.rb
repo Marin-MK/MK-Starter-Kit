@@ -131,7 +131,7 @@ class Battle
             black_out(@sides[side].trainers[0])
             return
           else
-            if @sides[side].trainers[0].wild_pokemon
+            if @wild_battle
               # Defeated a wild Pokémon
               @ui.fade_out
               @stop = true
@@ -213,7 +213,7 @@ class Battle
     validate battler => Battler
     movechoice = nil
     move = nil
-    index = 0
+    index = battler.last_move_index
     # Loop the move choice UI, in case a move can't be used.
     loop do
       # Choose the move to use
@@ -229,6 +229,7 @@ class Battle
       break
     end
     return if movechoice.cancel? # Go back to @ui.choose_command
+    battler.last_move_index =  movechoice.value
     return Command.new(:use_move, battler, move, 1, 0)
   end
 

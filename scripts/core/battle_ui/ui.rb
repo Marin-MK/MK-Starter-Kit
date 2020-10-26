@@ -71,8 +71,6 @@ class Battle
         shadow_color: Color.new(104, 88, 112),
         windowskin: :battle
       )
-      # Records the last selected move
-      @last_move_index = 0
       # The timer used for time- or interval-based animations.
       @i = 0
       # The counters used to animate the active battler and databox bobbing up and down.
@@ -387,7 +385,7 @@ class Battle
     # @param battler [Battler] the battler that is to use a move.
     # @param initial_index [Integer] the move index that begins selected.
     # @return [Choice] the move choice of the battler.
-    def choose_move(battler, initial_index = @last_move_index)
+    def choose_move(battler, initial_index = 0)
       validate \
           battler => Battler,
           initial_index => Integer
@@ -444,10 +442,7 @@ class Battle
       @cmdwin.dispose
       @cmdwin = nil
       @ppwin.dispose
-      if !cmd.cancel?
-        @last_move_index = cmd
-        @battler_bob = false
-      end
+      @battler_bob = false if !cmd.cancel?
       return cmd
     end
 

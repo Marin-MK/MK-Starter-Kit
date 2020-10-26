@@ -11,6 +11,7 @@ class Battle
     attr_accessor :index
     attr_accessor :side
     attr_accessor :wild_pokemon
+    attr_accessor :last_move_index
 
     # Create a new Battler object by wrapping a Pokémon object
     # @param battle [Battle] the battle object associated with the battler
@@ -34,6 +35,8 @@ class Battle
       @stages.speed = 0
       @stages.accuracy = 0
       @stages.evasion = 0
+      # The index of the last-used move.
+      @last_move_index = 0
     end
 
     # @return [String] the display name of this battler.
