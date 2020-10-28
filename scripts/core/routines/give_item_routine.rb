@@ -1,5 +1,10 @@
 class GiveItemRoutine
   def self.run(pokemon, item, viewport, &block)
+    validate \
+        pokemon => Pokemon,
+        item => [Symbol, Item],
+        viewport => [Viewport, NilClass]
+    item = Item.get(item)
     msgwin = MessageWindow.new(
       y: 224,
       z: 99999,

@@ -159,8 +159,7 @@ class PartyUI
       choices: press_pokemon_commands,
       viewport: @viewport
     )
-    @sprites["window"].width = 288
-    @sprites["window"].text = "Do what with this " + symbol(:pkmn) + "?"
+    set_command_help_text
     loop do
       cmd = cmdwin.get_choice { update }
       ret = handle_command(cmd, cmdwin)
@@ -168,8 +167,7 @@ class PartyUI
       return if ret == :return
     end
     cmdwin.dispose
-    @sprites["window"].width = 368
-    @sprites["window"].text = @helptext
+    set_main_help_text
   end
 
   def handle_command(cmd, cmdwin)
@@ -182,20 +180,18 @@ class PartyUI
       summary.main
       summary.dispose { update }
     when "SWITCH"
+      cmdwin.visible = false
       start_switching
-      cmdwin.dispose
       return :return
     when "ITEM"
       cmdwin.visible = false
-      ret = press_item
+      ret = press_item(cmdwin)
       if ret == :return
         # Quit command menu
         return :return
       else
         cmdwin.visible = true
         cmdwin.set_index(0, false)
-        @sprites["window"].width = 288
-        @sprites["window"].text = "Do what with this " + symbol(:pkmn) + "?"
       end
     when "CANCEL" # Quit command window
       return :break
@@ -207,7 +203,7 @@ class PartyUI
     return ["GIVE", "TAKE", "CANCEL"]
   end
 
-  def press_item
+  def press_item(cmdwin)
     itemwin = ChoiceWindow.new(
       x: System.width,
       ox: :right,
@@ -218,52 +214,53 @@ class PartyUI
       choices: press_item_commands,
       viewport: @viewport
     )
-    @sprites["window"].width = 336
-    @sprites["window"].text = "Do what with an item?"
+    set_item_help_text
     choice = itemwin.get_choice { update }
-    ret = handle_item_command(choice, itemwin)
+    ret = handle_item_command(choice, cmdwin, itemwin)
+    itemwin.dispose if !itemwin.disposed?
     return :return if ret == :return
   end
 
-  def handle_item_command(choice, itemwin)
+  def handle_item_command(choice, cmdwin, itemwin)
     case choice
     when "GIVE"
-      ret = give_item(itemwin)
-      itemwin.dispose
+      ret = give_item(cmdwin, itemwin)
       return :return if ret
     when "TAKE"
-      take_item(itemwin)
       itemwin.dispose
+      take_item
+      set_main_help_text
       return :return
     else # Cancel
       itemwin.dispose
+      set_command_help_text
     end
   end
 
-  def give_item(cmdwin = nil, itemwin = nil)
-    routine = GiveItemRoutine.new(self)
-    routine.itemwin = itemwin
-    ret = routine.start
-    @sprites["window"].visible = true
-    itemwin.dispose if itemwin && !itemwin.disposed?
-    if ret.nil?
-      @sprites["window"].width = 288
-      @sprites["window"].text = "Do what with this " + symbol(:pkmn) + "?"
+  def give_item(cmdwin, itemwin)
+    bag = BagUI.new(:choose_item) { update }
+    itemwin.dispose
+    bag.main
+    item = bag.chosen_item
+    if item.nil?
+      set_command_help_text
       cmdwin.visible = true
+      wait(0.3)
       cmdwin.set_index(0, false)
+      wait(0.3)
     else
-      cmdwin.dispose if cmdwin
-      @sprites["window"].width = 368
-      @sprites["window"].text = @helptext
+      set_main_help_text
     end
-    routine.stop
-    return ret
+    bag.dispose { update }
+    if !item.nil?
+      success = GiveItemRoutine.run(@party[@index], item, @viewport) { update }
+      @sprites["panel_#{@index}"].refresh_item
+    end
   end
 
-  def take_item(itemwin = nil)
+  def take_item
     pokemon = @party[@index]
     @sprites["window"].visible = false
-    itemwin.visible = false if itemwin
     text = ""
     if pokemon.has_item?
       text = "Received the " + pokemon.item.name + "\nfrom " + pokemon.name + "."
@@ -290,13 +287,13 @@ class PartyUI
     msgwin.show
     msgwin.dispose
     @sprites["panel_#{@index}"].refresh_item
+    @sprites["window"].visible = true
   end
 
   def start_switching
     @switching = @index
     @sprites["panel_#{@index}"].switching = true
-    @sprites["window"].width = 368
-    @sprites["window"].text = "Move to where?"
+    set_switching_help_text
   end
 
   def switch_pokemon
@@ -345,7 +342,7 @@ class PartyUI
     for i in 0...@party.size
       @sprites["panel_#{i}"].switching = false
     end
-    @sprites["window"].text = @helptext
+    set_main_help_text
   end
 
   def restart
@@ -362,5 +359,29 @@ class PartyUI
     @sprites.each_value(&:dispose)
     @viewport.dispose
     System.hide_overlay { yield if block_given? }
+  end
+
+  def set_command_help_text
+    @sprites["window"].width = 288
+    @sprites["window"].text = "Do what with this " + symbol(:pkmn) + "?"
+    @sprites["window"].update
+  end
+
+  def set_item_help_text
+    @sprites["window"].width = 336
+    @sprites["window"].text = "Do what with an item?"
+    @sprites["window"].update
+  end
+
+  def set_main_help_text
+    @sprites["window"].width = 368
+    @sprites["window"].text = @helptext
+    @sprites["window"].update
+  end
+
+  def set_switching_help_text
+    @sprites["window"].width = 368
+    @sprites["window"].text = "Move to where?"
+    @sprites["window"].update
   end
 end

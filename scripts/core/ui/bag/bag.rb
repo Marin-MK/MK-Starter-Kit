@@ -2,8 +2,10 @@ class BagUI
   attr_reader :pocket
   attr_reader :viewport
   attr_reader :path
+  attr_reader :chosen_item
 
-  def initialize
+  def initialize(mode = :default)
+    @mode = mode
     System.show_overlay { yield if block_given? }
     wait(0.3)
     @path = "gfx/ui/bag/"
@@ -247,6 +249,11 @@ class BagUI
   end
 
   def press_item
+    if @mode == :choose_item
+      @chosen_item = selected_item[:item]
+      stop
+      return
+    end
     Audio.se_play("audio/se/menu_select")
     set_footer(true)
     item = Item.get(selected_item[:item])
