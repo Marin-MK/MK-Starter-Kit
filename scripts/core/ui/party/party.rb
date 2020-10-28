@@ -169,7 +169,9 @@ class PartyUI
       @return_value = @index
       return :break
     when "SUMMARY"
-      SummaryUI.start(self)
+      summary = SummaryUI.new(@party, @index)
+      summary.main
+      summary.dispose
     when "SWITCH"
       start_switching
       cmdwin.dispose
@@ -342,7 +344,6 @@ class PartyUI
   end
 
   def dispose
-    return if @viewport.disposed?
     System.show_overlay { update }
     stop
     @sprites.each_value(&:dispose)

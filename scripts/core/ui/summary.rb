@@ -1,15 +1,13 @@
-class SummaryUI < BaseUI
-  def start(party, party_index = nil)
-    super(path: "summary")
-    if party.is_a?(PartyUI)
-      @party_ui = party
-      @party = @party_ui.party
-      @party_index = @party_ui.index
-    else
-      @party = party
-      @party_index = party_index
-    end
-    @pokemon = @party[@party_index]
+class SummaryUI
+  def initialize(party = $trainer.party, index = 0)
+    System.show_overlay { yield if block_given? }
+    @path = "gfx/ui/summary/"
+    @party = party
+    @index = 0
+    @pokemon = @party[@index]
+    @viewport = Viewport.new(0, 0, System.width, System.height)
+    @viewport.z = 99999
+    @sprites = {}
     @sprites["header"] = Sprite.new(@viewport)
     suffix = @pokemon.shiny? ? "_shiny" : ""
     @sprites["bg_1"] = Sprite.new(@viewport)
@@ -42,15 +40,17 @@ class SummaryUI < BaseUI
     elsif @pokemon.hp / @pokemon.totalhp.to_f <= 0.5
       @amplitude = 2
     end
-    change_pokemon(@party_index)
+    change_pokemon(@index)
+    System.hide_overlay
   end
 
   def change_pokemon(new_index)
-    @party_index = new_index
-    @pokemon = @party[@party_index]
+    @index = new_index
+    @pokemon = @party[@index]
     @sprites["vartext"].bitmap.clear if @sprites["vartext"]
     @sprites["text"].bitmap.clear if @sprites["text"]
     @sprites["shiny"].dispose if @sprites["shiny"]
+    @sprites.delete("shiny")
     @sprites["bg_1"].bitmap.dispose if @sprites["bg_1"].bitmap
     @sprites["bg_2"].bitmap.dispose if @sprites["bg_2"].bitmap
     if @pokemon.shiny?
@@ -145,22 +145,29 @@ class SummaryUI < BaseUI
       )
     end
     @sprites["type1"].dispose if @sprites["type1"]
+    @sprites.delete("type1")
     @sprites["type2"].dispose if @sprites["type2"]
+    @sprites.delete("type2")
     if @page == 2
       @sprites["vartext"].visible = false
       @sprites["hpbar"].dispose
+      @sprites.delete("hpbar")
       @sprites["hp"].dispose
+      @sprites.delete("hp")
       @sprites["expbar"].dispose
+      @sprites.delete("expbar")
       @sprites["exp"].dispose
+      @sprites.delete("exp")
       sprites["panel"].z = 1
       frames = framecount(0.08)
       sprites["panel"].x += System.width
       for i in 1..frames
         System.update
-        update_sprites
+        update
         sprites["panel"].x -= System.width / frames.to_f
       end
       @sprites["panel"].dispose
+      @sprites.delete("panel")
       @sprites["vartext"].bitmap.clear
       @sprites["vartext"].visible = true
       sprites["panel"].z = 0
@@ -273,43 +280,46 @@ class SummaryUI < BaseUI
     @sprites["header"].set_bitmap(@path + "page_2_header")
     sprites = preload_page_2
     @sprites["hpbar"].dispose if @sprites["hpbar"]
+    @sprites.delete("hpbar")
     @sprites["hp"].dispose if @sprites["hp"]
+    @sprites.delete("hp")
     @sprites["expbar"].dispose if @sprites["expbar"]
+    @sprites.delete("expbar")
     @sprites["exp"].dispose if @sprites["exp"]
+    @sprites.delete("exp")
     if @page == 1
       @sprites["vartext"].visible = false
       @sprites["type1"].dispose
+      @sprites.delete("type1")
       @sprites["type2"].dispose if @sprites["type2"]
+      @sprites.delete("type2")
       @sprites["panel"].z = 1
       frames = framecount(0.08)
       for i in 1..frames
         System.update
-        update_sprites
+        update
         @sprites["panel"].x += System.width / frames.to_f
       end
       @sprites["panel"].dispose
+      @sprites.delete("panel")
       @sprites["vartext"].bitmap.clear
       @sprites["vartext"].visible = true
     elsif @page == 3
       @sprites["vartext"].visible = false
       for i in 0...4
         @sprites["type_#{i}"].dispose if @sprites["type_#{i}"]
+        @sprites.delete("type_#{i}")
       end
       sprites["panel"].z = 1
       frames = framecount(0.08)
-      positions = {}
-      sprites.keys.each do |key|
-        positions[key] = sprites[key].x
-        sprites[key].x += System.width
-      end
+      sprites.keys.each { |key| sprites[key].x += System.width }
       for i in 1..frames
         System.update
-        update_sprites
-        sprites.keys.each do |key|
-          sprites[key].x = positions[key] + System.width / frames.to_f
-        end
+        update
+        sprites.keys.each { |key| sprites[key].x -= System.width / frames.to_f }
       end
       @sprites["panel"].dispose
+      @sprites.delete("panel")
       @sprites["vartext"].bitmap.clear
       @sprites["vartext"].visible = true
       sprites["panel"].z = 0
@@ -385,31 +395,43 @@ class SummaryUI < BaseUI
     if @page == 2
       @sprites["vartext"].visible = false
       @sprites["hpbar"].dispose
+      @sprites.delete("hpbar")
       @sprites["hp"].dispose
+      @sprites.delete("hp")
       @sprites["expbar"].dispose
+      @sprites.delete("expbar")
       @sprites["exp"].dispose
+      @sprites.delete("exp")
       @sprites["panel"].z = 1
       frames = framecount(0.08)
       for i in 1..frames
         System.update
-        update_sprites
+        update
         @sprites["panel"].x += System.width / frames.to_f
       end
       @sprites["panel"].dispose
+      @sprites.delete("panel")
       @sprites["vartext"].bitmap.clear
       @sprites["vartext"].visible = true
     elsif @page == 4
       @sprites["move_panel"].dispose if @sprites["move_panel"]
+      @sprites.delete("move_panel")
       if @sprites["shiny"]
         @sprites["shiny"].x = 204
         @sprites["shiny"].y = 72
       end
       @sprites["movetext"].dispose
+      @sprites.delete("movetext")
       @sprites["panel"].dispose
+      @sprites.delete("panel")
       @sprites["type1"].dispose
+      @sprites.delete("type1")
       @sprites["type2"].dispose if @sprites["type2"]
+      @sprites.delete("type2")
       @sprites["icon"].dispose
+      @sprites.delete("icon")
       @sprites["selector"].dispose
+      @sprites.delete("selector")
       @sprites["ball"].visible = true
       @sprites["pokemon"].visible = true
       @sprites["status"].visible = true
@@ -428,6 +450,7 @@ class SummaryUI < BaseUI
     for i in 0...4
       move = @pokemon.moves[i]
       @sprites["type_#{i}"].dispose if @sprites["type_#{i}"]
+      @sprites.delete("type_#{i}")
       if move
         @sprites["type_#{i}"] = TypeIcon.new(move.type, @viewport)
         @sprites["type_#{i}"].x = 246
@@ -575,20 +598,19 @@ class SummaryUI < BaseUI
     @swapping_move = nil
     @j = nil
     @sprites["selector_blue"].dispose
+    @sprites.delete("selector_blue")
     @sprites["selector"].visible = true
   end
 
-  def update_sprites
+  def update
+    @sprites.each_value(&:update)
     if @page == 4
-      super(no_update: ["icon"])
       if @j # Swapping move
         @j += 1
         if @j % framecount(0.25) == 0
           @sprites["selector"].visible = !@sprites["selector"].visible
         end
       end
-    else
-      super()
     end
     # Initial bounce animation
     @i += 1 if @i
@@ -620,95 +642,102 @@ class SummaryUI < BaseUI
     end
   end
 
-  def update
-    super
-    if Input.right? && (@page == 1 || @page == 2)
-      Audio.se_play("audio/se/menu_select")
-      if @page == 1
-        load_page_2
-      elsif @page == 2
-        load_page_3
-      end
-    end
-    if Input.left? && (@page == 2 || @page == 3)
-      Audio.se_play("audio/se/menu_select")
-      if @page == 2
-        load_page_1
-      elsif @page == 3
-        load_page_2
-      end
-    end
-    if Input.confirm? && (@page == 1 || @page == 3 || @page == 4)
-      Audio.se_play("audio/se/menu_select")
-      if @page == 1
-        stop
-      elsif @page == 3
-        load_page_3_details
-      elsif @page == 4
-        if @move_index == -1 # Cancel
+  def main
+    loop do
+      System.update
+      update
+      if Input.right? && (@page == 1 || @page == 2)
+        Audio.se_play("audio/se/menu_select")
+        if @page == 1
+          load_page_2
+        elsif @page == 2
           load_page_3
-        else
-          swap_move
         end
       end
-    end
-    if Input.down?
-      if @page == 4
-        @move_index += 1
-        if !@pokemon.moves[@move_index]
-          if @swapping_move
-            @move_index = 0
+      if Input.left? && (@page == 2 || @page == 3)
+        Audio.se_play("audio/se/menu_select")
+        if @page == 2
+          load_page_1
+        elsif @page == 3
+          load_page_2
+        end
+      end
+      if Input.confirm? && (@page == 1 || @page == 3 || @page == 4)
+        Audio.se_play("audio/se/menu_select")
+        if @page == 1
+          stop
+        elsif @page == 3
+          load_page_3_details
+        elsif @page == 4
+          if @move_index == -1 # Cancel
+            load_page_3
           else
-            @move_index = -1
+            swap_move
           end
         end
-        Audio.se_play("audio/se/menu_select")
-        update_move_text
-      else
-        if @party_index < @party.size - 1
-          change_pokemon(@party_index + 1)
-        end
       end
-    end
-    if Input.up?
-      if @page == 4
-        if @move_index == -1
-          @move_index = @pokemon.moves.size - 1
-        else
-          @move_index -= 1
-        end
-        if @move_index == -1 && @swapping_move
-          @move_index = @pokemon.moves.size - 1
-        end
-        Audio.se_play("audio/se/menu_select")
-        update_move_text
-      else
-        if @party_index > 0
-          change_pokemon(@party_index - 1)
-        end
-      end
-    end
-    if Input.cancel?
-      if @page == 4
-        if @swapping_move
+      if Input.down?
+        if @page == 4
+          @move_index += 1
+          if !@pokemon.moves[@move_index]
+            if @swapping_move
+              @move_index = 0
+            else
+              @move_index = -1
+            end
+          end
           Audio.se_play("audio/se/menu_select")
-          stop_swap_move
+          update_move_text
         else
-          load_page_3
+          if @index < @party.size - 1
+            change_pokemon(@index + 1)
+          end
         end
-      else
-        Audio.se_play("audio/se/menu_select")
-        stop
       end
+      if Input.up?
+        if @page == 4
+          if @move_index == -1
+            @move_index = @pokemon.moves.size - 1
+          else
+            @move_index -= 1
+          end
+          if @move_index == -1 && @swapping_move
+            @move_index = @pokemon.moves.size - 1
+          end
+          Audio.se_play("audio/se/menu_select")
+          update_move_text
+        else
+          if @index > 0
+            change_pokemon(@index - 1)
+          end
+        end
+      end
+      if Input.cancel?
+        if @page == 4
+          if @swapping_move
+            Audio.se_play("audio/se/menu_select")
+            stop_swap_move
+          else
+            load_page_3
+          end
+        else
+          Audio.se_play("audio/se/menu_select")
+          stop
+        end
+      end
+      break if @break
     end
   end
 
   def stop
-    if @party_ui
-      @party_ui.sprites["panel_#{@party_ui.index}"].deselect
-      @party_ui.index = @party_index
-      @party_ui.sprites["panel_#{@party_index}"].select
-    end
-    super
+    @break = true
+  end
+
+  def dispose
+    System.show_overlay
+    stop
+    @sprites.each_value(&:dispose)
+    @viewport.dispose
+    System.hide_overlay { yield if block_given? }
   end
 end
