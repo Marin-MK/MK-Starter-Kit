@@ -66,7 +66,8 @@ intro/introscene.rb: Intro Scene
 ui/base.rb: Base UI
 ui/pause_menu.rb: Pause Menu UI
 ui/trainer_card.rb: Trainer Card UI
-ui/bag.rb: Bag UI
+ui/bag/bag.rb: Bag UI
+ui/bag/bag_sprite.rb: Bag Sprite
 ui/party/party.rb: Party UI
 ui/party/big_panel.rb: Big Panel
 ui/party/panel.rb: Panel

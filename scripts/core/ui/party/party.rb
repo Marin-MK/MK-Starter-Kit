@@ -5,11 +5,14 @@ class PartyUI
   attr_reader :path
   attr_accessor :index
 
-  def initialize(party = $trainer.party)
+  def initialize(party = $trainer.party, mode = :default, helptext = nil)
     validate_array party => Pokemon
+    validate helptext => [String, NilClass]
     raise "Party is empty!" if party.size == 0
     System.show_overlay { yield if block_given? }
     @party = party
+    @mode = mode
+    @helptext = helptext || "Choose a POKéMON."
     @path = "gfx/ui/party/"
     @viewport = Viewport.new(0, 0, System.width, System.height)
     @viewport.z = 99999
@@ -21,7 +24,7 @@ class PartyUI
       viewport: @viewport,
       width: 368,
       height: 64,
-      text: "Choose a POKéMON.",
+      text: @helptext,
       color: Color::GREYBASE,
       shadow_color: Color::GREYSHADOW,
       letter_by_letter: false,
@@ -102,6 +105,7 @@ class PartyUI
         if @switching
           stop_switching
         else
+          @index = -1
           Audio.se_play("audio/se/menu_select")
           stop
         end
@@ -112,6 +116,7 @@ class PartyUI
           if @switching
             stop_switching
           else
+            @index = -1
             stop
           end
         else # A Pokemon
@@ -138,6 +143,10 @@ class PartyUI
   end
 
   def press_pokemon
+    if @mode == :choose_pokemon
+      stop
+      return
+    end
     Audio.se_play("audio/se/menu_select")
     pokemon = @party[@index]
     cmdwin = ChoiceWindow.new(
@@ -160,7 +169,7 @@ class PartyUI
     end
     cmdwin.dispose
     @sprites["window"].width = 368
-    @sprites["window"].text = "Choose a POKéMON."
+    @sprites["window"].text = @helptext
   end
 
   def handle_command(cmd, cmdwin)
@@ -169,9 +178,9 @@ class PartyUI
       @return_value = @index
       return :break
     when "SUMMARY"
-      summary = SummaryUI.new(@party, @index)
+      summary = SummaryUI.new(@party, @index) { update }
       summary.main
-      summary.dispose
+      summary.dispose { update }
     when "SWITCH"
       start_switching
       cmdwin.dispose
@@ -245,7 +254,7 @@ class PartyUI
     else
       cmdwin.dispose if cmdwin
       @sprites["window"].width = 368
-      @sprites["window"].text = "Choose a POKéMON."
+      @sprites["window"].text = @helptext
     end
     routine.stop
     return ret
@@ -336,7 +345,11 @@ class PartyUI
     for i in 0...@party.size
       @sprites["panel_#{i}"].switching = false
     end
-    @sprites["window"].text = "Choose a POKéMON."
+    @sprites["window"].text = @helptext
+  end
+
+  def restart
+    @break = false
   end
 
   def stop

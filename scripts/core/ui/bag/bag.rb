@@ -1,11 +1,18 @@
-class BagUI < BaseUI
+class BagUI
   attr_reader :pocket
+  attr_reader :viewport
+  attr_reader :path
 
-  def start
-    super(path: "bag")
-    @suffix = ["_male", "_female"][$trainer.gender]
+  def initialize
+    System.show_overlay { yield if block_given? }
+    wait(0.3)
+    @path = "gfx/ui/bag/"
+    @viewport = Viewport.new(0, 0, System.width, System.height)
+    @viewport.z = 99999
+    @sprites = {}
+    suffix = ["_male", "_female"][$trainer.gender]
     @sprites["background"] = Sprite.new(@viewport)
-    @sprites["background"].set_bitmap(@path + "background" + @suffix)
+    @sprites["background"].set_bitmap(@path + "background" + suffix)
     @sprites["bgtext"] = Sprite.new(@viewport)
     @sprites["bgtext"].set_bitmap(System.width, System.height)
     @sprites["bgtext"].z = 1
@@ -52,7 +59,7 @@ class BagUI < BaseUI
     @list_idx = $trainer.bag.indexes[@pocket][:list_idx]
     @sprites["selector"].y = 8 + 32 * @list_idx
     draw_pocket(false)
-    update_sprites
+    hide_black { update }
   end
 
   def pocket_idx
@@ -160,7 +167,7 @@ class BagUI < BaseUI
       @sprites["selector"].visible = true
       @sprites["arrow_up"].visible = true
       @sprites["arrow_down"].visible = true
-      update_sprites
+      update
     end
     draw_list
     @sprites["arrow_left"].visible = pocket_idx > 0
@@ -175,42 +182,47 @@ class BagUI < BaseUI
     return @items[item_idx]
   end
 
-  def update
-    super
-    stop if Input.cancel?
-    if Input.confirm?
-      if item_idx == @items.size # Cancel
+  def main
+    loop do
+      System.update
+      update
+      if Input.repeat_down?(0.5, 0.18)
+        if @list_idx == 3 && @items.size - item_idx > 2
+          @top_idx += 1
+          draw_list(true)
+        elsif @items.size - item_idx > 0
+          @list_idx += 1
+          draw_list(true)
+        end
+      elsif Input.repeat_up?(0.5, 0.18)
+        if @list_idx == 2 && item_idx > 2
+          @top_idx -= 1
+          draw_list(true)
+        elsif item_idx > 0
+          @list_idx -= 1
+          draw_list(true)
+        end
+      elsif Input.left? && pocket_idx > 0
+        @pocket = Trainer::Bag::POCKETS[pocket_idx - 1]
+        draw_pocket
+      elsif Input.right? && pocket_idx < Trainer::Bag::POCKETS.size - 1
+        @pocket = Trainer::Bag::POCKETS[pocket_idx + 1]
+        draw_pocket
+      elsif Input.confirm?
+        if item_idx == @items.size # Cancel
+          stop
+        else
+          press_item
+        end
+      elsif Input.cancel?
         stop
-      else
-        select_item
       end
+      break if @break
     end
-    if Input.repeat_down?(0.5, 0.18)
-      if @list_idx == 3 && @items.size - item_idx > 2
-        @top_idx += 1
-        draw_list(true)
-      elsif @items.size - item_idx > 0
-        @list_idx += 1
-        draw_list(true)
-      end
-    end
-    if Input.repeat_up?(0.5, 0.18)
-      if @list_idx == 2 && item_idx > 2
-        @top_idx -= 1
-        draw_list(true)
-      elsif item_idx > 0
-        @list_idx -= 1
-        draw_list(true)
-      end
-    end
-    if Input.left? && pocket_idx > 0
-      @pocket = Trainer::Bag::POCKETS[pocket_idx - 1]
-      draw_pocket
-    end
-    if Input.right? && pocket_idx < Trainer::Bag::POCKETS.size - 1
-      @pocket = Trainer::Bag::POCKETS[pocket_idx + 1]
-      draw_pocket
-    end
+  end
+
+  def update
+    @sprites.each_value(&:update)
   end
 
   def set_footer(selected)
@@ -230,7 +242,11 @@ class BagUI < BaseUI
     end
   end
 
-  def select_item
+  def press_item_commands(item)
+    return ["USE", "GIVE", "TOSS", "CANCEL"]
+  end
+
+  def press_item
     Audio.se_play("audio/se/menu_select")
     set_footer(true)
     item = Item.get(selected_item[:item])
@@ -247,7 +263,7 @@ class BagUI < BaseUI
       shadow_color: Color::GREYSHADOW,
       letter_by_letter: false
     )
-    choices = ["USE", "GIVE", "TOSS", "CANCEL"]
+    msgwin.update
     cmdwin = ChoiceWindow.new(
       x: 480,
       ox: :right,
@@ -255,194 +271,159 @@ class BagUI < BaseUI
       oy: :bottom,
       z: 3,
       width: 144,
-      choices: choices,
+      choices: press_item_commands(item),
       viewport: @viewport
     )
-    loop do
-      cmd = cmdwin.get_choice { update_sprites }
-      case cmd
-      when "USE"
-
-      when "GIVE"
-        routine = GiveItemRoutine.new(self)
-        stop_item_selection(cmdwin, msgwin)
-        routine.start
-        routine.stop
-        break
-      when "TOSS"
-        value = 0
-        cmdwin.visible = false
-        if selected_item[:count] == 1
-          value = 1
-        else
-          msgwin.width = 288
-          msgwin.text = "Toss out how many\n" + item.name + "(s)?"
-          numwin = NumericChoiceWindow.new(
-            x: 368,
-            y: 224,
-            z: 3,
-            max: selected_item[:count],
-            viewport: @viewport
-          )
-          value = numwin.get_choice
-          numwin.dispose
-        end
-        if value > 0
-          msgwin.width = 272
-          msgwin.text = "Throw away #{value} of this item?"
-          confirmwin = ChoiceWindow.new(
-            x: 352,
-            y: 224,
-            z: 3,
-            width: 128,
-            line_y_space: -4,
-            choices: ["YES", "NO"],
-            viewport: @viewport
-          )
-          toss = confirmwin.get_choice == "YES"
-          confirmwin.dispose
-          if toss
-            msgwin.width = 392
-            msgwin.show("Threw away #{value}\n" + item.name + "(s).")
-            $trainer.bag.remove_item(item, value)
-            draw_list
-          end
-          msgwin.dispose
-        end
-        break
-      when "CANCEL"
-        break
-      end
-    end
-    stop_item_selection(cmdwin, msgwin)
-  end
-
-  def stop_item_selection(cmdwin, msgwin)
+    cmd = cmdwin.get_choice { update }
+    ret = handle_command(item, cmd, cmdwin, msgwin)
     set_footer(false)
     cmdwin.dispose if !cmdwin.disposed?
     msgwin.dispose if !msgwin.disposed?
   end
 
-  def stop
-    if !stopped?
-      Audio.se_play("audio/se/menu_select")
+  def handle_command(item, cmd, cmdwin, msgwin)
+    case cmd
+    when "USE"
+      use_item(item, cmdwin, msgwin)
+    when "GIVE"
+      give_item(item, cmdwin, msgwin)
+    when "TOSS"
+      toss_item(item, cmdwin, msgwin)
     end
-    super
+  end
+
+  def use_item(item, cmdwin, msgwin)
+
+  end
+
+  def give_item(item, cmdwin, msgwin)
+    party = PartyUI.new($trainer.party, :choose_pokemon, "Give to which POKéMON?") { update }
+    set_footer(false)
+    cmdwin.dispose
+    msgwin.dispose
+    loop do
+      party.main
+      if party.index == -1
+        break
+      else
+        pokemon = $trainer.party[party.index]
+        success = GiveItemRoutine.run(pokemon, item, party.viewport) { party.update }
+        if success
+          if !$trainer.bag.has_item?(item)
+            if @top_idx == 0
+              @list_idx -= 1 if @list_idx > 0
+            else
+              @top_idx -= 1
+            end
+          end
+          draw_list
+          break
+        end
+      end
+      party.restart
+    end
+    party.dispose { update }
+  end
+
+  def toss_item(item, cmdwin, msgwin)
+    value = 0
+    cmdwin.visible = false
+    if selected_item[:count] == 1
+      value = 1
+    else
+      msgwin.width = 288
+      msgwin.text = "Toss out how many\n" + item.name + "(s)?"
+      msgwin.update
+      numwin = NumericChoiceWindow.new(
+        x: 368,
+        y: 224,
+        z: 3,
+        max: selected_item[:count],
+        viewport: @viewport
+      )
+      value = numwin.get_choice
+      numwin.dispose
+    end
+    if value > 0
+      msgwin.width = 272
+      msgwin.text = "Throw away #{value} of this item?"
+      msgwin.update
+      confirmwin = ChoiceWindow.new(
+        x: 352,
+        y: 224,
+        z: 3,
+        width: 128,
+        line_y_space: -4,
+        choices: ["YES", "NO"],
+        viewport: @viewport
+      )
+      toss = confirmwin.get_choice == "YES"
+      confirmwin.dispose
+      if toss
+        msgwin.width = 392
+        msgwin.show("Threw away #{value}\n" + item.name + "(s).")
+        $trainer.bag.remove_item(item, value)
+        draw_list
+      end
+    end
+  end
+
+  def stop
+    @break = true
+  end
+
+  def dispose
+    show_black { update }
+    wait(0.3)
+    stop
+    @sprites.each_value(&:dispose)
+    @viewport.dispose
+    System.hide_overlay { yield if block_given? }
   end
 
   def show_black(mode = nil)
-    if mode == :opening || mode == :closing
-      System.show_overlay { update }
-    else
-      black = Sprite.new(@viewport)
-      black.set_bitmap(System.width, System.height)
-      black.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
-      black.opacity = 0
-      black.z = 99999
-      sliding = Sprite.new(@viewport)
-      sliding.set_bitmap(System.width, System.height)
-      sliding.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
-      sliding.src_rect.height = 0
-      sliding.z = 99999
-      frames = framecount(0.15)
-      for i in 1..frames
-        System.update
-        update_sprites
-        sliding.src_rect.height += System.height / frames.to_f
-        black.opacity += 255.0 / frames
-      end
-      black.dispose
-      sliding.dispose
-      System.show_overlay 0
+    black = Sprite.new(@viewport)
+    black.set_bitmap(System.width, System.height)
+    black.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
+    black.opacity = 0
+    black.z = 99999
+    sliding = Sprite.new(@viewport)
+    sliding.set_bitmap(System.width, System.height)
+    sliding.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
+    sliding.src_rect.height = 0
+    sliding.z = 99999
+    frames = framecount(0.15)
+    for i in 1..frames
+      System.update
+      yield if block_given?
+      sliding.src_rect.height += System.height / frames.to_f
+      black.opacity += 255.0 / frames
     end
+    black.dispose
+    sliding.dispose
+    System.show_overlay 0
   end
 
-  def hide_black(mode = nil)
-    if mode == :opening || mode == :closing
-      System.hide_overlay { update }
-    else
-      black = Sprite.new(@viewport)
-      black.set_bitmap(System.width, System.height)
-      black.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
-      black.z = 99999
-      sliding = Sprite.new(@viewport)
-      sliding.set_bitmap(System.width, System.height)
-      sliding.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
-      sliding.z = 99999
-      frames = framecount(0.15)
-      increment_opacity = 255.0 / frames
-      increment_height = System.height / frames.to_f
-      System.hide_overlay 0
-      for i in 1..frames
-        System.update
-        update_sprites
-        sliding.src_rect.height -= System.height / frames.to_f
-        black.opacity -= 255.0 / frames
-      end
-      black.dispose
-      sliding.dispose
+  def hide_black
+    black = Sprite.new(@viewport)
+    black.set_bitmap(System.width, System.height)
+    black.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
+    black.z = 99999
+    sliding = Sprite.new(@viewport)
+    sliding.set_bitmap(System.width, System.height)
+    sliding.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
+    sliding.z = 99999
+    frames = framecount(0.15)
+    increment_opacity = 255.0 / frames
+    increment_height = System.height / frames.to_f
+    System.hide_overlay 0
+    for i in 1..frames
+      System.update
+      yield if block_given?
+      sliding.src_rect.height -= System.height / frames.to_f
+      black.opacity -= 255.0 / frames
     end
-  end
-
-
-
-  class BagSprite < Sprite
-    def initialize(gender, ui)
-      @gender = gender
-      @ui = ui
-      super(@ui.viewport)
-      pocket = $trainer.bag.last_pocket
-      @suffix = ["_male", "_female"][$trainer.gender]
-      self.set_bitmap(@ui.path + "bag" + @suffix)
-      self.src_rect.width = self.bitmap.width / (Trainer::Bag::POCKETS.size + 1)
-      self.ox = self.bitmap.width / 8
-      self.oy = self.bitmap.height / 2
-      self.z = 2
-      @shadow = Sprite.new(@ui.viewport)
-      @shadow.set_bitmap(@ui.path + "bag_shadow")
-      @shadow.y = 96
-      @shadow.z = 1
-      pidx = Trainer::Bag::POCKETS.index(pocket)
-      pidx = 0 if pidx < 1
-      self.src_rect.x = self.src_rect.width * (pidx + 1)
-    end
-
-    def pocket=(value)
-      self.src_rect.x = self.src_rect.width * (value + 1)
-    end
-
-    def x=(value)
-      super(value + self.ox)
-      @shadow.x = value
-    end
-
-    def y=(value)
-      super(value + self.oy)
-      @shadow.y = value + 96
-    end
-
-    def shake
-      @i = 0
-      self.angle = -2
-    end
-
-    def update
-      super
-      if @i
-        @i += 1
-        # One angle change takes 0.064 seconds and it can be interrupted.
-        case @i
-        when framecount(0.064 * 1)
-          self.angle = 0
-        when framecount(0.064 * 2)
-          self.angle = 2
-        when framecount(0.064 * 3)
-          self.angle = -6
-        when framecount(0.064 * 4)
-          self.angle = 0
-          @i = nil
-        end
-      end
-    end
+    black.dispose
+    sliding.dispose
   end
 end

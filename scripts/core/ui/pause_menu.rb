@@ -78,7 +78,9 @@ class PauseMenuUI < BaseUI
         party.main
         party.dispose
       when "BAG"
-        BagUI.start
+        bag = BagUI.new
+        bag.main
+        bag.dispose
       when $trainer.name
         TrainerCardUI.start
       when "SAVE"

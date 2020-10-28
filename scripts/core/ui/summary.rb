@@ -1,5 +1,7 @@
 class SummaryUI
   def initialize(party = $trainer.party, index = 0)
+    validate_array party => Pokemon
+    validate index => Integer
     System.show_overlay { yield if block_given? }
     @path = "gfx/ui/summary/"
     @party = party
@@ -41,7 +43,7 @@ class SummaryUI
       @amplitude = 2
     end
     change_pokemon(@index)
-    System.hide_overlay
+    System.hide_overlay { update }
   end
 
   def change_pokemon(new_index)
@@ -734,7 +736,7 @@ class SummaryUI
   end
 
   def dispose
-    System.show_overlay
+    System.show_overlay { update }
     stop
     @sprites.each_value(&:dispose)
     @viewport.dispose
