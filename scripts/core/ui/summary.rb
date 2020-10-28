@@ -605,7 +605,11 @@ class SummaryUI
   end
 
   def update
-    @sprites.each_value(&:update)
+    # Update alls prites except "icon"
+    @sprites.each_key do |key|
+      next if key == "icon"
+      @sprites[key].update
+    end
     if @page == 4
       if @j # Swapping move
         @j += 1

@@ -136,7 +136,12 @@ class MessageWindow < BaseWindow
       @arrow_counter = 0 if @arrow_counter == 32
     end
     @update.call if @update.is_a?(Proc)
-    @draw_counter_speed = 1
+    @draw_counter_speed = 2
+    if $trainer
+      @draw_counter_speed = 1 if $trainer.options.text_speed == :SLOW
+      @draw_counter_speed = 3 if $trainer.options.text_speed == :MID
+      @draw_counter_speed = 4 if $trainer.options.text_speed == :FAST
+    end
     if @move_up_counter > 0
       hide_arrow if @arrow && @arrow.visible
       @move_up_counter -= 1
@@ -156,8 +161,6 @@ class MessageWindow < BaseWindow
         if @letter_by_letter
           if @move_up_counter == 0 && (Input.press_confirm? || Input.press_cancel?)
             @draw_counter_speed = 3
-          else
-            @draw_counter_speed = 1
           end
           @draw_counter += 1
           if @draw_counter % (5 - @draw_counter_speed) == 0

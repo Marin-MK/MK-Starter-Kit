@@ -245,9 +245,7 @@ class PartyUI
     if item.nil?
       set_command_help_text
       cmdwin.visible = true
-      wait(0.3)
       cmdwin.set_index(0, false)
-      wait(0.3)
     else
       set_main_help_text
     end
@@ -255,7 +253,9 @@ class PartyUI
     if !item.nil?
       success = GiveItemRoutine.run(@party[@index], item, @viewport) { update }
       @sprites["panel_#{@index}"].refresh_item
+      return true
     end
+    return false
   end
 
   def take_item
