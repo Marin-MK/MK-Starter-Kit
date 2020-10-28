@@ -67,7 +67,9 @@ ui/base.rb: Base UI
 ui/pause_menu.rb: Pause Menu UI
 ui/trainer_card.rb: Trainer Card UI
 ui/bag.rb: Bag UI
-ui/party.rb: Party UI
+ui/party/party.rb: Party UI
+ui/party/big_panel.rb: Big Panel
+ui/party/panel.rb: Panel
 ui/summary.rb: Summary UI
 ui/save_menu.rb: Save UI
 ui/options_menu.rb: Options UI

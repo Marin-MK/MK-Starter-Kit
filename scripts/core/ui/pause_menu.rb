@@ -74,7 +74,9 @@ class PauseMenuUI < BaseUI
       when "POKéDEX"
 
       when "POKéMON"
-        PartyUI.start
+        party = PartyUI.new
+        party.main
+        party.dispose
       when "BAG"
         BagUI.start
       when $trainer.name

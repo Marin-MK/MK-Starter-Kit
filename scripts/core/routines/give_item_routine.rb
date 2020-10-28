@@ -173,23 +173,23 @@ class PartyUI
     self.dispose
   end
 
-  alias giveitemroutine_stop stop
-  def stop
-    if @give_item
-      @stop = true
-    else
-      giveitemroutine_stop
-    end
-  end
+  #alias giveitemroutine_stop stop
+  #def stop
+  #  if @give_item
+  #    @stop = true
+  #  else
+  #    giveitemroutine_stop
+  #  end
+  #end
 
-  alias giveitemroutine_select_pokemon select_pokemon
-  def select_pokemon
-    if @give_pokemon
-      Audio.se_play("audio/se/menu_select")
-      @ret = @party[@index]
-      stop
-    else
-      giveitemroutine_select_pokemon
-    end
-  end
+  #alias giveitemroutine_select_pokemon select_pokemon
+  #def select_pokemon
+  #  if @give_pokemon
+  #    Audio.se_play("audio/se/menu_select")
+  #    @ret = @party[@index]
+  #    stop
+  #  else
+  #    giveitemroutine_select_pokemon
+  #  end
+  #end
 end

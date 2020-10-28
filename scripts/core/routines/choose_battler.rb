@@ -25,18 +25,18 @@ class PartyUI
     self.dispose
   end
 
-  alias choosebattler_get_selection_choices get_selection_choices
-  def get_selection_choices
-    return ["SHIFT", "SUMMARY", "CANCEL"] if @choose_battler
-    return choosebattler_get_selection_choices
-  end
+  #alias choosebattler_get_selection_choices get_selection_choices
+  #def get_selection_choices
+  #  return ["SHIFT", "SUMMARY", "CANCEL"] if @choose_battler
+  #  return choosebattler_get_selection_choices
+  #end
 
-  alias choosebattler_stop stop
-  def stop
-    if @choose_battler
-      @stop = true
-    else
-      choosebattler_stop
-    end
-  end
+  #alias choosebattler_stop stop
+  #def stop
+  #  if @choose_battler
+  #    @stop = true
+  #  else
+  #    choosebattler_stop
+  #  end
+  #end
 end

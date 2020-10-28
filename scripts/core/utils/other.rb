@@ -307,3 +307,12 @@ end
 def chance(x)
   return rand(1..1000) <= x * 1000
 end
+
+# Waits for a certain number of seconds.
+# @param x [Float] the number of seconds to wait.
+def wait(x)
+  for i in 1..framecount(x)
+    System.update
+    yield i if block_given?
+  end
+end
