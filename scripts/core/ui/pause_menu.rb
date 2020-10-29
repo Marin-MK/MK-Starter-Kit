@@ -114,7 +114,12 @@ class PauseMenuUI
         show_ui
       end
     when "OPTION"
-      OptionsUI.start(self)
+      options = OptionsUI.new { update }
+      options.main
+      @sprites["text"].visible = $trainer.options.button_mode == :HELP
+      @sprites["desc"].visible = $trainer.options.button_mode == :HELP
+      @cmdwin.windowskin = Windowskin.get(:choice)
+      options.dispose { update }
     when "EXIT"
       stop
     end

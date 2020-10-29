@@ -1,7 +1,10 @@
-class OptionsUI < BaseUI
-  def start(pause_ui = nil)
-    @pause_ui = pause_ui
-    super(path: "options_menu")
+class OptionsUI
+  def initialize
+    System.show_overlay { yield if block_given? }
+    @path = "gfx/ui/options_menu/"
+    @viewport = Viewport.new(0, 0, System.width, System.height)
+    @viewport.z = 99999
+    @sprites = {}
     @sprites["header"] = Sprite.new(@viewport)
     @sprites["header"].set_bitmap(@path + "header")
     @sprites["bg"] = Sprite.new(@viewport)
@@ -29,6 +32,7 @@ class OptionsUI < BaseUI
     @sprites["text"].set_bitmap(System.width, System.height)
     @index = 0
     refresh
+    System.hide_overlay { update }
   end
 
   def refresh
@@ -81,39 +85,43 @@ class OptionsUI < BaseUI
       {x: 48, y: 278, text: "CANCEL", color: @index == 6 ? selbasecolor : basecolor,
        shadow_color: @index == 6 ? selshadowcolor : shadowcolor}
     )
-    if @pause_ui
-      @pause_ui.sprites["text"].visible = $trainer.options.button_mode == :HELP
-      @pause_ui.sprites["desc"].visible = $trainer.options.button_mode == :HELP
-      @pause_ui.cmdwin.windowskin = Windowskin.get(:choice)
+  end
+
+  def main
+    loop do
+      System.update
+      update
+      if Input.cancel? || Input.confirm? && @index == 6
+        stop
+      end
+      if Input.repeat_down?
+        Audio.se_play("audio/se/menu_select")
+        @index += 1
+        @index = 0 if @index > 6
+        refresh
+      end
+      if Input.repeat_up?
+        Audio.se_play("audio/se/menu_select")
+        @index -= 1
+        @index = 6 if @index < 0
+        refresh
+      end
+      if Input.repeat_right?
+        Audio.se_play("audio/se/menu_select")
+        move_right
+        refresh
+      end
+      if Input.repeat_left?
+        Audio.se_play("audio/se/menu_select")
+        move_left
+        refresh
+      end
+      break if @break
     end
   end
 
   def update
-    if Input.cancel? || Input.confirm? && @index == 6
-      stop
-    end
-    if Input.repeat_down?
-      Audio.se_play("audio/se/menu_select")
-      @index += 1
-      @index = 0 if @index > 6
-      refresh
-    end
-    if Input.repeat_up?
-      Audio.se_play("audio/se/menu_select")
-      @index -= 1
-      @index = 6 if @index < 0
-      refresh
-    end
-    if Input.repeat_right?
-      Audio.se_play("audio/se/menu_select")
-      move_right
-      refresh
-    end
-    if Input.repeat_left?
-      Audio.se_play("audio/se/menu_select")
-      move_left
-      refresh
-    end
+    @sprites.each_value(&:update)
   end
 
   def move_right
@@ -180,5 +188,17 @@ class OptionsUI < BaseUI
       $trainer.options.frame = 10 if $trainer.options.frame < 1
       @sprites["cmdwin"].set(Windowskin.get(:choice))
     end
+  end
+
+  def stop
+    @break = true
+  end
+
+  def dispose
+    System.show_overlay { update }
+    stop
+    @sprites.each_value(&:dispose)
+    @viewport.dispose
+    System.hide_overlay { yield if block_given? }
   end
 end
