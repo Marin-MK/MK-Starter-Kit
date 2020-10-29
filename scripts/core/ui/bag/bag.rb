@@ -375,6 +375,10 @@ class BagUI
     end
   end
 
+  def restart
+    @break = false
+  end
+
   def stop
     @break = true
   end

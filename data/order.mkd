@@ -99,6 +99,5 @@ battle_ui/base_move_animation.rb: base Move Animation
 battle_ui/stat_sprite.rb: Stat Sprite
 battle_ui/level_up_window.rb: Level Up Window
 routines/give_item_routine.rb: GiveItem Routine
-routines/choose_battler.rb: ChooseBattler Routine
 temp.rb: Temporary Data
 main.rb: Main

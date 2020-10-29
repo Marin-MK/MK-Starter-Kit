@@ -543,7 +543,7 @@ class Battle
 
     # Gets the battler to switch out with the current battler.
     # @param battler [Battler] the currently active battler.
-    # @return [Integer] the party index of the new battler.
+    # @return [Battler] the new chosen battler.
     def switch_battler(battler)
       validate battler => Battler
       battlerparty = @battle.sides[0].trainers[0].party

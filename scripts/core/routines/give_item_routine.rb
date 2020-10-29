@@ -1,4 +1,15 @@
 class GiveItemRoutine
+  def self.possible?(pokemon, item)
+    validate \
+        pokemon => Pokemon,
+        item => [Symbol, Item]
+    item = Item.get(item)
+    if item.pocket == :key_items
+      return false
+    end
+    return true
+  end
+
   def self.run(pokemon, item, viewport, &block)
     validate \
         pokemon => Pokemon,
@@ -20,9 +31,7 @@ class GiveItemRoutine
     )
     success = false
     if item.pocket == :key_items
-      #bag_ui.set_footer(true) if from_party?
       msgwin.show("The " + item.name + " can't be held.")
-      #bag_ui.set_footer(false) if from_party?
     else
       if pokemon.has_item?
         msgwin.ending_arrow = true

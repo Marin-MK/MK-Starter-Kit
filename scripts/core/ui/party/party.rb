@@ -251,22 +251,30 @@ class PartyUI
   def give_item(cmdwin, itemwin)
     bag = BagUI.new(:choose_item) { update }
     itemwin.dispose
-    bag.main
-    item = bag.chosen_item
-    if item.nil?
-      set_command_help_text
-      cmdwin.visible = true
-      cmdwin.set_index(0, false)
-    else
-      set_main_help_text
+    loop do
+      bag.main
+      item = bag.chosen_item
+      if item.nil?
+        set_command_help_text
+        cmdwin.visible = true
+        cmdwin.set_index(0, false)
+        bag.dispose { update }
+        return false
+      else
+        set_main_help_text
+        if GiveItemRoutine.possible?(@party[@index], item)
+          bag.dispose { update }
+          success = GiveItemRoutine.run(@party[@index], item, @viewport) { update }
+          @sprites["panel_#{@index}"].refresh_item
+          return true
+        else
+          bag.set_footer(true)
+          success = GiveItemRoutine.run(@party[@index], item, bag.viewport) { bag.update }
+          bag.set_footer(false)
+          bag.restart
+        end
+      end
     end
-    bag.dispose { update }
-    if !item.nil?
-      success = GiveItemRoutine.run(@party[@index], item, @viewport) { update }
-      @sprites["panel_#{@index}"].refresh_item
-      return true
-    end
-    return false
   end
 
   def take_item
