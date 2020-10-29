@@ -13,7 +13,7 @@ class Visuals
     def initialize(game_player)
       super(game_player)
       @game_player = game_player
-      @sprite.set_bitmap("gfx/characters/" + @game_player.graphic_name)
+      @sprite.bitmap = Bitmap.new("gfx/characters/" + @game_player.graphic_name)
       @sprite.src_rect.width = @sprite.bitmap.width / 4
       @sprite.src_rect.height = @sprite.bitmap.height / 4
       @sprite.src_rect.y = @sprite.src_rect.height * (@game_player.direction / 2 - 1)

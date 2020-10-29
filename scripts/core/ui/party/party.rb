@@ -18,7 +18,7 @@ class PartyUI
     @viewport.z = 99999
     @sprites = {}
     @sprites["background"] = Sprite.new(@viewport)
-    @sprites["background"].set_bitmap(@path + "background")
+    @sprites["background"].bitmap = Bitmap.new(@path + "background")
     @sprites["window"] = MessageWindow.new(
       y: 256,
       viewport: @viewport,
@@ -31,7 +31,7 @@ class PartyUI
       windowskin: :helper
     )
     @sprites["cancel"] = SelectableSprite.new(@viewport)
-    @sprites["cancel"].set_bitmap(@path + "cancel")
+    @sprites["cancel"].bitmap = Bitmap.new(@path + "cancel")
     @sprites["cancel"].x = 368
     @sprites["cancel"].y = 264
     @sprites["panel_0"] = BigPanel.new(self, @party[0])
@@ -42,7 +42,7 @@ class PartyUI
         @sprites["panel_#{i}"] = Panel.new(self, @party[i])
       else
         @sprites["panel_#{i}"] = Sprite.new(@viewport)
-        @sprites["panel_#{i}"].set_bitmap(@path + "panel_empty")
+        @sprites["panel_#{i}"].bitmap = Bitmap.new(@path + "panel_empty")
       end
       @sprites["panel_#{i}"].x = 176
       @sprites["panel_#{i}"].y = 18 + 48 * (i - 1)

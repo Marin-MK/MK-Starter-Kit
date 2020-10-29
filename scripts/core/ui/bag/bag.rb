@@ -14,22 +14,22 @@ class BagUI
     @sprites = {}
     suffix = ["_male", "_female"][$trainer.gender]
     @sprites["background"] = Sprite.new(@viewport)
-    @sprites["background"].set_bitmap(@path + "background" + suffix)
+    @sprites["background"].bitmap = Bitmap.new(@path + "background" + suffix)
     @sprites["bgtext"] = Sprite.new(@viewport)
-    @sprites["bgtext"].set_bitmap(System.width, System.height)
+    @sprites["bgtext"].bitmap = Bitmap.new(System.width, System.height)
     @sprites["bgtext"].z = 1
     @sprites["bag"] = BagSprite.new($trainer.gender, self)
     @sprites["bag"].x = 22
     @sprites["bag"].y = 66
     @sprites["footer"] = SelectableSprite.new(@viewport)
-    @sprites["footer"].set_bitmap(@path + "footer")
+    @sprites["footer"].bitmap = Bitmap.new(@path + "footer")
     @sprites["footer"].y = 224
     @sprites["list"] = Sprite.new(@viewport)
-    @sprites["list"].set_bitmap(@path + "item_list")
+    @sprites["list"].bitmap = Bitmap.new(@path + "item_list")
     @sprites["list"].x = 176
     @sprites["list"].y = 16
     @sprites["text"] = Sprite.new(@viewport)
-    @sprites["text"].set_bitmap(288, 190)
+    @sprites["text"].bitmap = Bitmap.new(288, 190)
     @sprites["text"].x = 176
     @sprites["text"].y = 16
     @sprites["text"].z = 1
@@ -49,7 +49,7 @@ class BagUI
     @sprites["arrow_down"].x = 306
     @sprites["arrow_down"].y = 206
     @sprites["selector"] = SelectableSprite.new(@viewport)
-    @sprites["selector"].set_bitmap("gfx/misc/choice_arrow")
+    @sprites["selector"].bitmap = Bitmap.new("gfx/misc/choice_arrow")
     @sprites["selector"].x = 180
     @pocket = $trainer.bag.last_pocket
     @items = $trainer.bag.pockets[@pocket]
@@ -83,13 +83,13 @@ class BagUI
         else
           item = Item.get(@items[i][:item])
           name = item.name
-          @sprites["text"].draw_text(
+          @sprites["text"].bitmap.draw_text(
               {x: 222, y: 8 + 32 * (i - @top_idx), text: "x", color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
               {x: 264, y: 10 + 32 * (i - @top_idx), text: @items[i][:count].to_s, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW,
                small: true, alignment: :right}
           )
         end
-        @sprites["text"].draw_text(
+        @sprites["text"].bitmap.draw_text(
           {x: 18, y: 10 + 32 * (i - @top_idx), text: name, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW}
         )
       end
@@ -108,7 +108,7 @@ class BagUI
 
   def draw_item
     @sprites["bgtext"].bitmap.clear
-    @sprites["bgtext"].draw_text(
+    @sprites["bgtext"].bitmap.draw_text(
       {x: 88, y: 24, text: pocket_name, color: Color::LIGHTBASE, shadow_color: Color::LIGHTSHADOW,
        alignment: :center}
     )
@@ -120,11 +120,11 @@ class BagUI
       description = MessageWindow.get_formatted_text(@sprites["bgtext"].bitmap, 384, item.description).split("\n")
     end
     description.each_with_index do |txt, i|
-      @sprites["bgtext"].draw_text(
+      @sprites["bgtext"].bitmap.draw_text(
         x: 80, y: 236 + 28 * i, text: txt, color: Color::LIGHTBASE, shadow_color: Color::LIGHTSHADOW
       )
     end
-    @sprites["icon"].set_bitmap(filename)
+    @sprites["icon"].bitmap = Bitmap.new(filename)
   end
 
   def draw_pocket(selection_changed = true)
@@ -394,12 +394,12 @@ class BagUI
 
   def show_black(mode = nil)
     black = Sprite.new(@viewport)
-    black.set_bitmap(System.width, System.height)
+    black.bitmap = Bitmap.new(System.width, System.height)
     black.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
     black.opacity = 0
     black.z = 99999
     sliding = Sprite.new(@viewport)
-    sliding.set_bitmap(System.width, System.height)
+    sliding.bitmap = Bitmap.new(System.width, System.height)
     sliding.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
     sliding.src_rect.height = 0
     sliding.z = 99999
@@ -417,11 +417,11 @@ class BagUI
 
   def hide_black
     black = Sprite.new(@viewport)
-    black.set_bitmap(System.width, System.height)
+    black.bitmap = Bitmap.new(System.width, System.height)
     black.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
     black.z = 99999
     sliding = Sprite.new(@viewport)
-    sliding.set_bitmap(System.width, System.height)
+    sliding.bitmap = Bitmap.new(System.width, System.height)
     sliding.bitmap.fill_rect(0, 0, System.width, System.height, Color::BLACK)
     sliding.z = 99999
     frames = framecount(0.15)

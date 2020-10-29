@@ -7,9 +7,9 @@ class TrainerCardUI
     @sprites = {}
     @suffix = ["_male", "_female"][$trainer.gender]
     @sprites["background"] = Sprite.new(@viewport)
-    @sprites["background"].set_bitmap(@path + "background" + @suffix)
+    @sprites["background"].bitmap = Bitmap.new(@path + "background" + @suffix)
     @sprites["card"] = Sprite.new(@viewport)
-    @sprites["card"].set_bitmap(@path + "card")
+    @sprites["card"].bitmap = Bitmap.new(@path + "card")
     @page = 0
     @i = (framecount(1.0) / 3.0).ceil # Starts at 1/3rd of the colon flicker animation
     load_front_page(true)
@@ -53,7 +53,7 @@ class TrainerCardUI
       Audio.se_play("audio/se/trainercard_flip_start")
       for i in 1..frames
         stretched_sprite.bitmap.dispose if stretched_sprite.bitmap
-        stretched_sprite.set_bitmap(System.width, System.height)
+        stretched_sprite.bitmap = Bitmap.new(System.width, System.height)
         y = (increment * i).round
         stretched_sprite.y = (y / 2.0).round
         stretched_sprite.bitmap.blt(
@@ -64,13 +64,13 @@ class TrainerCardUI
         System.update
         update
       end
-      @sprites["card"].set_bitmap(@path + "card")
+      @sprites["card"].bitmap = Bitmap.new(@path + "card")
       wait(0.2)
       Audio.se_play("audio/se/trainercard_flip_end")
       wait(0.2)
       for i in 1..frames
         stretched_sprite.bitmap.dispose if stretched_sprite.bitmap
-        stretched_sprite.set_bitmap(System.width, System.height)
+        stretched_sprite.bitmap = Bitmap.new(System.width, System.height)
         y = [(increment * i).round, 314].min
         stretched_sprite.y = 161 - (y / 2.0).round
         stretched_sprite.bitmap.blt(
@@ -88,13 +88,13 @@ class TrainerCardUI
     end
     @page = 0
     @sprites["trainer"] = Sprite.new(@viewport)
-    @sprites["trainer"].set_bitmap(@path + "trainer" + @suffix)
+    @sprites["trainer"].bitmap = Bitmap.new(@path + "trainer" + @suffix)
     @sprites["trainer"].x = 350
     @sprites["trainer"].y = 104
     for i in 1..8
       if $trainer.has_badge?(i)
         @sprites["badge#{i}"] = Sprite.new(@viewport)
-        @sprites["badge#{i}"].set_bitmap(@path + "badges")
+        @sprites["badge#{i}"].bitmap = Bitmap.new(@path + "badges")
         @sprites["badge#{i}"].src_rect.width = @sprites["badge#{i}"].bitmap.width / 8
         @sprites["badge#{i}"].src_rect.x = @sprites["badge#{i}"].src_rect.width * (i - 1)
         @sprites["badge#{i}"].x = 64 + 48 * (i - 1)
@@ -107,8 +107,8 @@ class TrainerCardUI
       @sprites["text"].bitmap.clear
       @sprites["text"].visible = true
     end
-    @sprites["text"].set_bitmap(System.width, System.height)
-    @sprites["text"].draw_text(
+    @sprites["text"].bitmap = Bitmap.new(System.width, System.height)
+    @sprites["text"].bitmap.draw_text(
       {x: 300, y: 42, text: "IDNo." + $trainer.pid.to_s, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
       {x: 56, y: 80, text: "NAME: " + $trainer.name, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
       {x: 56, y: 134, text: "MONEY", color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
@@ -117,10 +117,10 @@ class TrainerCardUI
       {x: 56, y: 198, text: "TIME", color: Color::GREYBASE, shadow_color: Color::GREYSHADOW}
     )
     @sprites["time_text"] = Sprite.new(@viewport)
-    @sprites["time_text"].set_bitmap(System.width, System.height)
+    @sprites["time_text"].bitmap = Bitmap.new(System.width, System.height)
     @sprites["colon"] = Sprite.new(@viewport)
-    @sprites["colon"].set_bitmap(10, 20)
-    @sprites["colon"].draw_text(text: ":", color: Color::GREYBASE, shadow_color: Color::GREYSHADOW)
+    @sprites["colon"].bitmap = Bitmap.new(10, 20)
+    @sprites["colon"].bitmap.draw_text(text: ":", color: Color::GREYBASE, shadow_color: Color::GREYSHADOW)
     @sprites["colon"].x = 254
     @sprites["colon"].y = 198
     @sprites["colon"].visible = true
@@ -150,7 +150,7 @@ class TrainerCardUI
     Audio.se_play("audio/se/trainercard_flip_start")
     for i in 1..frames
       stretched_sprite.bitmap.dispose if stretched_sprite.bitmap
-      stretched_sprite.set_bitmap(System.width, System.height)
+      stretched_sprite.bitmap = Bitmap.new(System.width, System.height)
       y = (increment * i).round
       stretched_sprite.y = (y / 2.0).round
       stretched_sprite.bitmap.blt(
@@ -161,13 +161,13 @@ class TrainerCardUI
       System.update
       update
     end
-    @sprites["card"].set_bitmap(@path + "card_back")
+    @sprites["card"].bitmap = Bitmap.new(@path + "card_back")
     wait(0.2)
     Audio.se_play("audio/se/trainercard_flip_end")
     wait(0.2)
     for i in 1..frames
       stretched_sprite.bitmap.dispose if stretched_sprite.bitmap
-      stretched_sprite.set_bitmap(System.width, System.height)
+      stretched_sprite.bitmap = Bitmap.new(System.width, System.height)
       y = [(increment * i).round, 314].min
       stretched_sprite.y = 161 - (y / 2.0).round
       stretched_sprite.bitmap.blt(
@@ -184,7 +184,7 @@ class TrainerCardUI
     @sprites["text"].visible = true
     Audio.se_play("audio/se/trainercard")
     wait(0.02)
-    @sprites["text"].draw_text(
+    @sprites["text"].bitmap.draw_text(
       x: 292, y: 44, text: $trainer.name, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW
     )
   end
@@ -195,7 +195,7 @@ class TrainerCardUI
       minutes = (System.frame_count / 60 / 60 % 60).to_digits(2)
       if @hours != hours || @minutes != minutes || force_update_time
         @sprites["time_text"].bitmap.clear
-        @sprites["time_text"].draw_text(
+        @sprites["time_text"].bitmap.draw_text(
           {x: 264, y: 198, text: minutes, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW},
           {x: 254, y: 198, text: hours, color: Color::GREYBASE, shadow_color: Color::GREYSHADOW, alignment: :right}
         )

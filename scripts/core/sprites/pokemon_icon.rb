@@ -6,7 +6,7 @@ class PokemonIcon < Sprite
 
   def set_pokemon(pokemon)
     @pokemon = pokemon
-    self.set_bitmap("gfx/pokemon/icons/#{@pokemon.species.intname.to_s.downcase}")
+    self.bitmap = Bitmap.new("gfx/pokemon/icons/#{@pokemon.species.intname.to_s.downcase}")
     self.src_rect.width = self.bitmap.width / 2
     self.ox = self.src_rect.width / 2
   end

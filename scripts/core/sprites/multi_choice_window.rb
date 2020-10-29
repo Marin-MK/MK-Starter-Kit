@@ -65,7 +65,7 @@ class MultiChoiceWindow < BaseWindow
     @small = small
     super(width, height, @windowskin, viewport)
     @text_width = @windowskin.get_text_width(width)
-    @text_sprite.set_bitmap(width, height)
+    @text_sprite.bitmap = Bitmap.new(width, height)
     @text_sprite.z = z + 1
     self.color = color
     self.shadow_color = shadow_color
@@ -114,7 +114,7 @@ class MultiChoiceWindow < BaseWindow
     test_disposed
     for y in 0...@choices.size
       for x in 0...@choices[y].size
-        @text_sprite.draw_text(
+        @text_sprite.bitmap.draw_text(
           x: @line_x_space * x,
           y: @line_y_space * y,
           text: @choices[y][x],
@@ -126,7 +126,7 @@ class MultiChoiceWindow < BaseWindow
     end
     unless @selector
       @selector = SelectableSprite.new(@viewport)
-      @selector.set_bitmap(@arrow_path, @arrow_states)
+      @selector.bitmap = Bitmap.new(@arrow_path, @arrow_states)
       @selector.x = self.x + @line_x_start - 2 + @line_x_space * (@index % 2) - @selector.bitmap.width
       @selector.y = self.y + @line_y_start - (@small ? 0 : 2) + @line_y_space * (@index / 2.0).floor
       @selector.z = self.z + 1

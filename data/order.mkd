@@ -4,7 +4,7 @@ utils/file_utils.rb: File Utilities
 utils/input.rb: Input Utilities
 utils/numeric.rb: Numeric Utilities
 utils/validate.rb: Validator Utilities
-utils/sprite.rb: Sprite Utilities
+utils/bitmap.rb: Bitmap Utilities
 system_event.rb: System Event
 mkd/map_overlay.rb: Map Overlay
 mkd/map.rb: Map
@@ -63,7 +63,6 @@ sprites/type_icon.rb: Type Icon
 sprites/pokemon_icon.rb: Pokemon Icon
 particles/basicparticle.rb: Basic Particle
 intro/introscene.rb: Intro Scene
-ui/base.rb: Base UI
 ui/pause_menu.rb: Pause Menu UI
 ui/trainer_card.rb: Trainer Card UI
 ui/bag/bag.rb: Bag UI

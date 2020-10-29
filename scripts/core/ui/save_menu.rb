@@ -12,10 +12,10 @@ class SaveUI
     @sprites["details"].y = 4
     @sprites["details"].refresh
     @sprites["text"] = Sprite.new(@viewport)
-    @sprites["text"].set_bitmap(248, 168)
+    @sprites["text"].bitmap = Bitmap.new(248, 168)
     @sprites["text"].x = 4
     @sprites["text"].y = 4
-    @sprites["text"].draw_text(
+    @sprites["text"].bitmap.draw_text(
       {x: 124, y: 18, text: "PEWTER CITY", color: Color.new(48, 80, 200),#$game.map.name
        shadow_color: Color.new(160, 192, 240), alignment: :center},
       {x: 16, y: 46, text: "PLAYER", color: Color.new(96, 96, 96),
@@ -30,7 +30,7 @@ class SaveUI
     hours = (System.frame_count / 60 / 60 / 60 % 60).to_s
     minutes = (System.frame_count / 60 / 60 % 60).to_digits(2)
     if $trainer.has_pokedex?
-      @sprites["text"].draw_text(
+      @sprites["text"].bitmap.draw_text(
         {x: 16, y: 102, text: "POKéDEX", color: Color.new(96, 96, 96),
          shadow_color: Color.new(208, 208, 200), small: true},
         {x: 130, y: 102, text: $trainer.pokedex.owned_count.to_s, color: Color.new(96, 96, 96),
@@ -41,7 +41,7 @@ class SaveUI
          shadow_color: Color.new(208, 208, 200), small: true}
       )
     else
-      @sprites["text"].draw_text(
+      @sprites["text"].bitmap.draw_text(
         {x: 16, y: 102, text: "TIME", color: Color.new(96, 96, 96),
          shadow_color: Color.new(208, 208, 200), small: true},
         {x: 130, y: 102, text: hours + ":" + minutes, color: Color.new(96, 96, 96),

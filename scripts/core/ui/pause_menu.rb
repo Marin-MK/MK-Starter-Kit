@@ -30,7 +30,7 @@ class PauseMenuUI
     @viewport.z = 99999
     @sprites = {}
     @sprites["desc"] = Sprite.new(@viewport)
-    @sprites["desc"].set_bitmap(@path + "desc_bar")
+    @sprites["desc"].bitmap = Bitmap.new(@path + "desc_bar")
     @sprites["desc"].y = 240
     @cmdwin = ChoiceWindow.new(
         choices: get_commands,
@@ -43,7 +43,7 @@ class PauseMenuUI
         initial_choice: $temp.last_menu_index
     )
     @sprites["text"] = Sprite.new(@viewport)
-    @sprites["text"].set_bitmap(System.width, System.height)
+    @sprites["text"].bitmap = Bitmap.new(System.width, System.height)
     @sprites["text"].z = 1
     @sprites["text"].visible = $trainer.options.button_mode == :HELP
     @sprites["desc"].visible = $trainer.options.button_mode == :HELP
@@ -59,7 +59,7 @@ class PauseMenuUI
     text ||= "No description."
     description = MessageWindow.get_formatted_text(@sprites["text"].bitmap, 460, text).split("\n")
     description.each_with_index do |txt, i|
-      @sprites["text"].draw_text(
+      @sprites["text"].bitmap.draw_text(
         x: 4,
         y: 256 + 30 * i,
         text: txt,

@@ -46,14 +46,14 @@ class Battle
       @sprites["name_gender"].bitmap.clear
       name_x = opponent? ? OPPONENT_NAME_X : PLAYER_NAME_X
       name_y = opponent? ? OPPONENT_NAME_Y : PLAYER_NAME_Y
-      @sprites["name_gender"].draw_text(x: name_x, y: name_y, text: @battler.pokemon.name, color: BASE_COLOR, shadow_color: SHADOW_COLOR, small: true)
+      @sprites["name_gender"].bitmap.draw_text(x: name_x, y: name_y, text: @battler.pokemon.name, color: BASE_COLOR, shadow_color: SHADOW_COLOR, small: true)
       fontname = @sprites["name_gender"].bitmap.font.name
       @sprites["name_gender"].bitmap.font.name = "fire_red_small"
       width = @sprites["name_gender"].bitmap.text_size(@battler.pokemon.name).width
       @sprites["name_gender"].bitmap.font.name = fontname
       if !@battler.genderless?
         color = @battler.male? ? GENDER_COLOR_MALE : GENDER_COLOR_FEMALE
-        @sprites["name_gender"].draw_text(x: name_x + width, y: name_y, text: symbol(@battler.male? ? :male : :female), color: color, shadow_color: SHADOW_COLOR, small: true)
+        @sprites["name_gender"].bitmap.draw_text(x: name_x + width, y: name_y, text: symbol(@battler.male? ? :male : :female), color: color, shadow_color: SHADOW_COLOR, small: true)
       end
     end
 
@@ -62,7 +62,7 @@ class Battle
       @sprites["level"].bitmap.clear
       level_x = opponent? ? OPPONENT_LEVEL_X : PLAYER_LEVEL_X
       level_y = opponent? ? OPPONENT_LEVEL_Y : PLAYER_LEVEL_Y
-      @sprites["level"].draw_text(x: level_x, y: level_y, text: symbol(:lv) + @battler.level.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, small: true, align: :right)
+      @sprites["level"].bitmap.draw_text(x: level_x, y: level_y, text: symbol(:lv) + @battler.level.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, small: true, align: :right)
     end
 
     # Draws an "owned" ball in the databox if the battler is already owned by the player.
@@ -118,9 +118,9 @@ class Battle
       @sprites["hp"].src_rect.width = fraction * @sprites["hp"].bitmap.width
       if !opponent?
         @sprites["hp_text"].bitmap.clear
-        @sprites["hp_text"].draw_text(x: 188, y: 44, text: @battler.totalhp.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, align: :right, small: true)
-        @sprites["hp_text"].draw_text(x: 150, y: 44, text: "/", color: BASE_COLOR, shadow_color: SHADOW_COLOR)
-        @sprites["hp_text"].draw_text(x: 148, y: 44, text: hp.round.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, align: :right, small: true)
+        @sprites["hp_text"].bitmap.draw_text(x: 188, y: 44, text: @battler.totalhp.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, align: :right, small: true)
+        @sprites["hp_text"].bitmap.draw_text(x: 150, y: 44, text: "/", color: BASE_COLOR, shadow_color: SHADOW_COLOR)
+        @sprites["hp_text"].bitmap.draw_text(x: 148, y: 44, text: hp.round.to_s, color: BASE_COLOR, shadow_color: SHADOW_COLOR, align: :right, small: true)
       end
     end
 

@@ -6,9 +6,9 @@ class OptionsUI
     @viewport.z = 99999
     @sprites = {}
     @sprites["header"] = Sprite.new(@viewport)
-    @sprites["header"].set_bitmap(@path + "header")
+    @sprites["header"].bitmap = Bitmap.new(@path + "header")
     @sprites["bg"] = Sprite.new(@viewport)
-    @sprites["bg"].set_bitmap(System.width, System.height - 32)
+    @sprites["bg"].bitmap = Bitmap.new(System.width, System.height - 32)
     @sprites["bg"].bitmap.fill_rect(0, 0, System.width, System.height - 32, Color.new(0, 0, 0))
     @sprites["bg"].y = 32
     @sprites["hdrwin"] = SplitSprite.new(@viewport)
@@ -24,12 +24,12 @@ class OptionsUI
     @sprites["cmdwin"].height = 224
     @sprites["cmdwin"].set(Windowskin.get(:choice))
     @sprites["textbg"] = Sprite.new(@viewport)
-    @sprites["textbg"].set_bitmap(416, 192)
+    @sprites["textbg"].bitmap = Bitmap.new(416, 192)
     @sprites["textbg"].x = 32
     @sprites["textbg"].y = 112
     @sprites["text"] = Sprite.new(@viewport)
     @sprites["text"].z = 1
-    @sprites["text"].set_bitmap(System.width, System.height)
+    @sprites["text"].bitmap = Bitmap.new(System.width, System.height)
     @index = 0
     refresh
     System.hide_overlay { update }
@@ -48,7 +48,7 @@ class OptionsUI
     shadowcolorred = Color.new(200, 8, 8)
     button_mode = $trainer.options.button_mode == :HELP ? "HELP" : $trainer.options.button_mode == :LR ? "LR" : "L=A"
     @sprites["text"].bitmap.clear
-    @sprites["text"].draw_text(
+    @sprites["text"].bitmap.draw_text(
       {x: 48, y: 56, text: "OPTION", color: Color.new(96, 96, 96),
        shadow_color: Color.new(208, 208, 200)},
 

@@ -58,7 +58,7 @@ class ChoiceWindow < BaseWindow
     height = [@line_y_space * (c + 1), 96].max
     super(width, height, @windowskin, viewport)
     @text_width = @windowskin.get_text_width(width)
-    @text_sprite.set_bitmap(@text_width, 18 + @line_y_space * c)
+    @text_sprite.bitmap = Bitmap.new(@text_width, 18 + @line_y_space * c)
     @text_sprite.z = z + 1
     self.color = color
     self.shadow_color = shadow_color
@@ -106,7 +106,7 @@ class ChoiceWindow < BaseWindow
   def draw_choices
     test_disposed
     for i in 0...@visible_choices
-      @text_sprite.draw_text(
+      @text_sprite.bitmap.draw_text(
         y: @line_y_space * i,
         text: @choices[i],
         color: @color,
@@ -116,7 +116,7 @@ class ChoiceWindow < BaseWindow
     end
     unless @selector
       @selector = SelectableSprite.new(@viewport)
-      @selector.set_bitmap("gfx/misc/choice_arrow")
+      @selector.bitmap = Bitmap.new("gfx/misc/choice_arrow")
       @selector.x = self.x + @line_x_start - 2 - @selector.src_rect.width
       @selector.y = self.y + @line_y_start - (@small ? 0 : 2) + @line_y_space * @index
       @selector.z = self.z + 1

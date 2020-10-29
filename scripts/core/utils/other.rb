@@ -29,13 +29,6 @@ def symbol(n)
   raise "Invalid symbol #{n.inspect}"
 end
 
-# Ensures #msgbox always pops up a box, no matter the RGSS version
-unless defined?(msgbox) == "method"
-	def msgbox(*args)
-		p *args
-	end
-end
-
 def warn(msg)
   log(:WARNING, msg)
 end
@@ -76,13 +69,6 @@ class Sprite
     old_initialize(viewport)
     @data = data
   end
-end
-
-#temp
-# @return [Integer] the amount of memory the game is currently using.
-def get_memory
-  ret = `pmap #{Process.pid} | tail -1`.reverse
-  return ret[2...ret.index(' ')].reverse.to_i
 end
 
 # Performs a memory and speed test.

@@ -5,13 +5,13 @@ class BagSprite < Sprite
     super(@ui.viewport)
     pocket = $trainer.bag.last_pocket
     @suffix = ["_male", "_female"][$trainer.gender]
-    self.set_bitmap(@ui.path + "bag" + @suffix)
+    self.bitmap = Bitmap.new(@ui.path + "bag" + @suffix)
     self.src_rect.width = self.bitmap.width / (Trainer::Bag::POCKETS.size + 1)
     self.ox = self.bitmap.width / 8
     self.oy = self.bitmap.height / 2
     self.z = 2
     @shadow = Sprite.new(@ui.viewport)
-    @shadow.set_bitmap(@ui.path + "bag_shadow")
+    @shadow.bitmap = Bitmap.new(@ui.path + "bag_shadow")
     @shadow.y = 96
     @shadow.z = 1
     pidx = Trainer::Bag::POCKETS.index(pocket)

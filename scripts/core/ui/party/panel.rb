@@ -11,11 +11,11 @@ class Panel
     @sprites["panel"] = SelectableSprite.new(@viewport)
     suffix = ""
     suffix = "_fainted" if @pokemon.fainted?
-    @sprites["panel"].set_bitmap(@path + "panel" + suffix)
+    @sprites["panel"].bitmap = Bitmap.new(@path + "panel" + suffix)
     @sprites["hpbar"] = Sprite.new(@viewport)
-    @sprites["hpbar"].set_bitmap("gfx/misc/hpbar")
+    @sprites["hpbar"].bitmap = Bitmap.new("gfx/misc/hpbar")
     @sprites["hp"] = Sprite.new(@viewport)
-    @sprites["hp"].set_bitmap("gfx/misc/hp")
+    @sprites["hp"].bitmap = Bitmap.new("gfx/misc/hp")
     @sprites["hp"].src_rect.height = @sprites["hp"].bitmap.height / 3
     hp_factor = @pokemon.hp / @pokemon.totalhp.to_f
     @sprites["hp"].src_rect.width = @sprites["hp"].bitmap.width * hp_factor
@@ -28,8 +28,8 @@ class Panel
       @sprites["hp"].src_rect.y = @sprites["hp"].src_rect.height
     end
     @sprites["text"] = Sprite.new(@viewport)
-    @sprites["text"].set_bitmap(@sprites["panel"].src_rect.width, @sprites["panel"].bitmap.height)
-    @sprites["text"].draw_text(
+    @sprites["text"].bitmap = Bitmap.new(@sprites["panel"].src_rect.width, @sprites["panel"].bitmap.height)
+    @sprites["text"].bitmap.draw_text(
       {x: 60, y: 10, text: @pokemon.name, color: Color.new(248, 248, 248), shadow_color: Color.new(112, 112, 112),
        small: true},
       {x: 248, y: 28, text: @pokemon.hp.to_s, color: Color.new(248, 248, 248), shadow_color: Color.new(112, 112, 112),
@@ -49,13 +49,13 @@ class Panel
       gender_color_shadow = Color.new(0, 96, 144)
     end
     if !@pokemon.genderless?
-      @sprites["text"].draw_text(
+      @sprites["text"].bitmap.draw_text(
         x: 144, y: 28, text: gender_text, color: gender_color, shadow_color: gender_color_shadow,
         small: true
       )
     end
     if !@pokemon.status && !@pokemon.fainted?
-      @sprites["text"].draw_text(
+      @sprites["text"].bitmap.draw_text(
         x: 80, y: 28, text: symbol(:lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248),
         shadow_color: Color.new(112, 112, 112), small: true
       )
@@ -63,7 +63,7 @@ class Panel
     @sprites["icon"] = PokemonIcon.new(@pokemon, @viewport)
     @sprites["icon"].z = 1
     @sprites["item"] = Sprite.new(@viewport)
-    @sprites["item"].set_bitmap(@path + "item") if @pokemon.has_item?
+    @sprites["item"].bitmap = Bitmap.new(@path + "item") if @pokemon.has_item?
     @sprites["item"].z = 2
     @sprites["status"] = StatusConditionIcon.new(@pokemon, @viewport)
     self.x = 0
@@ -100,7 +100,7 @@ class Panel
 
   def switching=(value)
     suffix = value ? "_switching" : @pokemon.fainted? ? "_fainted" : ""
-    @sprites["panel"].set_bitmap(@path + "panel" + suffix)
+    @sprites["panel"].bitmap = Bitmap.new(@path + "panel" + suffix)
   end
 
   def select
@@ -122,7 +122,7 @@ class Panel
 
   def refresh_item
     if @pokemon.has_item?
-      @sprites["item"].set_bitmap(@path + "item")
+      @sprites["item"].bitmap = Bitmap.new(@path + "item")
     else
       @sprites["item"].bitmap.clear if @sprites["item"].bitmap
     end

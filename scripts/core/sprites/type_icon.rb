@@ -2,7 +2,7 @@ class TypeIcon < Sprite
   def initialize(type, viewport = nil)
     validate type => [Type, Symbol, Integer]
     super(viewport)
-    self.set_bitmap("gfx/misc/types")
+    self.bitmap = Bitmap.new("gfx/misc/types")
     self.src_rect.height = self.bitmap.height / Type.count
     set_type(type)
   end

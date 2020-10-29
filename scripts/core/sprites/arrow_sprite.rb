@@ -3,7 +3,7 @@ class ArrowSprite < Sprite
     validate direction => Symbol, viewport => [Viewport, NilClass]
     @direction = direction
     super(viewport)
-    self.set_bitmap("gfx/misc/arrow_#{direction.to_s}")
+    self.bitmap = Bitmap.new("gfx/misc/arrow_#{direction.to_s}")
     @i = 0
     @rx = 0
     @ry = 0

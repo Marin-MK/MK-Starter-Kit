@@ -62,12 +62,12 @@ class MessageWindow < BaseWindow
   def width=(value)
     super(value)
     @text_width = @windowskin.get_text_width(@width)
-    @text_sprite.set_bitmap(@text_width + 2, 96)
+    @text_sprite.bitmap = Bitmap.new(@text_width + 2, 96)
   end
 
   def height=(value)
     super(value)
-    @text_sprite.set_bitmap(@text_width + 2, 96)
+    @text_sprite.bitmap = Bitmap.new(@text_width + 2, 96)
   end
 
   def x=(value)
@@ -179,7 +179,7 @@ class MessageWindow < BaseWindow
                   text = @formatted_text[i]
                 end
                 @max_y = (i - @current_line) * @line_y_space + 2
-                @text_sprite.draw_text(
+                @text_sprite.bitmap.draw_text(
                     y: (i - @current_line) * @line_y_space + 6,
                     text: text,
                     color: @color,
@@ -197,7 +197,7 @@ class MessageWindow < BaseWindow
           for i in @current_line..@line_index
             next if @formatted_text[i].nil?
             @max_y = (i - @current_line) * @line_y_space + 2
-            @text_sprite.draw_text(
+            @text_sprite.bitmap.draw_text(
               y: (i - @current_line) * @line_y_space + 6,
               text: @formatted_text[i],
               color: @color,
@@ -276,7 +276,7 @@ class MessageWindow < BaseWindow
     test_disposed
     unless @arrow
       @arrow = Sprite.new(@viewport)
-      @arrow.set_bitmap("gfx/misc/message_window_arrow")
+      @arrow.bitmap = Bitmap.new("gfx/misc/message_window_arrow")
       @arrow.y = self.y + @line_y_start + @max_y
       @arrow.z = self.z + 1
       @arrow_counter = 0

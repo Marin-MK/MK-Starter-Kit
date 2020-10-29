@@ -36,7 +36,7 @@ class NumericChoiceWindow < BaseWindow
     @up = ArrowSprite.new(:up, @viewport)
     @down = ArrowSprite.new(:down, @viewport)
     @text_sprite = Sprite.new(@viewport)
-    @text_sprite.set_bitmap(self.width, self.height)
+    @text_sprite.bitmap = Bitmap.new(self.width, self.height)
     self.x = x
     self.y = y
     self.z = z
@@ -70,7 +70,7 @@ class NumericChoiceWindow < BaseWindow
     (@digits - text.length).times { text.prepend("0") }
     x = (self.width - @text_sprite.text_size(text, true).width - 2) / 2 - 2
     @text_sprite.bitmap.clear
-    @text_sprite.draw_text(
+    @text_sprite.bitmap.draw_text(
       {x: x,
        y: self.height / 2 - 6,
        text: text,

@@ -37,7 +37,7 @@ class SplitSprite
     bmp = Bitmap.new(@width, @height)
     src = Bitmap.new(@file)
     if @width == src.width && @height == src.height
-      @sprite.set_bitmap(src)
+      @sprite.bitmap = Bitmap.new(src)
       return
     elsif @width < src.width || @height < src.height
       raise "Width and height can't be lower than the source width and height."
@@ -123,6 +123,6 @@ class SplitSprite
     end
     bmp.blt(tlw + (x + 1) * center.width, tlh + (y + 1) * center.height, src, Rect.new(center.x, center.y, (center.width * frac_x).round, (center.height * frac_y).round))
 
-    @sprite.set_bitmap(bmp)
+    @sprite.bitmap = Bitmap.new(bmp)
   end
 end

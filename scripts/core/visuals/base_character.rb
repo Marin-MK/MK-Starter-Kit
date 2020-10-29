@@ -246,7 +246,7 @@ class Visuals
       # Changes the sprite's bitmap if the player's graphic changed
       frame_x = @sprite.bitmap ? (@sprite.src_rect.x.to_f / @sprite.bitmap.width * 4).round : 0
       frame_y = @sprite.bitmap ? (@sprite.src_rect.y.to_f / @sprite.bitmap.height * 4).round : @game_character.direction / 2 - 1
-      @sprite.set_bitmap("gfx/characters/" + @game_character.graphic_name)
+      @sprite.bitmap = Bitmap.new("gfx/characters/" + @game_character.graphic_name)
       @sprite.src_rect.width = @sprite.bitmap.width / 4
       @sprite.src_rect.height = @sprite.bitmap.height / 4
       @sprite.ox = @sprite.src_rect.width / 2

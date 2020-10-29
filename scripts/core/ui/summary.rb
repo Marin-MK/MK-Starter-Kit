@@ -13,26 +13,26 @@ class SummaryUI
     @sprites["header"] = Sprite.new(@viewport)
     suffix = @pokemon.shiny? ? "_shiny" : ""
     @sprites["bg_1"] = Sprite.new(@viewport)
-    @sprites["bg_1"].set_bitmap(@path + "background_panel_1" + suffix)
+    @sprites["bg_1"].bitmap = Bitmap.new(@path + "background_panel_1" + suffix)
     @sprites["bg_1"].y = 32
     @sprites["bg_1"].z = -1
     @sprites["bg_2"] = Sprite.new(@viewport)
-    @sprites["bg_2"].set_bitmap(@path + "background_panel_2" + suffix)
+    @sprites["bg_2"].bitmap = Bitmap.new(@path + "background_panel_2" + suffix)
     @sprites["bg_2"].y = 64
     @sprites["bg_2"].z = -3
     if @pokemon.shiny?
       @sprites["shiny"] = Sprite.new(@viewport)
-      @sprites["shiny"].set_bitmap(@path + "shiny")
+      @sprites["shiny"].bitmap = Bitmap.new(@path + "shiny")
       @sprites["shiny"].x = 204
       @sprites["shiny"].y = 72
     end
     @sprites["panel"] = Sprite.new(@viewport)
     @sprites["panel"].y = 32
     @sprites["text"] = Sprite.new(@viewport)
-    @sprites["text"].set_bitmap(System.width, System.height)
+    @sprites["text"].bitmap = Bitmap.new(System.width, System.height)
     @sprites["text"].z = 1
     @sprites["vartext"] = Sprite.new(@viewport)
-    @sprites["vartext"].set_bitmap(System.width, System.height)
+    @sprites["vartext"].bitmap = Bitmap.new(System.width, System.height)
     @sprites["vartext"].z = 1
     @page = 1
     @i = -framecount(0.25) if !@pokemon.fainted?
@@ -57,14 +57,14 @@ class SummaryUI
     @sprites["bg_2"].bitmap.dispose if @sprites["bg_2"].bitmap
     if @pokemon.shiny?
       @sprites["shiny"] = Sprite.new(@viewport)
-      @sprites["shiny"].set_bitmap(@path + "shiny")
+      @sprites["shiny"].bitmap = Bitmap.new(@path + "shiny")
       @sprites["shiny"].x = 204
       @sprites["shiny"].y = 72
-      @sprites["bg_1"].set_bitmap(@path + "background_panel_1_shiny")
-      @sprites["bg_2"].set_bitmap(@path + "background_panel_2_shiny")
+      @sprites["bg_1"].bitmap = Bitmap.new(@path + "background_panel_1_shiny")
+      @sprites["bg_2"].bitmap = Bitmap.new(@path + "background_panel_2_shiny")
     else
-      @sprites["bg_1"].set_bitmap(@path + "background_panel_1")
-      @sprites["bg_2"].set_bitmap(@path + "background_panel_2")
+      @sprites["bg_1"].bitmap = Bitmap.new(@path + "background_panel_1")
+      @sprites["bg_2"].bitmap = Bitmap.new(@path + "background_panel_2")
     end
     indexes = {
       :POKEBALL => 0,
@@ -82,7 +82,7 @@ class SummaryUI
     }
     @sprites["ball"].dispose if @sprites["ball"]
     @sprites["ball"] = Sprite.new(@viewport)
-    @sprites["ball"].set_bitmap(@path + "balls")
+    @sprites["ball"].bitmap = Bitmap.new(@path + "balls")
     @sprites["ball"].src_rect.height = @sprites["ball"].bitmap.height / indexes.size
     @sprites["ball"].src_rect.y = indexes[@pokemon.ball_used] * @sprites["ball"].src_rect.height
     @sprites["ball"].x = 200
@@ -114,17 +114,17 @@ class SummaryUI
   def preload_page_1
     sprites = {}
     sprites["panel"] = Sprite.new(@viewport)
-    sprites["panel"].set_bitmap(@path + "page_1")
+    sprites["panel"].bitmap = Bitmap.new(@path + "page_1")
     sprites["panel"].y = 32
     return sprites
   end
 
   def load_page_1(ignore_wait = false)
     @sprites["header"].bitmap.dispose if @sprites["header"].bitmap
-    @sprites["header"].set_bitmap(@path + "page_1_header")
+    @sprites["header"].bitmap = Bitmap.new(@path + "page_1_header")
     sprites = preload_page_1
     @sprites["text"].bitmap.clear
-    @sprites["text"].draw_text(
+    @sprites["text"].bitmap.draw_text(
       {x: 8, y: 8, text: "POKéMON INFO", color: Color::LIGHTBASE,
        shadow_color: Color::LIGHTSHADOW},
       {x: 8, y: 42, text: symbol(:lv) + @pokemon.level.to_s, color: Color::LIGHTBASE,
@@ -142,7 +142,7 @@ class SummaryUI
       gender_color_shadow = Color.new(0, 96, 144)
     end
     if !@pokemon.genderless?
-      @sprites["text"].draw_text(
+      @sprites["text"].bitmap.draw_text(
         x: 210, y: 42, text: gender_text, color: gender_color, shadow_color: gender_color_shadow
       )
     end
@@ -177,7 +177,7 @@ class SummaryUI
     @sprites["panel"].dispose if @sprites["panel"]
     @sprites["panel"] = sprites["panel"]
     wait(0.1) unless ignore_wait
-    @sprites["vartext"].draw_text(
+    @sprites["vartext"].bitmap.draw_text(
       {x: 334, y: 48, text: @pokemon.species.id.to_digits(3), color: Color.new(64, 64, 64),
        shadow_color: Color.new(216, 216, 192)},
       {x: 334, y: 76, text: @pokemon.species.name, color: Color.new(64, 64, 64),
@@ -190,7 +190,7 @@ class SummaryUI
        shadow_color: Color.new(216, 216, 192)}
     )
     itemtext = @pokemon.has_item? ? @pokemon.item.name : "NONE"
-    @sprites["vartext"].draw_text(
+    @sprites["vartext"].bitmap.draw_text(
       x: 334, y: 196, text: itemtext, color: Color.new(64, 64, 64),
       shadow_color: Color.new(216, 216, 192)
     )
@@ -199,7 +199,7 @@ class SummaryUI
       obtaintext = "Met in " + MKD::Map.fetch(@pokemon.obtain_map).name + " at " + symbol(:lv) + " " + @pokemon.obtain_level.to_s + "."
     end
     if obtaintext
-      @sprites["vartext"].draw_text(
+      @sprites["vartext"].bitmap.draw_text(
         x: 16, y: 264, text: obtaintext, color: Color.new(64, 64, 64),
         shadow_color: Color.new(216, 216, 192)
       )
@@ -218,14 +218,14 @@ class SummaryUI
   def preload_page_2
     sprites = {}
     sprites["panel"] = Sprite.new(@viewport)
-    sprites["panel"].set_bitmap(@path + "page_2")
+    sprites["panel"].bitmap = Bitmap.new(@path + "page_2")
     sprites["panel"].y = 32
     sprites["hpbar"] = Sprite.new(@viewport)
-    sprites["hpbar"].set_bitmap("gfx/misc/hpbar")
+    sprites["hpbar"].bitmap = Bitmap.new("gfx/misc/hpbar")
     sprites["hpbar"].x = 338
     sprites["hpbar"].y = 64
     sprites["hp"] = Sprite.new(@viewport)
-    sprites["hp"].set_bitmap("gfx/misc/hp")
+    sprites["hp"].bitmap = Bitmap.new("gfx/misc/hp")
     sprites["hp"].src_rect.height = sprites["hp"].bitmap.height / 3
     factor = @pokemon.hp / @pokemon.totalhp.to_f
     sprites["hp"].src_rect.width = factor * sprites["hp"].bitmap.width
@@ -235,11 +235,11 @@ class SummaryUI
     sprites["hp"].x = 368
     sprites["hp"].y = 68
     sprites["expbar"] = Sprite.new(@viewport)
-    sprites["expbar"].set_bitmap(@path + "expbar")
+    sprites["expbar"].bitmap = Bitmap.new(@path + "expbar")
     sprites["expbar"].x = 304
     sprites["expbar"].y = 256
     sprites["exp"] = Sprite.new(@viewport)
-    sprites["exp"].set_bitmap(@path + "exp")
+    sprites["exp"].bitmap = Bitmap.new(@path + "exp")
     endexp = @pokemon.exp
     if @pokemon.level < 100
       beginexp = EXP.get_exp(@pokemon.species.leveling_rate(@pokemon.form), @pokemon.level)
@@ -256,7 +256,7 @@ class SummaryUI
 
   def load_page_2(ignore_wait = false)
     @sprites["text"].bitmap.clear
-    @sprites["text"].draw_text(
+    @sprites["text"].bitmap.draw_text(
       {x: 8, y: 8, text: "POKéMON SKILLS", color: Color.new(248, 248, 248),
        shadow_color: Color.new(96, 96, 96)},
       {x: 8, y: 42, text: symbol(:lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248),
@@ -274,12 +274,12 @@ class SummaryUI
       gender_color_shadow = Color.new(0, 96, 144)
     end
     if !@pokemon.genderless?
-      @sprites["text"].draw_text(
+      @sprites["text"].bitmap.draw_text(
         x: 210, y: 42, text: gender_text, color: gender_color, shadow_color: gender_color_shadow
       )
     end
     @sprites["header"].bitmap.dispose if @sprites["header"].bitmap
-    @sprites["header"].set_bitmap(@path + "page_2_header")
+    @sprites["header"].bitmap = Bitmap.new(@path + "page_2_header")
     sprites = preload_page_2
     @sprites["hpbar"].dispose if @sprites["hpbar"]
     @sprites.delete("hpbar")
@@ -336,7 +336,7 @@ class SummaryUI
     if @pokemon.level < 100
       endexp = EXP.get_exp(@pokemon.species.leveling_rate(@pokemon.form), @pokemon.level + 1)
     end
-    @sprites["vartext"].draw_text(
+    @sprites["vartext"].bitmap.draw_text(
       {x: 474, y: 46, text: @pokemon.hp.to_s + "/" + @pokemon.totalhp.to_s, color: Color.new(64, 64, 64),
        shadow_color: Color.new(216, 216, 192), alignment: :right},
       {x: 474, y: 82, text: @pokemon.attack.to_s, color: Color.new(64, 64, 64),
@@ -367,7 +367,7 @@ class SummaryUI
 
   def load_page_3(ignore_wait = false)
     @sprites["text"].bitmap.clear
-    @sprites["text"].draw_text(
+    @sprites["text"].bitmap.draw_text(
       {x: 8, y: 8, text: "KNOWN MOVES", color: Color.new(248, 248, 248),
        shadow_color: Color.new(96, 96, 96)},
       {x: 8, y: 42, text: symbol(:lv) + @pokemon.level.to_s, color: Color.new(248, 248, 248),
@@ -385,14 +385,14 @@ class SummaryUI
       gender_color_shadow = Color.new(0, 96, 144)
     end
     if !@pokemon.genderless?
-      @sprites["text"].draw_text(
+      @sprites["text"].bitmap.draw_text(
         x: 210, y: 42, text: gender_text, color: gender_color, shadow_color: gender_color_shadow
       )
     end
     @sprites["header"].bitmap.dispose if @sprites["header"].bitmap
-    @sprites["header"].set_bitmap(@path + "page_3_header")
+    @sprites["header"].bitmap = Bitmap.new(@path + "page_3_header")
     newpanel = Sprite.new(@viewport)
-    newpanel.set_bitmap(@path + "page_3")
+    newpanel.bitmap = Bitmap.new(@path + "page_3")
     newpanel.y = 32
     if @page == 2
       @sprites["vartext"].visible = false
@@ -457,7 +457,7 @@ class SummaryUI
         @sprites["type_#{i}"] = TypeIcon.new(move.type, @viewport)
         @sprites["type_#{i}"].x = 246
         @sprites["type_#{i}"].y = 42 + 56 * i
-        @sprites["vartext"].draw_text(
+        @sprites["vartext"].bitmap.draw_text(
           {x: 326, y: 48 + 56 * i, text: move.name, color: Color.new(32, 32, 32),
            shadow_color: Color.new(216, 216, 216)},
           {x: 436, y: 70 + 56 * i, text: move.pp.to_s, color: Color.new(32, 32, 32),
@@ -470,7 +470,7 @@ class SummaryUI
            shadow_color: Color.new(216, 216, 216), small: true}
         )
       else
-        @sprites["vartext"].draw_text(
+        @sprites["vartext"].bitmap.draw_text(
           {x: 326, y: 48 + 56 * i, text: "-", color: Color.new(32, 32, 32),
            shadow_color: Color.new(216, 216, 216)},
           {x: 392, y: 70 + 56 * i, text: "PP", color: Color.new(32, 32, 32),
@@ -483,16 +483,16 @@ class SummaryUI
   end
 
   def load_page_3_details
-    @sprites["panel"].set_bitmap(@path + "page_3_details")
+    @sprites["panel"].bitmap = Bitmap.new(@path + "page_3_details")
     @sprites["move_panel"] = Sprite.new(@viewport)
     suffix = @pokemon.shiny? ? "_shiny" : ""
-    @sprites["move_panel"].set_bitmap(@path + "move_panel" + suffix)
+    @sprites["move_panel"].bitmap = Bitmap.new(@path + "move_panel" + suffix)
     @sprites["move_panel"].x = 4
     @sprites["move_panel"].y = 36
     @sprites["header"].bitmap.dispose if @sprites["header"].bitmap
-    @sprites["header"].set_bitmap(@path + "page_3_details_header")
+    @sprites["header"].bitmap = Bitmap.new(@path + "page_3_details_header")
     @sprites["text"].bitmap.clear
-    @sprites["text"].draw_text(
+    @sprites["text"].bitmap.draw_text(
       {x: 8, y: 8, text: "KNOWN MOVES", color: Color.new(248, 248, 248),
        shadow_color: Color.new(96, 96, 96)},
       {x: 80, y: 42, text: @pokemon.name, color: Color.new(248, 248, 248),
@@ -508,7 +508,7 @@ class SummaryUI
       gender_color_shadow = Color.new(0, 96, 144)
     end
     if !@pokemon.genderless?
-      @sprites["text"].draw_text(
+      @sprites["text"].bitmap.draw_text(
         x: 210, y: 42, text: gender_text, color: gender_color, shadow_color: gender_color_shadow
       )
     end
@@ -534,16 +534,16 @@ class SummaryUI
       @sprites["type2"].y = 70
     end
     @sprites["selector"] = Sprite.new(@viewport)
-    @sprites["selector"].set_bitmap(@path + "selector")
+    @sprites["selector"].bitmap = Bitmap.new(@path + "selector")
     @sprites["selector"].x = 240
     @sprites["selector"].y = 36
     @sprites["selector"].z = 1
-    @sprites["vartext"].draw_text(
+    @sprites["vartext"].bitmap.draw_text(
       x: 326, y: 272, text: "CANCEL", color: Color.new(32, 32, 32),
       shadow_color: Color.new(216, 216, 216)
     )
     @sprites["movetext"] = Sprite.new(@viewport)
-    @sprites["movetext"].set_bitmap(System.width, System.height)
+    @sprites["movetext"].bitmap = Bitmap.new(System.width, System.height)
     @sprites["movetext"].z = 1
     @move_index = 0
     @page = 4
@@ -560,7 +560,7 @@ class SummaryUI
       accuracy = @pokemon.moves[@move_index].accuracy
       accuracy = "---" if accuracy == 0
       @sprites["movetext"].bitmap.clear
-      @sprites["movetext"].draw_text(
+      @sprites["movetext"].bitmap.draw_text(
         {x: 150, y: 120, text: power.to_s, color: Color.new(64, 64, 64),
          shadow_color: Color.new(216, 216, 192), alignment: :right},
         {x: 150, y: 148, text: accuracy.to_s, color: Color.new(64, 64, 64),
@@ -569,7 +569,7 @@ class SummaryUI
       lines = MessageWindow.get_formatted_text(@sprites["movetext"].bitmap, 214,
           @pokemon.moves[@move_index].description).split("\n")
       lines.each_with_index do |e, i|
-        @sprites["movetext"].draw_text(
+        @sprites["movetext"].bitmap.draw_text(
           {x: 14, y: 202 + 28 * i, text: e, color: Color.new(64, 64, 64),
            shadow_color: Color.new(216, 216, 192)}
         )
@@ -582,14 +582,14 @@ class SummaryUI
       @pokemon.moves.swap!(@swapping_move, @move_index)
       stop_swap_move
       draw_move_panels
-      @sprites["vartext"].draw_text(
+      @sprites["vartext"].bitmap.draw_text(
         x: 326, y: 272, text: "CANCEL", color: Color.new(32, 32, 32),
         shadow_color: Color.new(216, 216, 216)
       )
     else
       @swapping_move = @move_index
       @sprites["selector_blue"] = Sprite.new(@viewport)
-      @sprites["selector_blue"].set_bitmap(@path + "selector_blue")
+      @sprites["selector_blue"].bitmap = Bitmap.new(@path + "selector_blue")
       @sprites["selector_blue"].x = @sprites["selector"].x
       @sprites["selector_blue"].y = @sprites["selector"].y
       @j = 0

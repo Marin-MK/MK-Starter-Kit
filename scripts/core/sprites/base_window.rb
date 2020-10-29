@@ -115,7 +115,7 @@ class BaseWindow
     if @text_sprite.bitmap.nil?
       @text_sprite.bitmap = Bitmap.new(@window.width, @window.height)
     end
-    @text_sprite.draw_text(*args)
+    @text_sprite.bitmap.draw_text(*args)
   end
 
   def update
