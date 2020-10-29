@@ -12,14 +12,3 @@ The game is written in Ruby, and is run using <b><a href="https://github.com/Mar
 <li>Discord: https://discord.gg/Mmt3a3Y
 <li>Twitter: https://twitter.com/MKStarterKit/
 </list>
-
-<h2>Credits</h2>
-
-<h4>Creator</h4>
-<li>Marin
-
-<h4>Support</h4>
-<li>Maruno
-<li>Nuri Yuri
-<li>Aaron
-<li>Lunos

@@ -121,7 +121,11 @@ class PartyUI
           end
         else # A Pokemon
           if @switching
-            switch_pokemon
+            if @switching == @index
+              stop_switching
+            else
+              switch_pokemon
+            end
           else
             press_pokemon
           end
@@ -138,8 +142,16 @@ class PartyUI
     end
   end
 
-  def press_pokemon_commands
-    return ["SUMMARY", "SWITCH", "ITEM", "CANCEL"]
+  def press_pokemon_commands(pokemon)
+    commands = []
+    commands << "SHIFT" if @mode == :choose_battler
+    commands << "SUMMARY"
+    if @mode != :choose_battler
+      commands << "SWITCH"
+      commands << "ITEM"
+    end
+    commands << "CANCEL"
+    return commands
   end
 
   def press_pokemon
@@ -156,7 +168,7 @@ class PartyUI
       oy: :bottom,
       z: 1,
       width: 192,
-      choices: press_pokemon_commands,
+      choices: press_pokemon_commands(pokemon),
       viewport: @viewport
     )
     set_command_help_text
@@ -164,7 +176,6 @@ class PartyUI
       cmd = cmdwin.get_choice { update }
       ret = handle_command(cmd, cmdwin)
       break if ret == :break
-      return if ret == :return
     end
     cmdwin.dispose
     set_main_help_text
@@ -173,7 +184,7 @@ class PartyUI
   def handle_command(cmd, cmdwin)
     case cmd
     when "SHIFT"
-      @return_value = @index
+      stop
       return :break
     when "SUMMARY"
       summary = SummaryUI.new(@party, @index) { update }
@@ -182,13 +193,13 @@ class PartyUI
     when "SWITCH"
       cmdwin.visible = false
       start_switching
-      return :return
+      return :break
     when "ITEM"
       cmdwin.visible = false
       ret = press_item(cmdwin)
       if ret == :return
         # Quit command menu
-        return :return
+        return :break
       else
         cmdwin.visible = true
         cmdwin.set_index(0, false)

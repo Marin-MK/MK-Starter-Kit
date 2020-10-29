@@ -546,7 +546,9 @@ class Battle
     # @return [Integer] the party index of the new battler.
     def switch_battler(battler)
       validate battler => Battler
-      ui = PartyUI.start_choose_battler(@battle.sides[0].trainers[0].party.map { |e| e.pokemon }) { update }
+      battlerparty = @battle.sides[0].trainers[0].party
+      pokemonparty = battlerparty.map { |e| e.pokemon }
+      party = PartyUI.new(pokemonparty, :choose_battler, "Choose which POKéMON?") { update }
       msgwin = MessageWindow.new(
         y: 224,
         z: 3,
@@ -557,14 +559,14 @@ class Battle
         line_y_space: -2,
         line_y_start: -2,
         visible: false,
-        viewport: ui.viewport,
-        update: proc { ui.update_sprites }
+        viewport: party.viewport,
+        update: proc { party.update }
       )
       ret = nil
       loop do
-        ret = ui.choose_battler
-        if !ret.nil?
-          battler = @battle.sides[0].trainers[0].party[ret]
+        party.main
+        if party.index != -1
+          battler = battlerparty[party.index]
           if @battle.sides[0].battlers.include?(battler)
             # The selected Pokémon is already battling.
             msgwin.ending_arrow = false
@@ -584,8 +586,10 @@ class Battle
           ret = nil
           break
         end
+        party.restart
       end
-      ui.end_choose_battler
+      party.dispose { update }
+      battlerparty.swap!(0, party.index) if party.index != -1
       return ret
     end
 
