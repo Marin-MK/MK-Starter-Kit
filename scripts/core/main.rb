@@ -56,7 +56,7 @@ def main_function
   $game.update
   $visuals.update
   if Input.trigger?(Input::CTRL)
-    wild_battle(Pokemon.new(:BULBASAUR, 14, moves: [UsableMove.new(:TACKLE), UsableMove.new(:GROWL)]))
+    wild_battle(Pokemon.new(:BULBASAUR, 14, ivs: $trainer.party[0].ivs, nature: $trainer.party[0].nature, moves: [UsableMove.new(:TACKLE), UsableMove.new(:GROWL)]))
   end
   return true
 end

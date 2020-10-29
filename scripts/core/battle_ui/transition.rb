@@ -25,15 +25,6 @@ class Battle
       bmp.dispose
     end
 
-    # Wait for a certain number of seconds
-    # @param seconds [Float] the number of seconds to wait.
-    def wait(seconds)
-      validate seconds => Float
-      for i in 1..framecount(seconds)
-        update
-      end
-    end
-
     # Flickers the overlay in.
     def flicker_overlay_in
       frames = framecount(0.1)

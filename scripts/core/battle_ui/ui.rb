@@ -537,7 +537,10 @@ class Battle
       else
         @msgwin.drawing = true
         update while @msgwin.drawing?
-        wait(0.4)
+        for i in 1..framecount(0.6)
+          update
+          break if Input.confirm? || Input.cancel?
+        end
       end
     end
 

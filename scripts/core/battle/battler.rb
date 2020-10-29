@@ -137,7 +137,11 @@ class Battle
       if @stages.speed < -6 || @stages.speed > 6
         raise "Invalid speed stage: #{@stages.speed}"
       end
-      return (base_speed * GENERIC_STAGE_MULTIPLIER[@stages.speed + 6]).floor
+      speed = (base_speed * GENERIC_STAGE_MULTIPLIER[@stages.speed + 6]).floor
+      if paralyzed?
+        speed /= 2
+      end
+      return speed.floor
     end
 
     # @return [Integer] the accuracy stage of this battler.

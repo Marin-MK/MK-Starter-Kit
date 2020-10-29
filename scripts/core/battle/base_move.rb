@@ -243,6 +243,12 @@ class Battle
       validate \
           user => Battler,
           target => [NilClass, Battler]
+      if user.paralyzed?
+        if chance(0.25)
+          message("#{user.name} is paralyzed!\nIt can't move!")
+          return
+        end
+      end
       targets = target || get_target(user)
       targets = [targets] if targets.is_a?(Battler)
       # Determines if a critical hit for this user is possible by checking each target.
