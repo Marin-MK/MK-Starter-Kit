@@ -1,6 +1,9 @@
-class SaveUI < BaseUI
-  def start
-    super(fade: false)
+class SaveUI
+  def initialize
+    @saved = false
+    @viewport = Viewport.new(0, 0, System.width, System.height)
+    @viewport.z = 99999
+    @sprites = {}
     @sprites["details"] = SplitSprite.new(@viewport)
     @sprites["details"].set(Windowskin.get(:helper))
     @sprites["details"].width = 248
@@ -47,33 +50,37 @@ class SaveUI < BaseUI
     end
   end
 
-  def update
-    if show_confirm("Would you like to save the game?")
+  def saved?
+    return @saved
+  end
+
+  def main
+    if show_confirm("Would you like to save the game?") { update }
       save_exists = true # to implement
       if save_exists
-        if show_confirm("There is already a saved file.\nIs it okay to overwrite it?")
-          save_message
-        else
-          @ret = false
+        if show_confirm("There is already a saved file.\nIs it okay to overwrite it?") { update }
+          save
         end
       else
-        save_message
+        save
       end
-      stop
-    else
-      @ret = false
-      stop
     end
   end
 
-  def save_message
-    show_message("SAVING...\nDON'T TURN OFF THE POWER.")
-    Game.save_game
-	Audio.se_play("audio/se/save")
-    show_message($trainer.name + " saved the game.")
+  def update
+    $visuals.update(:no_events)
   end
 
-  def update_sprites
-    $visuals.update(:no_events)
+  def save
+    show_message("SAVING...\nDON'T TURN OFF THE POWER.") { update }
+    Game.save_game
+    Audio.se_play("audio/se/save")
+    show_message($trainer.name + " saved the game.") { update }
+    @saved = true
+  end
+
+  def dispose
+    @sprites.each_value(&:dispose)
+    @viewport.dispose
   end
 end

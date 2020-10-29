@@ -107,8 +107,10 @@ class PauseMenuUI
       card.dispose { update }
     when "SAVE"
       hide_ui
-      ret = SaveUI.start
-      if ret # Saved
+      save = SaveUI.new
+      save.main
+      save.dispose
+      if save.saved?
         stop
       else
         show_ui

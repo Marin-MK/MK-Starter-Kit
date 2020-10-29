@@ -94,6 +94,7 @@ class Game
   end
 
   def self.save_game
+    return
     folder = Game.get_save_folder
     FileUtils.mkdir_p(folder) if !Dir.exists?(folder)
     filename = folder + "/save.mkd"
