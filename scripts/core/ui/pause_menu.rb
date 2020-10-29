@@ -94,15 +94,17 @@ class PauseMenuUI
     when "POKéDEX"
 
     when "POKéMON"
-      party = PartyUI.new
+      party = PartyUI.new { update }
       party.main
-      party.dispose
+      party.dispose { update }
     when "BAG"
-      bag = BagUI.new
+      bag = BagUI.new { update }
       bag.main
-      bag.dispose
+      bag.dispose { update }
     when $trainer.name
-      TrainerCardUI.start
+      card = TrainerCardUI.new { update }
+      card.main
+      card.dispose { update }
     when "SAVE"
       hide_ui
       ret = SaveUI.start

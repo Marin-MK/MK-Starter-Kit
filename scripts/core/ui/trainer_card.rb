@@ -1,6 +1,10 @@
-class TrainerCardUI < BaseUI
-  def start
-    super(path: "trainer_card")
+class TrainerCardUI
+  def initialize
+    System.show_overlay { yield if block_given? }
+    @path = "gfx/ui/trainer_card/"
+    @viewport = Viewport.new(0, 0, System.width, System.height)
+    @viewport.z = 99999
+    @sprites = {}
     @suffix = ["_male", "_female"][$trainer.gender]
     @sprites["background"] = Sprite.new(@viewport)
     @sprites["background"].set_bitmap(@path + "background" + @suffix)
@@ -9,29 +13,33 @@ class TrainerCardUI < BaseUI
     @page = 0
     @i = (framecount(1.0) / 3.0).ceil # Starts at 1/3rd of the colon flicker animation
     load_front_page(true)
-    update_sprites
     @start = true
+    System.hide_overlay { update }
   end
 
-  def update
-    super
-    if @start
-      Audio.se_play("audio/se/trainercard")
-      @start = false
-    end
-    if Input.cancel?
-      if @page == 1
-        load_front_page
-      else
-        stop
+  def main
+    loop do
+      System.update
+      update
+      if @start
+        Audio.se_play("audio/se/trainercard")
+        @start = false
       end
-    end
-    if Input.confirm?
-      if @page == 0 # Flip from Front to Back
-        load_back_page
-      else
-        stop
+      if Input.cancel?
+        if @page == 1
+          load_front_page
+        else
+          stop
+        end
       end
+      if Input.confirm?
+        if @page == 0 # Flip from Front to Back
+          load_back_page
+        else
+          stop
+        end
+      end
+      break if @break
     end
   end
 
@@ -54,6 +62,7 @@ class TrainerCardUI < BaseUI
           Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
         )
         System.update
+        update
       end
       @sprites["card"].set_bitmap(@path + "card")
       wait(0.2)
@@ -70,6 +79,7 @@ class TrainerCardUI < BaseUI
           Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
         )
         System.update
+        update
       end
       @sprites["card"].visible = true
       stretched_sprite.dispose
@@ -115,7 +125,7 @@ class TrainerCardUI < BaseUI
     @sprites["colon"].y = 198
     @sprites["colon"].visible = true
     @sprites["text"].visible = true
-    update_sprites(true)
+    update(true)
   end
 
   def load_back_page
@@ -149,6 +159,7 @@ class TrainerCardUI < BaseUI
         Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
       )
       System.update
+      update
     end
     @sprites["card"].set_bitmap(@path + "card_back")
     wait(0.2)
@@ -165,6 +176,7 @@ class TrainerCardUI < BaseUI
         Rect.new(0, 0, @sprites["card"].bitmap.width, @sprites["card"].bitmap.height)
       )
       System.update
+      update
     end
     @sprites["card"].visible = true
     stretched_sprite.dispose
@@ -177,8 +189,7 @@ class TrainerCardUI < BaseUI
     )
   end
 
-  def update_sprites(force_update_time = false)
-    super()
+  def update(force_update_time = false)
     if @page == 0 # Front
       hours = (System.frame_count / 60 / 60 / 60 % 60).to_s
       minutes = (System.frame_count / 60 / 60 % 60).to_digits(2)
@@ -199,5 +210,17 @@ class TrainerCardUI < BaseUI
     else # Back
 
     end
+  end
+
+  def stop
+    @break = true
+  end
+
+  def dispose
+    System.show_overlay { update }
+    stop
+    @sprites.each_value(&:dispose)
+    @viewport.dispose
+    System.hide_overlay { yield if block_given? }
   end
 end
