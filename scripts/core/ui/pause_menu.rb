@@ -1,4 +1,4 @@
-class PauseMenuUI < BaseUI
+class PauseMenuUI
   Descriptions = {
     "POKéDEX" => "A device that records POKéMON secrets upon meeting or catching them.",
     "POKéMON" => "Check and organise POKéMON that are traveling with you in your party.",
@@ -10,19 +10,30 @@ class PauseMenuUI < BaseUI
   }
 
   attr_reader :cmdwin
+  attr_reader :sprites
 
-  def start
-    super(path: "pause_menu", fade: false)
-    $trainer.give_pokedex
+  def get_commands
+    commands = []
+    commands << "POKéDEX" if $trainer.has_pokedex?
+    commands << "POKéMON" if $trainer.party.size > 0
+    commands << "BAG"
+    commands << $trainer.name
+    commands << "SAVE"
+    commands << "OPTION"
+    commands << "EXIT"
+    return commands
+  end
+
+  def initialize
+    @path = "gfx/ui/pause_menu/"
+    @viewport = Viewport.new(0, 0, System.width, System.height)
+    @viewport.z = 99999
+    @sprites = {}
     @sprites["desc"] = Sprite.new(@viewport)
     @sprites["desc"].set_bitmap(@path + "desc_bar")
     @sprites["desc"].y = 240
-    choices = []
-    choices << "POKéDEX" if $trainer.has_pokedex?
-    choices << "POKéMON" if $trainer.party.size > 0
-    choices = choices.concat(["BAG", $trainer.name, "SAVE", "OPTION", "EXIT"])
     @cmdwin = ChoiceWindow.new(
-        choices: choices,
+        choices: get_commands,
         x: System.width,
         ox: :right,
         line_y_start: -4,
@@ -42,7 +53,9 @@ class PauseMenuUI < BaseUI
 
   def draw_description(idx)
     @sprites["text"].bitmap.clear
-    text = Descriptions[@cmdwin.choices[idx].gsub($trainer.name, "NAME")]
+    command = @cmdwin.choices[idx]
+    command = "NAME" if command == $trainer.name
+    text = Descriptions[command]
     text ||= "No description."
     description = MessageWindow.get_formatted_text(@sprites["text"].bitmap, 460, text).split("\n")
     description.each_with_index do |txt, i|
@@ -57,47 +70,52 @@ class PauseMenuUI < BaseUI
   end
 
   def main
-    test_disposed
     loop do
-      choice = @cmdwin.get_choice do |oldidx, newidx|
+      System.update
+      update
+      command = @cmdwin.get_choice do |oldidx, newidx|
         if oldidx != newidx
           draw_description(newidx)
           $temp.last_menu_index = newidx
         end
-        update_sprites
+        update
         if Input.start?
           stop
           return
         end
       end
-      case choice
-      when "POKéDEX"
-
-      when "POKéMON"
-        party = PartyUI.new
-        party.main
-        party.dispose
-      when "BAG"
-        bag = BagUI.new
-        bag.main
-        bag.dispose
-      when $trainer.name
-        TrainerCardUI.start
-      when "SAVE"
-        hide_ui
-        ret = SaveUI.start
-        if ret # Saved
-          break
-        else
-          show_ui
-        end
-      when "OPTION"
-        OptionsUI.start(self)
-      when "EXIT"
-        break
-      end
+      ret = handle_command(command)
+      break if @break
     end
-    stop
+  end
+
+  def handle_command(command)
+    case command
+    when "POKéDEX"
+
+    when "POKéMON"
+      party = PartyUI.new
+      party.main
+      party.dispose
+    when "BAG"
+      bag = BagUI.new
+      bag.main
+      bag.dispose
+    when $trainer.name
+      TrainerCardUI.start
+    when "SAVE"
+      hide_ui
+      ret = SaveUI.start
+      if ret # Saved
+        stop
+      else
+        show_ui
+      end
+    when "OPTION"
+      OptionsUI.start(self)
+    when "EXIT"
+      stop
+    end
   end
 
   def show_ui
@@ -110,14 +128,18 @@ class PauseMenuUI < BaseUI
     @cmdwin.visible = false
   end
 
-  def update_sprites
-    super
+  def update
     $visuals.update(:no_events)
   end
 
+  def stop
+    @break = true
+  end
+
   def dispose
-    test_disposed
+    stop
+    @sprites.each_value(&:dispose)
     @cmdwin.dispose
-    super
+    @viewport.dispose
   end
 end

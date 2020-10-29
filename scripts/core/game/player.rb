@@ -63,7 +63,9 @@ class Game
         end
         # Pause Menu
         if Input.start?
-          PauseMenuUI.start
+          pausemenu = PauseMenuUI.new
+          pausemenu.main
+          pausemenu.dispose
         end
       end
       # Movement

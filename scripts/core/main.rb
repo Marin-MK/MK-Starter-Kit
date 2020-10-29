@@ -49,6 +49,8 @@ $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 4, item: :REPEL))
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 5, hp: 6, status: :poisoned))
 $trainer.add_pokemon(Pokemon.new(:BULBASAUR, 6, gender: 1, hp: 0))
 $trainer.add_item(:MAXREPEL, 5)
+$trainer.add_item(:REPEL, 2)
+$trainer.give_pokedex
 
 def main_function
   $game.update
@@ -73,9 +75,6 @@ end
 
 main_function
 loop do
-  update = System.update
-  if defined?(APPLICATION) && APPLICATION == "ruby-sdl2"
-    break unless update
-  end
+  System.update
   break if !main_function
 end
