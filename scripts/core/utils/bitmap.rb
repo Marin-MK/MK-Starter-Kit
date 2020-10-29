@@ -40,13 +40,13 @@ class Bitmap
       x -= text_size.width if [:RIGHT, :right, "right", "RIGHT"].include?(alignment)
       x -= text_size.width / 2 if [:CENTER, :center, "center", "CENTER", :MID, :mid, "mid", "MID", :MIDDLE, :middle, "middle", "MIDDLE"].include?(alignment)
       if shadow_color
-        self.bitmap.font.color = shadow_color
+        self.font.color = shadow_color
         original_draw_text(x + 2, y, text_size.width, text_size.height, text)
         original_draw_text(x, y + 2, text_size.width, text_size.height, text)
         original_draw_text(x + 2, y + 2, text_size.width, text_size.height, text)
       end
       if outline_color
-        self.bitmap.font.color = outline_color
+        self.font.color = outline_color
         original_draw_text(x + 2, y + 2, text_size.width, text_size.height, text)
         original_draw_text(x + 2, y - 2, text_size.width, text_size.height, text)
         original_draw_text(x + 2, y, text_size.width, text_size.height, text)

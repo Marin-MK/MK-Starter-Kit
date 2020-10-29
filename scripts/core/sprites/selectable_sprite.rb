@@ -5,7 +5,7 @@ class SelectableSprite < Sprite
   end
 
   def set_bitmap(path, possible_states = 2)
-    super(path)
+    self.bitmap = Bitmap.new(path)
     self.src_rect.width = self.bitmap.width / possible_states
     self.select(@state)
   end

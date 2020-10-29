@@ -43,6 +43,7 @@ def log(category, msg, no_duplicates = false)
   end
 end
 
+
 # Returns the coordinates of the facing tile based on x,y,direction.
 # @param x [Integer] the current X value.
 # @param y [Integer] the current Y value.
@@ -69,19 +70,6 @@ class Sprite
     old_initialize(viewport)
     @data = data
   end
-end
-
-# Performs a memory and speed test.
-# @param abort_after [Boolean] whether or not to shut down after performing the test.
-def perform_test(abort_after = true)
-  smem = get_memory
-  st = Time.now
-  yield if block_given?
-  et = (Time.now - st).round(4)
-  emem = get_memory
-  msgbox "Memory Before: #{smem}\nMemory After: #{emem}\nMemory Difference: #{emem > smem ? "+" : emem < smem ? "-" : ""}#{emem - smem}\n----------------------\n" +
-      "Time: #{et} seconds"
-  abort if abort_after
 end
 
 class Object

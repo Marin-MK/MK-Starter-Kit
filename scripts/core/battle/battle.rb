@@ -2,6 +2,7 @@ def wild_battle(arg1, arg2 = nil)
   pokemon = nil
   if arg1 && !arg2
     validate arg1 => Pokemon
+    pokemon = arg1
   elsif arg1 && arg2
     validate \
         arg1 => [Species, Symbol, Integer],

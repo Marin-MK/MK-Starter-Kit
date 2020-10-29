@@ -203,10 +203,17 @@ class Battle
       return @pokemon.status
     end
 
+    # @return [Boolean] whether the Pokémon has a status condition.
+    def has_status?
+      return !@pokemon.status.nil?
+    end
+
     # Burns the Pokémon.
     def burn
       if burned?
-        message("#{self.name} was already\nburned!")
+        message("#{self.name} is already\nburned!")
+      elsif has_status?
+        message("But it failed!")
       else
         @pokemon.status = :burned
         @ui.update_status(self)
@@ -222,7 +229,9 @@ class Battle
     # Freezes the Pokémon.
     def freeze
       if frozen?
-        message("#{self.name} was already\nfrozen!")
+        message("#{self.name} is already\nfrozen!")
+      elsif has_status?
+        message("But it failed!")
       else
         @pokemon.status = :frozen
         @ui.update_status(self)
@@ -238,7 +247,9 @@ class Battle
     # Paralyzes the Pokémon.
     def paralyze
       if paralyzed?
-        message("#{self.name} was already\nparalyzed!")
+        message("#{self.name} is already\nparalyzed!")
+      elsif has_status?
+        message("But it failed!")
       else
         @pokemon.status = :paralyzed
         @ui.update_status(self)
@@ -252,9 +263,12 @@ class Battle
     end
 
     # Poisons the Pokémon.
+    # @param bad [Boolean] whether the poison type is bad poison.
     def poison(bad = false)
       if poisoned?
-        message("#{self.name} was already\npoisoned!")
+        message("#{self.name} is already\npoisoned.")
+      elsif has_status?
+        message("But it failed!")
       else
         @pokemon.status = :poisoned
         @ui.update_status(self)
@@ -271,7 +285,9 @@ class Battle
     # Makes the Pokémon fall asleep.
     def sleep
       if asleep?
-        message("#{self.name} was already\nasleep!")
+        message("#{self.name} is already\nasleep!")
+      elsif has_status?
+        message("But it failed!")
       else
         @pokemon.status = :asleep
         @ui.update_status(self)
@@ -412,7 +428,7 @@ class Battle
         lower_hp(totalhp / 8)
       elsif burned?
         message("#{self.name} is hurt\nby its burn!")
-        lower_hp(totalhp / 8)
+        lower_hp(totalhp / 16)
       end
     end
 

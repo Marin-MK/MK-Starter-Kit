@@ -126,7 +126,7 @@ class MultiChoiceWindow < BaseWindow
     end
     unless @selector
       @selector = SelectableSprite.new(@viewport)
-      @selector.bitmap = Bitmap.new(@arrow_path, @arrow_states)
+      @selector.set_bitmap(@arrow_path, @arrow_states)
       @selector.x = self.x + @line_x_start - 2 + @line_x_space * (@index % 2) - @selector.bitmap.width
       @selector.y = self.y + @line_y_start - (@small ? 0 : 2) + @line_y_space * (@index / 2.0).floor
       @selector.z = self.z + 1
