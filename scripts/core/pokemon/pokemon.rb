@@ -29,6 +29,8 @@ class Pokemon
   attr_accessor :happiness
   # @return [Symbol, NilClass] the status condition of this Pokemon.
   attr_accessor :status
+  # @return [Integer, NilClass] the status counter of the status condition.
+  attr_accessor :status_counter
   # @return [Integer] the number of egg cycles left on this Pokemon.
   attr_accessor :egg_cycles
   # @return [Symbol] the internal name of the ball used to catch this Pokemon.
@@ -108,7 +110,7 @@ class Pokemon
       @obtain_time = hash[:obtain_time]
       @obtain_level = hash[:obtain_level]
       @moves = hash[:moves]
-      @item = hash[:item]
+      @item = hash[:item].is_a?(Item) ? hash[:item].intname : hash[:item]
       @status = hash[:status]
       @hp = hash[:hp]
       @egg_cycles = hash[:egg_cycles]
@@ -171,8 +173,11 @@ class Pokemon
     if !@item.nil? && !Item.exists?(@item)
       raise ArgumentError, "the held item must be an existing item."
     end
-    if !@status.nil? && ![:burned,:frozen,:paralyzed,:poisoned,:asleep].include?(@status)
-      raise ArgumentError, "the status must be a given status condition."
+    if !@status.nil?
+      if ![:burned,:frozen,:paralyzed,:poisoned,:asleep].include?(@status)
+        raise ArgumentError, "the status must be a given status condition."
+      end
+      @status_count = rand(1..3) if @status == :asleep
     end
     if !@hp.nil? && @hp < 0
       raise ArgumentError, "the hp stat cannot be negative."
@@ -228,6 +233,7 @@ class Pokemon
     @moves ||= get_moveset_for_level
     calc_stats
     @hp ||= @totalhp
+    @status_count ||= 0
     @egg_cycles ||= 0
   end
 
@@ -249,7 +255,7 @@ class Pokemon
 
   # Naturally changes the Pokemon's form.
   # @param form [Integer] the new form of the Pokemon.
-  def set_form(form)
+  def form=(form)
     validate form => Integer
     unless @form == form
       @form = form
@@ -257,6 +263,7 @@ class Pokemon
       self.calc_stats
     end
   end
+  alias set_form form=
 
 
 
@@ -270,6 +277,7 @@ class Pokemon
     end
     self.calc_stats
   end
+  alias set_exp exp=
 
   # @return [Integer] the level this Pokemon is currently at.
   def level
@@ -286,39 +294,32 @@ class Pokemon
     @exp = EXP.get_exp(species.leveling_rate(self.form), value)
     self.calc_stats
   end
+  alias set_level level=
 
 
 
   # @return [Item, NilClass] the item the Pokemon is holding.
   def item
-    return nil unless @item
+    return nil if !@item
     return Item.get(@item)
   end
 
   # Gives the Pokemon an item to hold.
-  # @param value [Symbol, Item, NilClass] the item to give the Pokemon.
-  def item=(value)
-    validate value => [Symbol, Item, NilClass]
-    @item = value
-  end
-
-  # Gives the Pokemon an item to hold.
   # @param nature [Symbol, Integer, Item, NilClass] the item to give the Pokemon.
-  def set_item(item)
+  def item=(item)
     validate item => [Symbol, Integer, Item, NilClass]
     if item.nil?
       @item = nil
     else
-      item = Item.get(item)
-      @item = item.intname
+      @item = Item.get(item).intname
     end
   end
-  alias give_item set_item
+  alias set_item item=
 
 
 
   # @return [Boolean] whether or not the Pokemon is shiny.
-  def shiny
+  def shiny?
     return @shinyflag if @shinyflag
     p1 = (@pid / 65536.0).floor
     p2 = @pid % 65536
@@ -327,21 +328,15 @@ class Pokemon
     s = tid ^ sid ^ p1 ^ p2
     return s < SHINYCHANCE
   end
-  alias shiny? shiny
 
   # Forces a value for the Pokemon's shininess.
   # @param value [Boolean, NilClass] the shininess value.
   def shiny=(value)
-    self.set_shiny(value)
+    validate value => [Boolean, NilClass]
+    @shinyflag = value
   end
-
-  # Forces a value for the Pokemon's shininess.
-  # @param shiny [Boolean, NilClass] the shininess value.
-  def set_shiny(shiny)
-    validate shiny => [Boolean, NilClass]
-    @shinyflag = shiny
-  end
-  alias set_shininess set_shiny
+  alias set_shiny shiny=
+  alias set_shininess shiny=
 
 
 
@@ -374,18 +369,13 @@ class Pokemon
   end
 
   # Forces a value for the Pokemon's gender.
-  # @param value [Integer, NilClass] the gender value.
-  def gender=(value)
-    self.set_gender(value)
-  end
-
-  # Forces a value for the Pokemon's gender.
   # @param nature [Integer, NilClass] the gender value.
-  def set_gender(value)
+  def gender=(value)
     validate value => [Integer, NilClass]
     raise "Invalid gender #{value.inspect}" unless [nil, 0, 1, 2].include?(value)
     @genderflag = value
   end
+  alias set_gender gender=
 
 
 
@@ -401,27 +391,16 @@ class Pokemon
   end
 
   # Forces a value for the Pokemon's ability.
-  # @param value [Symbol, NilClass] the ability value.
+  # @param value [Integer, Symbol, Ability, NilClass] the ability value.
   def ability=(value)
-    validate value => [Symbol, NilClass]
-    if value.nil? || Ability.exists?(value)
+    validate value => [Integer, Symbol, Ability, NilClass]
+    if value.nil?
       @abilityflag = value
     else
-      raise "Invalid ability for #{value.inspect}"
+      @abilityflag = Ability.get(value).intname
     end
   end
-
-  # Forces a value for the Pokemon's ability.
-  # @param nature [Symbol, Integer, Ability, NilClass] the ability value.
-  def set_ability(ability)
-    validate ability => [Symbol, Integer, Ability, NilClass]
-    if ability.nil?
-      @abilityflag = nil
-    else
-      ability = Ability.get(ability)
-      @abilityflag = ability.intname
-    end
-  end
+  alias set_ability ability=
 
 
 
@@ -432,19 +411,8 @@ class Pokemon
   end
 
   # Forces a value for the Pokemon's nature.
-  # @param value [Symbol, NilClass] the nature value.
-  def nature=(value)
-    validate value => [Symbol, Nature, NilClass]
-    if value.nil? || Nature.exists?(value)
-      @natureflag = value.nil? ? value : Nature.get(value).intname
-    else
-      raise "Invalid nature for #{value.inspect}"
-    end
-  end
-
-  # Forces a value for the Pokemon's nature.
   # @param nature [Symbol, Integer, Nature, NilClass] the nature value.
-  def set_nature(nature)
+  def nature=(nature)
     validate nature => [Symbol, Integer, Nature, NilClass]
     if nature.nil?
       @natureflag = nil
@@ -453,6 +421,7 @@ class Pokemon
       @natureflag = nature.intname
     end
   end
+  alias set_nature nature=
 
 
 
@@ -586,11 +555,8 @@ class Pokemon
   # @return [Boolean] whether or not the Pokemon is holding the given item or an item at all.
   def has_item?(item = nil)
     validate item => [Symbol, Integer, Item, NilClass]
-    if item.nil?
-      return !self.item.nil?
-    end
-    item = Item.get(item)
-    return self.item == item
+    return false if item.nil? || self.item.nil?
+    return self.item.is?(item)
   end
 
   # @return [Boolean] whether or not the Pokemon knows the given move.
@@ -623,8 +589,9 @@ class Pokemon
     return self.is_gender?(2)
   end
 
+  # @return [Boolean] whether this Pokémon is an egg.
   def egg?
-    return @egg_cycles > 0
+    return self.egg_cycles > 0
   end
 
   # Restores the Pokemon's HP.
@@ -633,20 +600,21 @@ class Pokemon
   end
 
   # Clears the Pokemon's status.
-  def heal_status
+  def remove_status
     self.status = nil
+    self.status_count = nil
   end
 
   # Heals the Pokemon's move PP.
-  def heal_pp
-    self.moves.each { |e| e.heal_pp }
+  def restore_pp
+    self.moves.each { |e| e.restore_pp }
   end
 
   # Fully heals the Pokemon.
   def heal
     self.heal_hp
-    self.heal_status
-    self.heal_pp
+    self.remove_status
+    self.restore_pp
   end
 
   # @return [Boolean] whether or not the Pokemon is fainted.

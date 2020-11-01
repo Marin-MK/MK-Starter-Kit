@@ -71,7 +71,7 @@ class UsableMove
     return self.move.status?
   end
 
-  def heal_pp
+  def restore_pp
     self.pp = self.move.totalpp
   end
 end
