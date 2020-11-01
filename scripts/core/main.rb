@@ -61,15 +61,48 @@ def main_function
   return true
 end
 
+$fps_sprite = Sprite.new
+$fps_sprite.z = 999999999
+$fps_sprite.bitmap = Bitmap.new(System.width, System.height)
+
 class << System
-  alias speedup_update update
+  alias misc_update update
   def update
     if Input.trigger?(Input::Q)
       System.render_speed /= 2
     elsif Input.trigger?(Input::E)
       System.render_speed *= 2
     end
-    speedup_update
+    if @before_ruby
+      @after_ruby = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      @ruby_total ||= 0
+      @ruby_count ||= 0
+      @ruby_total += @after_ruby - @before_ruby
+      @ruby_count += 1
+    end
+    if @render_count == System.frame_rate
+      render_avg = (@render_count / @render_total).round
+      render_str = "Render FPS: #{render_avg}"
+      ruby_avg = (@ruby_count / @ruby_total).round
+      ruby_str = "Ruby FPS: #{ruby_avg}"
+      $fps_sprite.bitmap.clear
+      $fps_sprite.bitmap.draw_text(
+        x: System.width - 8, y: 8, align: :right, color: Color.new(96, 96, 96), text: ruby_str
+      )
+      $fps_sprite.bitmap.draw_text(
+        x: System.width - 8, y: 40, align: :right, color: Color.new(96, 96, 96), text: render_str
+      )
+      @render_total = @render_count = 0
+      @ruby_total = @ruby_count = 0
+    end
+    before_render = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    misc_update
+    after_render = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    @render_total ||= 0
+    @render_count ||= 0
+    @render_total += after_render - before_render
+    @render_count += 1
+    @before_ruby = Process.clock_gettime(Process::CLOCK_MONOTONIC)
   end
 end
 
