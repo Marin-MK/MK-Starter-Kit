@@ -274,6 +274,14 @@ class Species < Serializable
     return Cache.size
   end
 
+  # Determines equality between two species.
+  # @param species [Symbol, Integer, Species] the species to compare with.
+  # @return [Boolean] whether the two species are equal.
+  def is?(species)
+    validate species => [Symbol, Integer, Species]
+    return @intname == Species.get(species).intname
+  end
+
   # Registers the proc used to determine the form of the Pokemon upon creation.
   def self.get_form_on_creation(species, code)
     GetFormOnCreation[species] = code

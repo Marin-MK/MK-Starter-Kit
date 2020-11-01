@@ -72,6 +72,14 @@ class Nature < Serializable
   def self.count
     return Cache.size
   end
+
+  # Determines equality between two natures.
+  # @param nature [Symbol, Integer, Nature] the nature to compare with.
+  # @return [Boolean] whether the two natures are equal.
+  def is?(nature)
+    validate nature => [Symbol, Integer, Nature]
+    return @intname == Nature.get(nature).intname
+  end
 end
 
 # This would be loaded from a data file

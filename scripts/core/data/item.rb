@@ -79,6 +79,14 @@ class Item < Serializable
   def self.count
     return Cache.size
   end
+
+  # Determines equality between two items.
+  # @param item [Symbol, Integer, Item] the items to compare with.
+  # @return [Boolean] whether the two items are equal.
+  def is?(item)
+    validate item => [Symbol, Integer, Item]
+    return @intname == Item.get(item).intname
+  end
 end
 
 # This would be loaded from a data file

@@ -103,7 +103,14 @@ class Type < Serializable
     return Cache.size
   end
 
-  # Unused
+  # Determines equality between two types.
+  # @param type [Symbol, Integer, Type] the type to compare with.
+  # @return [Boolean] whether the two types are equal.
+  def is?(type)
+    validate type => [Symbol, Integer, Type]
+    return @intname == Type.get(type).intname
+  end
+
   def status?
     return @category == :status
   end

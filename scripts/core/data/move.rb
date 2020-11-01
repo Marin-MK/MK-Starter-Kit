@@ -96,12 +96,20 @@ class Move < Serializable
     return Cache.size
   end
 
+  # Determines equality between two moves.
+  # @param move [Symbol, Integer, Move] the move to compare with.
+  # @return [Boolean] whether the two moves are equal.
+  def is?(move)
+    validate move => [Symbol, Integer, Move]
+    return @intname == Move.get(move).intname
+  end
+
   # @return [Boolean] whether the move is status.
   def status?
     return @category == :status
   end
 
-# @return [Boolean] whether the move is physical.
+  # @return [Boolean] whether the move is physical.
   def physical?
     return PHYSICAL_SPECIAL_SPLIT ? @category == :physical : Type.get(@type).physical?
   end

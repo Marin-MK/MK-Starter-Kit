@@ -69,6 +69,14 @@ class Ability < Serializable
   def self.count
     return Cache.size
   end
+
+  # Determines equality between two abilities.
+  # @param ability [Symbol, Integer, Ability] the ability to compare with.
+  # @return [Boolean] whether the two abilities are equal.
+  def is?(ability)
+    validate ability => [Symbol, Integer, Ability]
+    return @intname == Ability.get(ability).intname
+  end
 end
 
 # This would be loaded from a data file

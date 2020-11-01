@@ -78,6 +78,14 @@ class Windowskin < Serializable
     return Cache.values.any? { |e| e.intname == windowskin }
   end
 
+  # Determines equality between two windowskins.
+  # @param windowskin [Symbol, Integer, Windowskin] the windowskin to compare with.
+  # @return [Boolean] whether the two windowskins are equal.
+  def is?(windowskin)
+    validate windowskin => [Symbol, Integer, Windowskin]
+    return @intname == Windowskin.get(windowskin).intname
+  end
+
   # @return [Integer] the maximum width for drawing text on this windowskin.
   def get_text_width(window_width)
     return window_width - @line_x_start - @line_x_end
