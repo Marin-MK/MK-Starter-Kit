@@ -54,13 +54,13 @@ sprites/selectable_sprite.rb: Selectable Sprite
 sprites/splitsprite.rb: Split Sprite
 sprites/arrow_sprite.rb: Arrow Sprite
 sprites/base_window.rb: Base Window
-sprites/message_window.rb: Message Window
-sprites/choice_window.rb: Choice Window
-sprites/multi_choice_window: Multi Choice Window
-sprites/numeric_choice_window.rb: Numeric Choice Window
-sprites/status_condition_icon.rb: Status Condition Icon
-sprites/type_icon.rb: Type Icon
-sprites/pokemon_icon.rb: Pokemon Icon
+sprites/text/message_window.rb: Message Window
+sprites/text/choice_window.rb: Choice Window
+sprites/text/multi_choice_window: Multi Choice Window
+sprites/text/numeric_choice_window.rb: Numeric Choice Window
+sprites/pokemon/status_condition_icon.rb: Status Condition Icon
+sprites/pokemon/type_icon.rb: Type Icon
+sprites/pokemon/pokemon_icon.rb: Pokemon Icon
 particles/basicparticle.rb: Basic Particle
 intro/introscene.rb: Intro Scene
 ui/pause_menu.rb: Pause Menu UI
