@@ -149,9 +149,8 @@ class Battle
         @sprites["status"] = StatusConditionIcon.new(@battler, @viewport)
         @sprites["status"].x = opponent? ? OPPONENT_STATUS_X : PLAYER_STATUS_X
         @sprites["status"].y = opponent? ? OPPONENT_STATUS_Y : PLAYER_STATUS_Y
-      else
-        @sprites["status"].status = @battler.status
       end
+      @sprites["status"].status = @battler.status
     end
 
     # Show the databox level up animation.

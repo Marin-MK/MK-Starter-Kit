@@ -7,7 +7,7 @@ class StatusConditionIcon < Sprite
   end
 
   def status=(arg)
-    validate arg => [Battle::Battler, Pokemon, Symbol]
+    validate arg => [NilClass, Battle::Battler, Pokemon, Symbol]
     if arg.is_a?(Battle::Battler, Pokemon)
       if arg.fainted?
         arg = :fainted
@@ -16,7 +16,10 @@ class StatusConditionIcon < Sprite
       end
     end
     @status = arg
-    return if @status.nil?
+    if @status.nil?
+      self.bitmap.dispose if self.bitmap && !self.bitmap.disposed?
+      return
+    end
     self.bitmap = Bitmap.new("gfx/misc/status_conditions")
     self.src_rect.height = self.bitmap.height / 7
     indexes = {

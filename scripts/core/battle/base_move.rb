@@ -248,6 +248,13 @@ class Battle
           message("#{user.name} is paralyzed!\nIt can't move!")
           return
         end
+      elsif user.frozen?
+        if chance(0.2)
+          user.thaw_out
+        else
+          message("#{user.name} is\nfrozen solid!")
+          return
+        end
       end
       targets = target || get_target(user)
       targets = [targets] if targets.is_a?(Battler)
@@ -264,17 +271,20 @@ class Battle
       crit = can_crit ? critical_hit?(user) : false
       for target in targets
         # Determines whether the move hit the target.
-        hit = hit?(user, target)
-        if hit
+        used = hit?(user, target)
+        damage = nil
+        if used
           # Calculates the damage this move does if it's not a status move.
-          damage = status? ? nil : calculate_damage(user, target, targets.size > 1, crit)
+          damage = calculate_damage(user, target, targets.size > 1, crit) if !status?
           # Use the move.
-          use_move(user, target, damage, crit)
+          used = use_move(user, target, damage, crit)
         else
           # Move missed
           use_move_message(user, target, nil, false)
           message("#{user.name}'s\nattack missed!'")
         end
+        # After-use effect, regardless of whether the attack landed.
+        after_use_effect(user, target, used, damage, crit)
       end
     end
 
@@ -335,7 +345,8 @@ class Battle
       # Show the move used message.
       use_move_message(user, target, damage, critical_hit)
       # Apply any potential before-use effects.
-      before_use_effect(user, target, damage, critical_hit)
+      cancel_move = before_hit_effect(user, target, damage, critical_hit)
+      return false if cancel_move
       # Executes the move animation
       execute_animation(user, target, damage, critical_hit)
       if damage
@@ -346,14 +357,18 @@ class Battle
         critical_hit_message(user, target, damage, critical_hit) if critical_hit
       end
       decrease_pp(user, target)
-      # Apply any potential after-use effects.
-      after_use_effect(user, target, damage, critical_hit)
       @ui.wait(0.2)
       # Faint the target if it is out of HP.
       if target.fainted?
         @ui.wait(0.4)
         target.faint
+        @ui.wait(0.2)
       end
+      # Apply any basic after-hit effects.
+      basic_after_hit_effect(user, target, damage, critical_hit)
+      # Apply any potential after-hit effects.
+      after_hit_effect(user, target, damage, critical_hit)
+      return true
     end
 
     # Show the animation of the move being used.
@@ -372,29 +387,63 @@ class Battle
       anim.dispose
     end
 
-    # Apply this move's before-use effects.
+    # Apply this move's before-hit effects.
     # @param user [Battler] the user of the move.
-    # @param target [Battler] the target of the move.f
-    # @param damage [Integer] the damage the user did to the target.
+    # @param target [Battler] the target of the move.
+    # @param damage [Integer] the damage the user will do to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
-    def before_use_effect(user, target, damage, critical_hit)
+    # @return [Boolean] whether the use of the move should be cancelled.
+    def before_hit_effect(user, target, damage, critical_hit)
       validate \
           user => Battler,
           target => Battler,
           damage => [NilClass, Integer],
           critical_hit => Boolean
-
+      return false
     end
 
-    # Apply this move's after-use effects.
+    # Apply common after-hit effects.
     # @param user [Battler] the user of the move.
     # @param target [Battler] the target of the move.f
     # @param damage [NilClass, Integer] the damage the user did to the target.
     # @param critical_hit [Boolean] whether the move is a critical hit.
-    def after_use_effect(user, target, damage, critical_hit)
+    def basic_after_hit_effect(user, target, damage, critical_hit)
       validate \
           user => Battler,
           target => Battler,
+          damage => [NilClass, Integer],
+          critical_hit => Boolean
+      if damage
+        if target.frozen? && @move.type.is?(:FIRE)
+          target.thaw_out
+        end
+      end
+    end
+
+    # Apply this move's after-hit effects.
+    # @param user [Battler] the user of the move.
+    # @param target [Battler] the target of the move.f
+    # @param damage [NilClass, Integer] the damage the user did to the target.
+    # @param critical_hit [Boolean] whether the move is a critical hit.
+    def after_hit_effect(user, target, damage, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          damage => [NilClass, Integer],
+          critical_hit => Boolean
+    end
+
+    # Apply this move's after-use effects.
+    # @param user [Battler] the user of the move.
+    # @param target [Battler] the target of the move.
+    # @param used [Boolean] whether the move was successfully used.
+    # @param damage [NilClass, Integer] the damage the user did to the target.
+    # @param critical_hit [Boolean] whether the move is a critical hit.
+    def after_use_effect(user, target, used, damage, critical_hit)
+      validate \
+          user => Battler,
+          target => Battler,
+          used => Boolean,
           damage => [NilClass, Integer],
           critical_hit => Boolean
     end

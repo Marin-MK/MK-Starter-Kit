@@ -212,6 +212,12 @@ class Battle
       return !@pokemon.status.nil?
     end
 
+    # Removes the Pokémon's status condition.
+    def remove_status
+      @pokemon.status = nil
+      @ui.update_status(self)
+    end
+
     # Burns the Pokémon.
     def burn
       if burned?
@@ -221,7 +227,7 @@ class Battle
       else
         @pokemon.status = :burned
         @ui.update_status(self)
-        message("#{self.name} was burned!")
+        message("#{self.name} was\nburned!")
       end
     end
 
@@ -239,13 +245,20 @@ class Battle
       else
         @pokemon.status = :frozen
         @ui.update_status(self)
-        message("#{self.name} was frozen solid!")
+        message("#{self.name} was\nfrozen solid!")
       end
     end
 
     # @return [Boolean] whether the Pokémon is frozen.
     def frozen?
       return @pokemon.status == :frozen
+    end
+
+    # Heals the user from a frozen status condition.
+    def thaw_out
+      return if !frozen?
+      message("#{self.name} thawed out!")
+      remove_status
     end
 
     # Paralyzes the Pokémon.

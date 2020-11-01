@@ -16,14 +16,6 @@ module MKD
     attr_accessor :panoramas
     attr_accessor :fogs
 
-    def panoramas
-      return @panoramas ||= []
-    end
-
-    def fogs
-      return @fogs ||= []
-    end
-
     def initialize(id = 0)
       @id = id
       @dev_name = ""
@@ -38,10 +30,6 @@ module MKD
       @connections = []
       @panoramas = []
       @fogs = []
-    end
-
-    def encounter_tables
-      return @encounter_tables ||= []
     end
 
     # @param [id] the ID of the map to fetch.
