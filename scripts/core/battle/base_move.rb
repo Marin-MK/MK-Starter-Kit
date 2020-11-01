@@ -248,6 +248,14 @@ class Battle
           message("#{user.name} is paralyzed!\nIt can't move!")
           return
         end
+      elsif user.asleep?
+        if user.status_counter == 0
+          message("#{user.name} woke up!")
+          user.remove_status
+        else
+          message("#{user.name} is fast\nasleep.")
+          return
+        end
       elsif user.frozen?
         if chance(0.2)
           user.thaw_out

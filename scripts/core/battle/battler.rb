@@ -207,6 +207,17 @@ class Battle
       return @pokemon.status
     end
 
+    # @return [Integer, NilClass] the status counter of the status condition.
+    def status_counter
+      return @pokemon.status_counter
+    end
+
+    # Sets the status counter of the status condition.
+    # @param value [Integer, NilClass] the value of the status counter.
+    def status_counter=(value)
+      @pokemon.status_counter = value
+    end
+
     # @return [Boolean] whether the Pokémon has a status condition.
     def has_status?
       return !@pokemon.status.nil?
@@ -214,7 +225,7 @@ class Battle
 
     # Removes the Pokémon's status condition.
     def remove_status
-      @pokemon.status = nil
+      @pokemon.remove_status
       @ui.update_status(self)
     end
 
@@ -300,13 +311,14 @@ class Battle
     end
 
     # Makes the Pokémon fall asleep.
-    def sleep
+    def sleep(turns = nil)
       if asleep?
         message("#{self.name} is already\nasleep!")
       elsif has_status?
         message("But it failed!")
       else
         @pokemon.status = :asleep
+        @pokemon.status_counter = 1 + (turns.nil? ? rand(1..3) : turns)
         @ui.update_status(self)
         message("#{self.name} fell asleep!")
       end
@@ -446,6 +458,8 @@ class Battle
       elsif burned?
         message("#{self.name} is hurt\nby its burn!")
         lower_hp(totalhp / 16)
+      elsif asleep?
+        self.status_counter -= 1 if self.status_counter > 0
       end
     end
 

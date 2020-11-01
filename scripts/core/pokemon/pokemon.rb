@@ -150,9 +150,9 @@ class Pokemon
     if !@pid.nil? && (@pid < 0 || @pid >= 2 ** 32)
       raise ArgumentError, "pid has to be between 0 and 2^32."
     end
-    if !@ivs.nil? && (@ivs.hp < 1 || @ivs.attack < 1 || @ivs.defense < 1 ||
-       @ivs.spatk < 1 || @ivs.spdef < 1 || @ivs.speed < 1)
-      raise ArgumentError, "IV stats must be greater than 0."
+    if !@ivs.nil? && (@ivs.hp < 0 || @ivs.attack < 0 || @ivs.defense < 0 ||
+       @ivs.spatk < 0 || @ivs.spdef < 0 || @ivs.speed < 0)
+      raise ArgumentError, "IV stats cannot be negative."
     end
     if !@evs.nil? && (@evs.hp < 0 || @ivs.attack < 0 || @ivs.defense < 0 ||
        @evs.spatk < 0 || @evs.spdef < 0 || @ivs.speed < 0)
@@ -177,7 +177,7 @@ class Pokemon
       if ![:burned,:frozen,:paralyzed,:poisoned,:asleep].include?(@status)
         raise ArgumentError, "the status must be a given status condition."
       end
-      @status_count = rand(1..3) if @status == :asleep
+      @status_counter = rand(1..3) if @status == :asleep
     end
     if !@hp.nil? && @hp < 0
       raise ArgumentError, "the hp stat cannot be negative."
@@ -233,7 +233,7 @@ class Pokemon
     @moves ||= get_moveset_for_level
     calc_stats
     @hp ||= @totalhp
-    @status_count ||= 0
+    @status_counter ||= 0
     @egg_cycles ||= 0
   end
 
@@ -602,7 +602,7 @@ class Pokemon
   # Clears the Pokemon's status.
   def remove_status
     self.status = nil
-    self.status_count = nil
+    self.status_counter = nil
   end
 
   # Heals the Pokemon's move PP.
