@@ -1,3 +1,5 @@
+This project has been discontinued. The editor that was being made for this project, <b><a href="https://github.com/Marin-MK/RPG-Studio-MK">RPG Studio MK</a></b> has become the primary focus, and will instead be an editor for <b><a href="https://github.com/Maruno17/pokemon-essentials">Pokémon Essentials</a></b> projects.
+
 <h1>MK Starter Kit</h1>
 
 The aim of the MK Starter Kit is to provide a fast, free, cross-platform and open-source alternative to RPG Maker XP and Pokémon Essentials, while still using Ruby. It will have an editor similar to RPG Maker but customized entirely with Pokémon in mind.
